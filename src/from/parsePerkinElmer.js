@@ -9,7 +9,7 @@ export default function parsePerkinElmer(text) {
         inMethodSteps = false;
       } else {
         if (!result.meta['Method Steps']) result.meta['Method Steps'] = '';
-        result.meta['Method Steps'] += line.replace(/\t/g, '  ') + '\n';
+        result.meta['Method Steps'] += `${line.replace(/\t/g, '  ')}\n`;
       }
     } else if (line.match(/^[a-zA-Z -]+$/)) {
       section = trim(line);
