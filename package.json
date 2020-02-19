@@ -1,0 +1,57 @@
+{
+  "name": "tga-spectrum",
+  "version": "0.2.2",
+  "description": "",
+  "main": "lib/index.js",
+  "module": "src/index.js",
+  "files": [
+    "lib",
+    "src"
+  ],
+  "scripts": {
+    "build": "rollup -c && cheminfo-build --root IVSpectrum",
+    "build-doc": "cheminfo doc",
+    "eslint": "eslint src",
+    "eslint-fix": "npm run eslint -- --fix",
+    "test": "npm run test-only && npm run eslint",
+    "test-travis": "eslint src && jest --coverage && codecov",
+    "test-only": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cheminfo/tga-spectrum.git"
+  },
+  "keywords": [],
+  "author": "Luc Patiny",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cheminfo/tga-spectrum/issues"
+  },
+  "homepage": "https://github.com/cheminfo/tga-spectrum#readme",
+  "jest": {
+    "testEnvironment": "node"
+  },
+  "devDependencies": {
+    "@types/jest": "^25.1.2",
+    "cheminfo-build": "^1.0.5",
+    "codecov": "^3.6.5",
+    "eslint": "^6.8.0",
+    "eslint-config-cheminfo": "^2.0.4",
+    "eslint-plugin-import": "^2.20.1",
+    "eslint-plugin-jest": "^23.7.0",
+    "eslint-plugin-prettier": "^3.1.2",
+    "jest": "^25.1.0",
+    "prettier": "^1.19.1",
+    "rollup": "^1.31.0"
+  },
+  "dependencies": {
+    "@babel/plugin-transform-modules-commonjs": "^7.8.3",
+    "convert-to-jcamp": "^2.0.0",
+    "jcampconverter": "^4.1.0",
+    "ml-array-max": "^1.1.2",
+    "ml-array-min": "^1.1.2",
+    "ml-array-utils": "^0.4.0",
+    "ml-array-xy-equally-spaced": "^1.1.1",
+    "xy-parser": "^3.0.0"
+  }
+}
