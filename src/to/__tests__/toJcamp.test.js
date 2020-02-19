@@ -1,7 +1,8 @@
-import { toJcamp } from '../toJcamp';
-import { fromPerkinElmer } from '../..';
 import { readFileSync } from 'fs';
 import { join } from 'path';
+
+import { fromPerkinElmer } from '../..';
+
 test('toJcamp', () => {
   let text = readFileSync(
     join(__dirname, '../../../testFiles/tga4000_perkinElmer.txt'),
