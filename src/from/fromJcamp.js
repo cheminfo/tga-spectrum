@@ -1,7 +1,6 @@
-import addJcamp from '../addJcamp';
-
 import { createTree } from 'jcampconverter';
 
+import addJcamp from '../addJcamp';
 import { Spectrum } from '../Spectrum';
 /**
  * Creates a new Chromatogram element based in a JCAMP string

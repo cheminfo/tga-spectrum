@@ -29,7 +29,7 @@ export class Spectrum {
     }
     flavor = flavor.toLowerCase();
     if (!this.flavors[flavor]) {
-      throw new Error('No spectrum for the flavor: ' + flavor);
+      throw new Error(`No spectrum for the flavor: ${flavor}`);
     }
     return this.flavors[flavor];
   }

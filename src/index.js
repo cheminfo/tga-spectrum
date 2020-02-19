@@ -1,3 +1,3 @@
 export { Spectrum } from './Spectrum';
-export { fromSIV } from './from/fromSIV';
+export { fromPerkinElmer } from './from/fromPerkinElmer';
 export { fromJcamp } from './from/fromJcamp';
