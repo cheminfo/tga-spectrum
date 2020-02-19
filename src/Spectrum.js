@@ -52,7 +52,7 @@ Spectrum.prototype.toJcamp = function() {
 };
 
 function normalizeData(x, y, options = {}) {
-  const { meta = {}, xLabel = 'abc', yLabel = 'def' } = options;
+  const { meta = {}, xLabel = 'abc', yLabel = 'def', title = '' } = options;
   if (x && x.length > 1 && x[0] > x[1]) {
     x = x.reverse();
     y = y.reverse();
@@ -65,6 +65,7 @@ function normalizeData(x, y, options = {}) {
     y,
     xLabel,
     yLabel,
+    title,
     meta,
   };
 }
