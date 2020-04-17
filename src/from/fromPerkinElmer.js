@@ -1,4 +1,4 @@
-import { Spectrum } from '../Spectrum';
+import Spectrum from '../Spectrum';
 
 import parsePerkinElmer from './parsePerkinElmer';
 
@@ -7,26 +7,26 @@ import parsePerkinElmer from './parsePerkinElmer';
  * @param {string} text - String containing the JCAMP data
  * @return {Spectrum} - New class element with the given data
  */
-export function fromPerkinElmer(text) {
+export default function fromPerkinElmer(text) {
   let spectrum = new Spectrum();
   let result = parsePerkinElmer(text);
 
-  spectrum.add(
-    result.data.temperature,
-    result.data.weight,
-    'weightVersusTemperature',
+  spectrum.set(
+    { x: result.data.temperature, y: result.data.weight },
     {
       xLabel: 'Temperature [°C]',
       yLabel: 'Weight [mg]',
       title: result.meta['Sample ID'],
       meta: result.meta,
+      flavor: 'weightVersusTemperature',
     },
   );
-  spectrum.add(result.data.time, result.data.weight, 'weightVersusTime', {
+  spectrum.set(result.data.time, result.data.weight, {
     xLabel: 'Time [s]',
     yLabel: 'Weight [mg]',
     title: result.meta['Sample ID'],
     meta: result.meta,
+    flavor: 'weightVersusTime',
   });
   return spectrum;
 }

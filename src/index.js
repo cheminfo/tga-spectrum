@@ -1,3 +1,6 @@
-export { Spectrum } from './Spectrum';
-export { fromPerkinElmer } from './from/fromPerkinElmer';
-export { fromJcamp } from './from/fromJcamp';
+export { default as Spectrum } from './Spectrum';
+export { default as Spectra } from './Spectra';
+export { default as fromPerkinElmer } from './from/fromPerkinElmer';
+export { default as fromJcamp } from './from/fromJcamp';
+export { default as toJcamp } from './to/toJcamp';
+export { default as getJSGraph } from './jsgraph/getJSGraph';

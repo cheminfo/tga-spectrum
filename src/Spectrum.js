@@ -1,71 +1,74 @@
-import toJcamp from './to/toJcamp';
-import addJcamp from './addJcamp';
+import getNormalized from './util/getNormalized';
+import sortX from 'ml-array-xy-sort-x';
+
+const DEFAULT_FLAVOR = 'weightVersusTemperature';
+
 /**
- * Class allowing manipulate a spectrum
- * @class spectrum
+ * Class allowing to store and manipulate a spectrum
+ * @class Spectrum
  * @param {object} [data={}] - object containing a spectrum
  * @param {Array} [data.x=[]] - voltage
  * @param {Array} [data.y=[]] - intensity
+ * @param {object} [options={}]
  */
-export class Spectrum {
-  constructor() {
+export default class Spectrum {
+  constructor(options = {}) {
+    this.id = options.id || Math.random().toString(36).substring(2, 10);
     this.flavors = {};
   }
 
-  add(x, y, flavor = 'weightVersusTemperature', options = {}) {
-    if (!flavor) {
-      throw new Error('You need to specify the flavor of analysis');
-    }
-    this.flavors[flavor.toLowerCase()] = normalizeData(x, y, options);
+  set(points, options = {}) {
+    const { flavor = DEFAULT_FLAVOR } = options;
+    this.flavors[flavor.toLowerCase()] = standardizeData(points, options);
   }
 
-  addJcamp(jcamp) {
-    addJcamp(this.flavors, jcamp);
-  }
-
-  get(flavor = 'weightVersusTemperature') {
-    if (!flavor) {
-      throw new Error('You need to specify the flavor of analysis');
-    }
+  get(flavor = DEFAULT_FLAVOR) {
     flavor = flavor.toLowerCase();
     if (!this.flavors[flavor]) {
-      throw new Error(`No spectrum for the flavor: ${flavor}`);
+      return undefined;
     }
     return this.flavors[flavor];
   }
 
-  getXLabel(flavor = 'weightVersusTemperature') {
-    return this.get(flavor).meta;
+  getData(options = {}) {
+    const { flavor, normalization } = options;
+    let data = this.get(flavor);
+    if (!data) return undefined;
+    return getNormalized(data, normalization);
   }
 
-  getYLabel() {
-    return 'Intensity [A]';
+  getXLabel(flavor) {
+    return this.get(flavor).xAxis;
+  }
+
+  getYLabel(flavor) {
+    return this.get(flavor).yAxis;
   }
 }
 
-Spectrum.prototype.getData = function() {
-  return { x: this.x, y: this.y };
-};
-
-Spectrum.prototype.toJcamp = function() {
-  return toJcamp(this);
-};
-
-function normalizeData(x, y, options = {}) {
-  const { meta = {}, xLabel = 'abc', yLabel = 'def', title = '' } = options;
-  if (x && x.length > 1 && x[0] > x[1]) {
-    x = x.reverse();
-    y = y.reverse();
+function standardizeData(points, options = {}) {
+  const { meta = {}, tmp = {}, xLabel = '', yLabel = '', title = '' } = options;
+  if (false) {
+    points = sortX(points);
   } else {
-    x = x || [];
-    y = y || [];
+    let { x, y } = points;
+    if (x && x.length > 1 && x[0] > x[x.length - 1]) {
+      x = x.reverse();
+      y = y.reverse();
+    } else {
+      x = x || [];
+      y = y || [];
+    }
+    points = { x, y };
   }
+
   return {
-    x,
-    y,
+    x: points.x,
+    y: points.y,
     xLabel,
     yLabel,
     title,
     meta,
+    tmp,
   };
 }

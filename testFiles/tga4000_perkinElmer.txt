@@ -1,4 +1,4 @@
-Filename:	C:\Program Files\PerkinElmer\Pyris\data\bobbink\VanMuyden\luTGA\HMm-1130.t6d 
+Filename:	TEST
 Operator ID:	 
 Sample ID:	HMm-1130 
 Comment: 	 
@@ -11,10 +11,10 @@ Validated:	No
 By:	 
 Date:	 
 Calibration Information 
-Filename:	C:\Program Files\PerkinElmer\Pyris\Calibrations\PE_20190328.t6c 
+Filename:	TEST
 Date/Time:	 
 Initial Conditions 
-Temperature:	 50.00 °C 
+Temperature:	 50.00 ï¿½C 
 Baseline Filename:	 
 End Condition:	Go To Load 
 Total Points in Run:	1155 
@@ -24,11 +24,11 @@ Start the Run
 	Action occurs Immediately 
 Switch the Gas to Nitrogen at 20.0 ml/min  
 	Action occurs Immediately 
-1)	Hold for 1.0 min at 50.00°C 
+1)	Hold for 1.0 min at 50.00ï¿½C 
  
-2)	Heat from 50.00°C to 700.00°C at 40.00°C/min 
+2)	Heat from 50.00ï¿½C to 700.00ï¿½C at 40.00ï¿½C/min 
  
-3)	Hold for 2.0 min at 700.00°C 
+3)	Hold for 2.0 min at 700.00ï¿½C 
  
 1) TGA Isothermal 
 	Time     	Unsubtracted	Baseline     	Program     	Sample     	Approx.     	R25 Diagnostic 

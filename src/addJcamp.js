@@ -1,15 +1,15 @@
 import { convert } from 'jcampconverter';
 
 export default function addJcamp(spectrum, jcamp) {
-  const converted = convert(jcamp, {
-    xy: true,
+  let converted = convert(jcamp, {
     keepRecordsRegExp: /.*/,
     canonicDataLabels: false,
     dynamicTyping: true,
   });
 
-  let currentSpectrum = converted.spectra[0];
-  for (let oneSpectrum of converted.spectra) {
+  for (let entry of converted.flatten) {
+    let currentSpectrum = entry.spectra[0];
+
     let xLabel = currentSpectrum.xUnit;
     let yLabel = currentSpectrum.yUnit;
 
@@ -17,7 +17,8 @@ export default function addJcamp(spectrum, jcamp) {
     if (xLabel.match(/\[.*C\]/)) flavor = 'weightVersusTemperature';
     if (xLabel.match(/\[.*s\]/)) flavor = 'weightVersusTime';
     if (flavor) {
-      spectrum.add(currentSpectrum.data[0].x, oneSpectrum.data[0].y, flavor, {
+      spectrum.set(currentSpectrum.data, {
+        flavor,
         xLabel,
         yLabel,
         title: currentSpectrum.title,

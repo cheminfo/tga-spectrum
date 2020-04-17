@@ -9,10 +9,11 @@
     "src"
   ],
   "scripts": {
-    "build": "rollup -c && cheminfo-build --root TGASpectrum",
+    "build": "cheminfo-build  --entry src/index.js --root TGASpectrum",
     "build-doc": "cheminfo doc",
     "eslint": "eslint src",
     "eslint-fix": "npm run eslint -- --fix",
+    "prepublishOnly": "rollup -c",
     "test": "npm run test-only && npm run eslint",
     "test-travis": "eslint src && jest --coverage && codecov",
     "test-only": "jest"
@@ -32,26 +33,31 @@
     "testEnvironment": "node"
   },
   "devDependencies": {
-    "@types/jest": "^25.1.2",
-    "cheminfo-build": "^1.0.5",
+    "@types/jest": "^25.2.1",
+    "cheminfo-build": "^1.1.0",
     "codecov": "^3.6.5",
     "eslint": "^6.8.0",
-    "eslint-config-cheminfo": "^2.0.4",
-    "eslint-plugin-import": "^2.20.1",
-    "eslint-plugin-jest": "^23.7.0",
-    "eslint-plugin-prettier": "^3.1.2",
-    "jest": "^25.1.0",
-    "prettier": "^1.19.1",
-    "rollup": "^1.31.0"
+    "eslint-config-cheminfo": "^3.0.0",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-jest": "^23.8.2",
+    "eslint-plugin-prettier": "^3.1.3",
+    "jest": "^25.3.0",
+    "prettier": "^2.0.4",
+    "rollup": "^2.6.1"
   },
   "dependencies": {
-    "@babel/plugin-transform-modules-commonjs": "^7.8.3",
-    "convert-to-jcamp": "^2.0.0",
-    "jcampconverter": "^4.1.0",
+    "@babel/plugin-transform-modules-commonjs": "^7.9.0",
+    "convert-to-jcamp": "^2.0.1",
+    "jcampconverter": "^5.0.2",
     "ml-array-max": "^1.1.2",
     "ml-array-min": "^1.1.2",
+    "ml-array-normed": "^1.2.0",
+    "ml-array-rescale": "^1.3.0",
     "ml-array-utils": "^0.4.0",
     "ml-array-xy-equally-spaced": "^1.1.1",
+    "ml-array-xy-filter-x": "^1.0.1",
+    "ml-array-xy-sort-x": "^1.0.1",
+    "ml-stat": "^1.3.3",
     "xy-parser": "^3.0.0"
   }
 }

@@ -10,6 +10,7 @@ export default function toJcamp(spectrum) {
   if (weightVersusTime) {
     jcamps.push(getJcamp(weightVersusTime));
   }
+
   return jcamps.join('\n');
 }
 

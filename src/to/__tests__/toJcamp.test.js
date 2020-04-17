@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
-import { fromPerkinElmer } from '../..';
+import { fromPerkinElmer, toJcamp } from '../..';
 
 test('toJcamp', () => {
   let text = readFileSync(
@@ -9,7 +9,7 @@ test('toJcamp', () => {
     'latin1',
   );
   const spectrum = fromPerkinElmer(text);
-  const jcamp = spectrum.toJcamp();
+  const jcamp = toJcamp(spectrum);
   let lines = jcamp.split(/\n/);
   let points = lines.filter((line) => line.match('##NPOINTS=1155'));
   expect(points).toHaveLength(2);
