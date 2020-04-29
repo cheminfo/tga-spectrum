@@ -6,14 +6,14 @@ const DEFAULT_FLAVOR = 'weightVersusTemperature';
 /**
  * Class allowing to store and manipulate a spectrum
  * @class Spectrum
- * @param {object} [data={}] - object containing a spectrum
- * @param {Array} [data.x=[]] - voltage
- * @param {Array} [data.y=[]] - intensity
  * @param {object} [options={}]
+ * @param {string} [options.id=randomString] unique identifier
+ * @param {string} [options.label] human redeable label
  */
 export default class Spectrum {
   constructor(options = {}) {
     this.id = options.id || Math.random().toString(36).substring(2, 10);
+    this.label = options.label || this.id;
     this.flavors = {};
   }
 

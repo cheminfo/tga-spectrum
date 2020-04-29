@@ -24,28 +24,39 @@ export default function getNormalized(spectrum, options = {}) {
     exclusions = [],
   } = options;
 
-  let y = spectrum.y.slice(0);
+  let { x, y } = filterX(spectrum, { from, to });
+
+  console.log({ from, to, x, y });
+
   console.log({ filters });
   for (let filter of filters) {
+    let options = filter.options || {};
     switch (filter.name) {
       case 'centerMean': {
-        let mean = Stat.mean(spectrum.y);
+        let mean = Stat.mean(y);
         let meanFct = (y) => y - mean;
         y = y.map(meanFct);
         break;
       }
       case 'scaleSD': {
-        let std = Stat.standardDeviation(spectrum.y);
+        let std = Stat.standardDeviation(y);
         let stdFct = (y) => y / std;
         y = y.map(stdFct);
         break;
       }
       case 'normalize': {
-        y = normed(y);
+        // should be an integration in fact
+        y = normed(y, {
+          sumValue: options.value ? Number(options.value) : 1,
+          algorithm: 'absolute',
+        });
         break;
       }
       case 'rescale': {
-        y = rescale(y);
+        y = rescale(y, {
+          min: options.min ? Number(filter.options.min) : 0,
+          max: options.max ? Number(filter.options.max) : 1,
+        });
         break;
       }
       case '':
@@ -55,13 +66,10 @@ export default function getNormalized(spectrum, options = {}) {
         throw new Error(`Unknown process kind: ${process.kind}`);
     }
   }
-  console.log({ from, to, spectrum, numberOfPoints });
+
   if (!numberOfPoints) {
-    return filterX({ x: spectrum.x, y }, { from, to, exclusions });
+    return filterX({ x, y }, { from, to, exclusions });
   }
 
-  return equallySpaced(
-    { x: spectrum.x, y },
-    { from, to, numberOfPoints, exclusions },
-  );
+  return equallySpaced({ x, y }, { from, to, numberOfPoints, exclusions });
 }

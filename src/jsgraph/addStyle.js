@@ -12,5 +12,5 @@ export default function addStyle(data, spectrum, options = {}) {
       lineStyle: 1,
     },
   };
-  data.label = spectrum.id;
+  data.label = spectrum.label || spectrum.id;
 }
