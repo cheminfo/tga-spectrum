@@ -1,5 +1,4 @@
 import getNormalized from './util/getNormalized';
-import sortX from 'ml-array-xy-sort-x';
 
 const DEFAULT_FLAVOR = 'weightVersusTemperature';
 
@@ -38,29 +37,25 @@ export default class Spectrum {
   }
 
   getXLabel(flavor) {
-    return this.get(flavor).xAxis;
+    return this.get(flavor).xLabel;
   }
 
   getYLabel(flavor) {
-    return this.get(flavor).yAxis;
+    return this.get(flavor).yLabel;
   }
 }
 
 function standardizeData(points, options = {}) {
   const { meta = {}, tmp = {}, xLabel = '', yLabel = '', title = '' } = options;
-  if (false) {
-    points = sortX(points);
+  let { x, y } = points;
+  if (x && x.length > 1 && x[0] > x[x.length - 1]) {
+    x = x.reverse();
+    y = y.reverse();
   } else {
-    let { x, y } = points;
-    if (x && x.length > 1 && x[0] > x[x.length - 1]) {
-      x = x.reverse();
-      y = y.reverse();
-    } else {
-      x = x || [];
-      y = y || [];
-    }
-    points = { x, y };
+    x = x || [];
+    y = y || [];
   }
+  points = { x, y };
 
   return {
     x: points.x,

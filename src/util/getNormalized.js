@@ -1,9 +1,9 @@
-import equallySpaced from 'ml-array-xy-equally-spaced';
-import Stat from 'ml-stat/array';
 import normed from 'ml-array-normed';
 import rescale from 'ml-array-rescale';
+import equallySpaced from 'ml-array-xy-equally-spaced';
 import filterX from 'ml-array-xy-filter-x';
-
+import Stat from 'ml-stat/array';
+import { X } from 'ml-spectra-processing';
 /**
  *
  * @private
@@ -26,36 +26,31 @@ export default function getNormalized(spectrum, options = {}) {
 
   let { x, y } = filterX(spectrum, { from, to });
 
-  console.log({ from, to, x, y });
-
-  console.log({ filters });
   for (let filter of filters) {
-    let options = filter.options || {};
+    let filterOptions = filter.options || {};
     switch (filter.name) {
       case 'centerMean': {
         let mean = Stat.mean(y);
-        let meanFct = (y) => y - mean;
-        y = y.map(meanFct);
+        y = X.subtract(mean);
         break;
       }
       case 'scaleSD': {
         let std = Stat.standardDeviation(y);
-        let stdFct = (y) => y / std;
-        y = y.map(stdFct);
+        y = X.divide(std);
         break;
       }
       case 'normalize': {
         // should be an integration in fact
         y = normed(y, {
-          sumValue: options.value ? Number(options.value) : 1,
+          sumValue: filterOptions.value ? Number(filterOptions.value) : 1,
           algorithm: 'absolute',
         });
         break;
       }
       case 'rescale': {
         y = rescale(y, {
-          min: options.min ? Number(filter.options.min) : 0,
-          max: options.max ? Number(filter.options.max) : 1,
+          min: filterOptions.min ? Number(filter.options.min) : 0,
+          max: filterOptions.max ? Number(filter.options.max) : 1,
         });
         break;
       }

@@ -11,19 +11,43 @@ import addStyle from './addStyle';
 export default function getJSGraph(spectra, options = {}) {
   let data = spectra.data || spectra;
   const { ids, colors, flavor, normalization } = options;
-  let chart = {
-    data: [],
-  };
+  let series = [];
+
+  let xLabel = '';
+  let yLabel = '';
 
   for (let i = 0; i < data.length; i++) {
     const spectrum = data[i];
     if (!ids || ids.includes(spectrum.id)) {
+      let serie = {};
       let currentData = spectrum.getData({ flavor, normalization });
-      console.log({ currentData });
       if (!currentData) continue;
-      addStyle(currentData, spectrum, { color: colors[i] });
-      chart.data.push(currentData);
+      if (!xLabel) xLabel = spectrum.getXLabel(flavor);
+      if (!yLabel) yLabel = spectrum.getYLabel(flavor);
+      addStyle(serie, spectrum, { color: colors[i] });
+      serie.data = currentData;
+      series.push(serie);
     }
   }
-  return chart;
+  return {
+    axes: {
+      x: {
+        label: xLabel,
+        unit: '',
+        unitWrapperBefore: '',
+        unitWrapperAfter: '',
+        flipped: false,
+        display: true,
+      },
+      y: {
+        label: yLabel,
+        unit: '',
+        unitWrapperBefore: '',
+        unitWrapperAfter: '',
+        flipped: false,
+        display: true,
+      },
+    },
+    series,
+  };
 }
