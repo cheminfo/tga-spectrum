@@ -1,15 +1,26 @@
-export default class Spectra {
+export default class SpectraManager {
   constructor() {
-    this.data = [];
+    this.spectra = [];
   }
 
   addSpectrum(spectrum) {
     let index = this.getSpectrumIndex(spectrum.id);
     if (index === undefined) {
-      this.data.push(spectrum);
+      this.spectra.push(spectrum);
     } else {
-      this.data[index] = spectrum;
+      this.spectra[index] = spectrum;
     }
+  }
+
+  getSpectra(options = {}) {
+    const { ids } = options;
+    let spectra = [];
+    for (const spectrum of this.spectra) {
+      if (!ids || ids.includes(spectrum.id)) {
+        spectra.push(spectrum);
+      }
+    }
+    return spectra;
   }
 
   /**
@@ -19,7 +30,7 @@ export default class Spectra {
   removeSpectrum(id) {
     let index = this.getSpectrumIndex(id);
     if (index === undefined) return undefined;
-    return this.data.splice(index, 1);
+    return this.spectra.splice(index, 1);
   }
 
   /**
@@ -29,8 +40,8 @@ export default class Spectra {
    */
   getSpectrumIndex(id) {
     if (!id) return undefined;
-    for (let i = 0; i < this.data.length; i++) {
-      let spectrum = this.data[i];
+    for (let i = 0; i < this.spectra.length; i++) {
+      let spectrum = this.spectra[i];
       if (spectrum.id === id) return i;
     }
     return undefined;

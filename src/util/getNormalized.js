@@ -4,6 +4,7 @@ import equallySpaced from 'ml-array-xy-equally-spaced';
 import filterX from 'ml-array-xy-filter-x';
 import Stat from 'ml-stat/array';
 import { X } from 'ml-spectra-processing';
+import savitzkyGolay from 'ml-savitzky-golay';
 /**
  *
  * @private
@@ -22,9 +23,34 @@ export default function getNormalized(spectrum, options = {}) {
     numberOfPoints,
     filters = [],
     exclusions = [],
+    processing = '',
   } = options;
 
   let { x, y } = filterX(spectrum, { from, to });
+
+  switch (processing) {
+    case 'firstDerivative':
+      if (options.processing) {
+        y = savitzkyGolay(y, 1, {
+          derivative: 1,
+          polynomial: 2,
+          windowSize: 5,
+        });
+        x = x.slice(2, x.length - 2);
+      }
+      break;
+    case 'secondDerivative':
+      if (options.processing) {
+        y = savitzkyGolay(y, 1, {
+          derivative: 2,
+          polynomial: 2,
+          windowSize: 5,
+        });
+        x = x.slice(2, x.length - 2);
+      }
+      break;
+    default:
+  }
 
   for (let filter of filters) {
     let filterOptions = filter.options || {};

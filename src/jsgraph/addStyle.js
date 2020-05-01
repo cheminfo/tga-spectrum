@@ -22,5 +22,5 @@ export default function addStyle(serie, spectrum, options = {}) {
       },
     },
   ];
-  serie.label = spectrum.label || spectrum.id;
+  serie.name = spectrum.label || spectrum.id;
 }
