@@ -5,7 +5,7 @@ import { fromPerkinElmer, toJcamp } from '../..';
 
 test('toJcamp', () => {
   let text = readFileSync(
-    join(__dirname, '../../../testFiles/tga4000_perkinElmer.txt'),
+    join(__dirname, '../../../testFiles/perkinElmer_tga4000.txt'),
     'latin1',
   );
   const spectrum = fromPerkinElmer(text);
