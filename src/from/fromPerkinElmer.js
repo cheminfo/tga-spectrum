@@ -1,16 +1,16 @@
-import Spectrum from '../Spectrum';
+import { Analysis } from '..';
 
-import parsePerkinElmer from './parsePerkinElmer';
+import { parsePerkinElmer } from './parsePerkinElmer';
 
 /**
  * Creates a new Chromatogram element based in a JCAMP string
  * @param {string} text - String containing the JCAMP data
- * @return {Spectrum} - New class element with the given data
+ * @return {Analysis} - New class element with the given data
  */
-export default function fromPerkinElmer(text) {
-  let spectrum = new Spectrum();
+export function fromPerkinElmer(text) {
+  let analysis = new Analysis();
   let result = parsePerkinElmer(text);
-  spectrum.set(
+  analysis.set(
     { x: result.data.temperature, y: result.data.weight },
     {
       xLabel: 'Temperature [°C]',
@@ -20,7 +20,7 @@ export default function fromPerkinElmer(text) {
       flavor: 'weightVersusTemperature',
     },
   );
-  spectrum.set(
+  analysis.set(
     { x: result.data.time, y: result.data.weight },
     {
       xLabel: 'Time [s]',
@@ -30,5 +30,5 @@ export default function fromPerkinElmer(text) {
       flavor: 'weightVersusTime',
     },
   );
-  return spectrum;
+  return analysis;
 }

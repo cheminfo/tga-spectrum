@@ -1,7 +1,16 @@
-export { default as Spectrum } from './Spectrum';
-export { default as SpectraManager } from './SpectraManager';
-export { default as fromPerkinElmer } from './from/fromPerkinElmer';
-export { default as fromPerkinElmerCSV } from './from/fromPerkinElmerCSV';
-export { default as fromJcamp } from './from/fromJcamp';
-export { default as toJcamp } from './to/toJcamp';
-export { default as getJSGraph } from './jsgraph/getJSGraph';
+import { CommonSpectrum } from 'common-spectrum';
+
+export const {
+  Analysis,
+  AnalysesManager,
+  fromJcamp,
+  toJcamp,
+  getJSGraph,
+  getNormalizationAnnotations,
+} = new CommonSpectrum({
+  dataType: 'TGA',
+  defaultFlavor: 'weightVersusTemperature',
+});
+
+export { fromPerkinElmer } from './from/fromPerkinElmer';
+export { fromPerkinElmerCSV } from './from/fromPerkinElmerCSV';

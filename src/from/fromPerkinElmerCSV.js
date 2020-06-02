@@ -1,17 +1,17 @@
-import Spectrum from '../Spectrum';
-
 import Papa from 'papaparse';
+
+import { Analysis } from '..';
 
 /**
  * Creates a new Chromatogram element based in a JCAMP string
  * @param {string} text - String containing the JCAMP data
- * @return {Spectrum} - New class element with the given data
+ * @return {Analysis} - New class element with the given data
  */
-export default function fromPerkinElmerCSV(text) {
+export function fromPerkinElmerCSV(text) {
   let parsed = Papa.parse(text, { header: true, dynamicTyping: true }).data;
 
-  let spectrum = new Spectrum();
-  spectrum.set(
+  let analysis = new Analysis();
+  analysis.set(
     {
       x: parsed.map((d) => d['Sample Temperature']),
       y: parsed.map((d) => d['Unsubtracted Weight']),
@@ -22,7 +22,7 @@ export default function fromPerkinElmerCSV(text) {
       flavor: 'weightVersusTemperature',
     },
   );
-  spectrum.set(
+  analysis.set(
     {
       x: parsed.map((d) => d.Time),
       y: parsed.map((d) => d['Unsubtracted Weight']),
@@ -33,5 +33,5 @@ export default function fromPerkinElmerCSV(text) {
       flavor: 'weightVersusTime',
     },
   );
-  return spectrum;
+  return analysis;
 }

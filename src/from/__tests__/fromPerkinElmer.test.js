@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
-import fromPerkinElmer from '../fromPerkinElmer';
+import { fromPerkinElmer } from '../fromPerkinElmer';
 
 test('fromPerkinElmer', () => {
   let jcamp = readFileSync(

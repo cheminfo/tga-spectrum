@@ -1,4 +1,4 @@
-export default function parsePerkinElmer(text) {
+export function parsePerkinElmer(text) {
   let lines = text.split(/[\r\n]+/);
   let result = { meta: {}, data: { time: [], weight: [], temperature: [] } };
   let section = '';
