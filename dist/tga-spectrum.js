@@ -1,6 +1,6 @@
 /**
  * tga-spectrum
- * @version v0.3.0
+ * @version v0.5.0
  * @link https://github.com/cheminfo/tga-spectrum#readme
  * @license MIT
  */
@@ -9,6 +9,75 @@
   typeof define === 'function' && define.amd ? define(['exports'], factory) :
   (global = global || self, factory(global.TGASpectrum = {}));
 }(this, (function (exports) { 'use strict';
+
+  class AnalysesManager {
+    constructor() {
+      this.analyses = [];
+    }
+
+    addAnalysis(analysis) {
+      let index = this.getAnalysisIndex(analysis.id);
+
+      if (index === undefined) {
+        this.analyses.push(analysis);
+      } else {
+        this.analyses[index] = analysis;
+      }
+    }
+
+    getAnalyses(options = {}) {
+      const {
+        ids
+      } = options;
+      let analyses = [];
+
+      for (const analysis of this.analyses) {
+        if (!ids || ids.includes(analysis.id)) {
+          analyses.push(analysis);
+        }
+      }
+
+      return analyses;
+    }
+    /**
+     * Remove the analysis from the AnalysesManager for the specified id
+     * @param {string} id
+     */
+
+
+    removeAnalysis(id) {
+      let index = this.getAnalysisIndex(id);
+      if (index === undefined) return undefined;
+      return this.analyses.splice(index, 1);
+    }
+    /**
+     * Returns the index of the analysis in the analyses array
+     * @param {string} id
+     * @returns {number}
+     */
+
+
+    getAnalysisIndex(id) {
+      if (!id) return undefined;
+
+      for (let i = 0; i < this.analyses.length; i++) {
+        let analysis = this.analyses[i];
+        if (analysis.id === id) return i;
+      }
+
+      return undefined;
+    }
+    /**
+     * Checks if the ID of an analysis exists in the AnalysesManager
+     * @param {string} id
+     */
+
+
+    includes(id) {
+      return !isNaN(this.getAnalysisIndex(id));
+    }
+
+  }
 
   const toString = Object.prototype.toString;
   function isAnyArray(object) {
@@ -876,1000 +945,6 @@
       y: newY
     };
   }
-
-  function createCommonjsModule(fn, module) {
-  	return module = { exports: {} }, fn(module, module.exports), module.exports;
-  }
-
-  var array = createCommonjsModule(function (module, exports) {
-
-    function compareNumbers(a, b) {
-      return a - b;
-    }
-    /**
-     * Computes the sum of the given values
-     * @param {Array} values
-     * @returns {number}
-     */
-
-
-    exports.sum = function sum(values) {
-      var sum = 0;
-
-      for (var i = 0; i < values.length; i++) {
-        sum += values[i];
-      }
-
-      return sum;
-    };
-    /**
-     * Computes the maximum of the given values
-     * @param {Array} values
-     * @returns {number}
-     */
-
-
-    exports.max = function max(values) {
-      var max = values[0];
-      var l = values.length;
-
-      for (var i = 1; i < l; i++) {
-        if (values[i] > max) max = values[i];
-      }
-
-      return max;
-    };
-    /**
-     * Computes the minimum of the given values
-     * @param {Array} values
-     * @returns {number}
-     */
-
-
-    exports.min = function min(values) {
-      var min = values[0];
-      var l = values.length;
-
-      for (var i = 1; i < l; i++) {
-        if (values[i] < min) min = values[i];
-      }
-
-      return min;
-    };
-    /**
-     * Computes the min and max of the given values
-     * @param {Array} values
-     * @returns {{min: number, max: number}}
-     */
-
-
-    exports.minMax = function minMax(values) {
-      var min = values[0];
-      var max = values[0];
-      var l = values.length;
-
-      for (var i = 1; i < l; i++) {
-        if (values[i] < min) min = values[i];
-        if (values[i] > max) max = values[i];
-      }
-
-      return {
-        min: min,
-        max: max
-      };
-    };
-    /**
-     * Computes the arithmetic mean of the given values
-     * @param {Array} values
-     * @returns {number}
-     */
-
-
-    exports.arithmeticMean = function arithmeticMean(values) {
-      var sum = 0;
-      var l = values.length;
-
-      for (var i = 0; i < l; i++) {
-        sum += values[i];
-      }
-
-      return sum / l;
-    };
-    /**
-     * {@link arithmeticMean}
-     */
-
-
-    exports.mean = exports.arithmeticMean;
-    /**
-     * Computes the geometric mean of the given values
-     * @param {Array} values
-     * @returns {number}
-     */
-
-    exports.geometricMean = function geometricMean(values) {
-      var mul = 1;
-      var l = values.length;
-
-      for (var i = 0; i < l; i++) {
-        mul *= values[i];
-      }
-
-      return Math.pow(mul, 1 / l);
-    };
-    /**
-     * Computes the mean of the log of the given values
-     * If the return value is exponentiated, it gives the same result as the
-     * geometric mean.
-     * @param {Array} values
-     * @returns {number}
-     */
-
-
-    exports.logMean = function logMean(values) {
-      var lnsum = 0;
-      var l = values.length;
-
-      for (var i = 0; i < l; i++) {
-        lnsum += Math.log(values[i]);
-      }
-
-      return lnsum / l;
-    };
-    /**
-     * Computes the weighted grand mean for a list of means and sample sizes
-     * @param {Array} means - Mean values for each set of samples
-     * @param {Array} samples - Number of original values for each set of samples
-     * @returns {number}
-     */
-
-
-    exports.grandMean = function grandMean(means, samples) {
-      var sum = 0;
-      var n = 0;
-      var l = means.length;
-
-      for (var i = 0; i < l; i++) {
-        sum += samples[i] * means[i];
-        n += samples[i];
-      }
-
-      return sum / n;
-    };
-    /**
-     * Computes the truncated mean of the given values using a given percentage
-     * @param {Array} values
-     * @param {number} percent - The percentage of values to keep (range: [0,1])
-     * @param {boolean} [alreadySorted=false]
-     * @returns {number}
-     */
-
-
-    exports.truncatedMean = function truncatedMean(values, percent, alreadySorted) {
-      if (alreadySorted === undefined) alreadySorted = false;
-
-      if (!alreadySorted) {
-        values = [].concat(values).sort(compareNumbers);
-      }
-
-      var l = values.length;
-      var k = Math.floor(l * percent);
-      var sum = 0;
-
-      for (var i = k; i < l - k; i++) {
-        sum += values[i];
-      }
-
-      return sum / (l - 2 * k);
-    };
-    /**
-     * Computes the harmonic mean of the given values
-     * @param {Array} values
-     * @returns {number}
-     */
-
-
-    exports.harmonicMean = function harmonicMean(values) {
-      var sum = 0;
-      var l = values.length;
-
-      for (var i = 0; i < l; i++) {
-        if (values[i] === 0) {
-          throw new RangeError('value at index ' + i + 'is zero');
-        }
-
-        sum += 1 / values[i];
-      }
-
-      return l / sum;
-    };
-    /**
-     * Computes the contraharmonic mean of the given values
-     * @param {Array} values
-     * @returns {number}
-     */
-
-
-    exports.contraHarmonicMean = function contraHarmonicMean(values) {
-      var r1 = 0;
-      var r2 = 0;
-      var l = values.length;
-
-      for (var i = 0; i < l; i++) {
-        r1 += values[i] * values[i];
-        r2 += values[i];
-      }
-
-      if (r2 < 0) {
-        throw new RangeError('sum of values is negative');
-      }
-
-      return r1 / r2;
-    };
-    /**
-     * Computes the median of the given values
-     * @param {Array} values
-     * @param {boolean} [alreadySorted=false]
-     * @returns {number}
-     */
-
-
-    exports.median = function median(values, alreadySorted) {
-      if (alreadySorted === undefined) alreadySorted = false;
-
-      if (!alreadySorted) {
-        values = [].concat(values).sort(compareNumbers);
-      }
-
-      var l = values.length;
-      var half = Math.floor(l / 2);
-
-      if (l % 2 === 0) {
-        return (values[half - 1] + values[half]) * 0.5;
-      } else {
-        return values[half];
-      }
-    };
-    /**
-     * Computes the variance of the given values
-     * @param {Array} values
-     * @param {boolean} [unbiased=true] - if true, divide by (n-1); if false, divide by n.
-     * @returns {number}
-     */
-
-
-    exports.variance = function variance(values, unbiased) {
-      if (unbiased === undefined) unbiased = true;
-      var theMean = exports.mean(values);
-      var theVariance = 0;
-      var l = values.length;
-
-      for (var i = 0; i < l; i++) {
-        var x = values[i] - theMean;
-        theVariance += x * x;
-      }
-
-      if (unbiased) {
-        return theVariance / (l - 1);
-      } else {
-        return theVariance / l;
-      }
-    };
-    /**
-     * Computes the standard deviation of the given values
-     * @param {Array} values
-     * @param {boolean} [unbiased=true] - if true, divide by (n-1); if false, divide by n.
-     * @returns {number}
-     */
-
-
-    exports.standardDeviation = function standardDeviation(values, unbiased) {
-      return Math.sqrt(exports.variance(values, unbiased));
-    };
-
-    exports.standardError = function standardError(values) {
-      return exports.standardDeviation(values) / Math.sqrt(values.length);
-    };
-    /**
-     * IEEE Transactions on biomedical engineering, vol. 52, no. 1, january 2005, p. 76-
-     * Calculate the standard deviation via the Median of the absolute deviation
-     *  The formula for the standard deviation only holds for Gaussian random variables.
-     * @returns {{mean: number, stdev: number}}
-     */
-
-
-    exports.robustMeanAndStdev = function robustMeanAndStdev(y) {
-      var mean = 0,
-          stdev = 0;
-      var length = y.length,
-          i = 0;
-
-      for (i = 0; i < length; i++) {
-        mean += y[i];
-      }
-
-      mean /= length;
-      var averageDeviations = new Array(length);
-
-      for (i = 0; i < length; i++) averageDeviations[i] = Math.abs(y[i] - mean);
-
-      averageDeviations.sort(compareNumbers);
-
-      if (length % 2 === 1) {
-        stdev = averageDeviations[(length - 1) / 2] / 0.6745;
-      } else {
-        stdev = 0.5 * (averageDeviations[length / 2] + averageDeviations[length / 2 - 1]) / 0.6745;
-      }
-
-      return {
-        mean: mean,
-        stdev: stdev
-      };
-    };
-
-    exports.quartiles = function quartiles(values, alreadySorted) {
-      if (typeof alreadySorted === 'undefined') alreadySorted = false;
-
-      if (!alreadySorted) {
-        values = [].concat(values).sort(compareNumbers);
-      }
-
-      var quart = values.length / 4;
-      var q1 = values[Math.ceil(quart) - 1];
-      var q2 = exports.median(values, true);
-      var q3 = values[Math.ceil(quart * 3) - 1];
-      return {
-        q1: q1,
-        q2: q2,
-        q3: q3
-      };
-    };
-
-    exports.pooledStandardDeviation = function pooledStandardDeviation(samples, unbiased) {
-      return Math.sqrt(exports.pooledVariance(samples, unbiased));
-    };
-
-    exports.pooledVariance = function pooledVariance(samples, unbiased) {
-      if (typeof unbiased === 'undefined') unbiased = true;
-      var sum = 0;
-      var length = 0,
-          l = samples.length;
-
-      for (var i = 0; i < l; i++) {
-        var values = samples[i];
-        var vari = exports.variance(values);
-        sum += (values.length - 1) * vari;
-        if (unbiased) length += values.length - 1;else length += values.length;
-      }
-
-      return sum / length;
-    };
-
-    exports.mode = function mode(values) {
-      var l = values.length,
-          itemCount = new Array(l),
-          i;
-
-      for (i = 0; i < l; i++) {
-        itemCount[i] = 0;
-      }
-
-      var itemArray = new Array(l);
-      var count = 0;
-
-      for (i = 0; i < l; i++) {
-        var index = itemArray.indexOf(values[i]);
-        if (index >= 0) itemCount[index]++;else {
-          itemArray[count] = values[i];
-          itemCount[count] = 1;
-          count++;
-        }
-      }
-
-      var maxValue = 0,
-          maxIndex = 0;
-
-      for (i = 0; i < count; i++) {
-        if (itemCount[i] > maxValue) {
-          maxValue = itemCount[i];
-          maxIndex = i;
-        }
-      }
-
-      return itemArray[maxIndex];
-    };
-
-    exports.covariance = function covariance(vector1, vector2, unbiased) {
-      if (typeof unbiased === 'undefined') unbiased = true;
-      var mean1 = exports.mean(vector1);
-      var mean2 = exports.mean(vector2);
-      if (vector1.length !== vector2.length) throw 'Vectors do not have the same dimensions';
-      var cov = 0,
-          l = vector1.length;
-
-      for (var i = 0; i < l; i++) {
-        var x = vector1[i] - mean1;
-        var y = vector2[i] - mean2;
-        cov += x * y;
-      }
-
-      if (unbiased) return cov / (l - 1);else return cov / l;
-    };
-
-    exports.skewness = function skewness(values, unbiased) {
-      if (typeof unbiased === 'undefined') unbiased = true;
-      var theMean = exports.mean(values);
-      var s2 = 0,
-          s3 = 0,
-          l = values.length;
-
-      for (var i = 0; i < l; i++) {
-        var dev = values[i] - theMean;
-        s2 += dev * dev;
-        s3 += dev * dev * dev;
-      }
-
-      var m2 = s2 / l;
-      var m3 = s3 / l;
-      var g = m3 / Math.pow(m2, 3 / 2.0);
-
-      if (unbiased) {
-        var a = Math.sqrt(l * (l - 1));
-        var b = l - 2;
-        return a / b * g;
-      } else {
-        return g;
-      }
-    };
-
-    exports.kurtosis = function kurtosis(values, unbiased) {
-      if (typeof unbiased === 'undefined') unbiased = true;
-      var theMean = exports.mean(values);
-      var n = values.length,
-          s2 = 0,
-          s4 = 0;
-
-      for (var i = 0; i < n; i++) {
-        var dev = values[i] - theMean;
-        s2 += dev * dev;
-        s4 += dev * dev * dev * dev;
-      }
-
-      var m2 = s2 / n;
-      var m4 = s4 / n;
-
-      if (unbiased) {
-        var v = s2 / (n - 1);
-        var a = n * (n + 1) / ((n - 1) * (n - 2) * (n - 3));
-        var b = s4 / (v * v);
-        var c = (n - 1) * (n - 1) / ((n - 2) * (n - 3));
-        return a * b - 3 * c;
-      } else {
-        return m4 / (m2 * m2) - 3;
-      }
-    };
-
-    exports.entropy = function entropy(values, eps) {
-      if (typeof eps === 'undefined') eps = 0;
-      var sum = 0,
-          l = values.length;
-
-      for (var i = 0; i < l; i++) sum += values[i] * Math.log(values[i] + eps);
-
-      return -sum;
-    };
-
-    exports.weightedMean = function weightedMean(values, weights) {
-      var sum = 0,
-          l = values.length;
-
-      for (var i = 0; i < l; i++) sum += values[i] * weights[i];
-
-      return sum;
-    };
-
-    exports.weightedStandardDeviation = function weightedStandardDeviation(values, weights) {
-      return Math.sqrt(exports.weightedVariance(values, weights));
-    };
-
-    exports.weightedVariance = function weightedVariance(values, weights) {
-      var theMean = exports.weightedMean(values, weights);
-      var vari = 0,
-          l = values.length;
-      var a = 0,
-          b = 0;
-
-      for (var i = 0; i < l; i++) {
-        var z = values[i] - theMean;
-        var w = weights[i];
-        vari += w * (z * z);
-        b += w;
-        a += w * w;
-      }
-
-      return vari * (b / (b * b - a));
-    };
-
-    exports.center = function center(values, inPlace) {
-      if (typeof inPlace === 'undefined') inPlace = false;
-      var result = values;
-      if (!inPlace) result = [].concat(values);
-      var theMean = exports.mean(result),
-          l = result.length;
-
-      for (var i = 0; i < l; i++) result[i] -= theMean;
-    };
-
-    exports.standardize = function standardize(values, standardDev, inPlace) {
-      if (typeof standardDev === 'undefined') standardDev = exports.standardDeviation(values);
-      if (typeof inPlace === 'undefined') inPlace = false;
-      var l = values.length;
-      var result = inPlace ? values : new Array(l);
-
-      for (var i = 0; i < l; i++) result[i] = values[i] / standardDev;
-
-      return result;
-    };
-
-    exports.cumulativeSum = function cumulativeSum(array) {
-      var l = array.length;
-      var result = new Array(l);
-      result[0] = array[0];
-
-      for (var i = 1; i < l; i++) result[i] = result[i - 1] + array[i];
-
-      return result;
-    };
-  });
-  var array_1 = array.sum;
-  var array_2 = array.max;
-  var array_3 = array.min;
-  var array_4 = array.minMax;
-  var array_5 = array.arithmeticMean;
-  var array_6 = array.mean;
-  var array_7 = array.geometricMean;
-  var array_8 = array.logMean;
-  var array_9 = array.grandMean;
-  var array_10 = array.truncatedMean;
-  var array_11 = array.harmonicMean;
-  var array_12 = array.contraHarmonicMean;
-  var array_13 = array.median;
-  var array_14 = array.variance;
-  var array_15 = array.standardDeviation;
-  var array_16 = array.standardError;
-  var array_17 = array.robustMeanAndStdev;
-  var array_18 = array.quartiles;
-  var array_19 = array.pooledStandardDeviation;
-  var array_20 = array.pooledVariance;
-  var array_21 = array.mode;
-  var array_22 = array.covariance;
-  var array_23 = array.skewness;
-  var array_24 = array.kurtosis;
-  var array_25 = array.entropy;
-  var array_26 = array.weightedMean;
-  var array_27 = array.weightedStandardDeviation;
-  var array_28 = array.weightedVariance;
-  var array_29 = array.center;
-  var array_30 = array.standardize;
-  var array_31 = array.cumulativeSum;
-
-  /**
-   * Returns the closest index of a `target` in an ordered array
-   * @param {array} array
-   * @param {number} target
-   */
-  function findClosestIndex(array, target) {
-    let low = 0;
-    let high = array.length - 1;
-    let middle = 0;
-
-    while (high - low > 1) {
-      middle = low + (high - low >> 1);
-
-      if (array[middle] < target) {
-        low = middle;
-      } else if (array[middle] > target) {
-        high = middle;
-      } else {
-        return middle;
-      }
-    }
-
-    if (low < array.length - 1) {
-      if (Math.abs(target - array[low]) < Math.abs(array[low + 1] - target)) {
-        return low;
-      } else {
-        return low + 1;
-      }
-    } else {
-      return low;
-    }
-  }
-
-  /**
-   * Returns an object with {fromIndex, toIndex} for a specific from / to
-   * @param {array} x
-   * @param {object} [options={}]
-   * @param {number} [options.from] - First value for integration in the X scale
-   * @param {number} [options.fromIndex=0] - First point for integration
-   * @param {number} [options.to] - Last value for integration in the X scale
-   * @param {number} [options.toIndex=x.length-1] - Last point for integration
-   */
-
-  function getFromToIndex(x, options = {}) {
-    let {
-      fromIndex,
-      toIndex,
-      from,
-      to
-    } = options;
-
-    if (fromIndex === undefined) {
-      if (from !== undefined) {
-        fromIndex = findClosestIndex(x, from);
-      } else {
-        fromIndex = 0;
-      }
-    }
-
-    if (toIndex === undefined) {
-      if (to !== undefined) {
-        toIndex = findClosestIndex(x, to);
-      } else {
-        toIndex = x.length - 1;
-      }
-    }
-
-    if (fromIndex > toIndex) [fromIndex, toIndex] = [toIndex, fromIndex];
-    return {
-      fromIndex,
-      toIndex
-    };
-  }
-
-  /**
-   *  Returns the targetIndex
-   * @param {array} [x]
-   * @param {object} [options={}]
-   * @param {number} [options.target]
-   * @param {number} [options.targetIndex=0]
-   * @param {number}
-   */
-
-  function getTargetIndex(x, options = {}) {
-    let {
-      target,
-      targetIndex
-    } = options;
-
-    if (targetIndex === undefined) {
-      if (target !== undefined) {
-        return findClosestIndex(x, target);
-      } else {
-        return 0;
-      }
-    }
-
-    return targetIndex;
-  }
-
-  /**
-
-  /**
-   * This function add the first array by the second array or a constant value to each element of the first array
-   * @param {Array} array1 - the array that will be rotated
-   * @param {Array|Number} array2
-   * @return {Array}
-   */
-  function add(array1, array2) {
-    let isConstant = false;
-    let constant;
-
-    if (Array.isArray(array2)) {
-      if (array1.length !== array2.length) {
-        throw new Error('sub: size of array1 and array2 must be identical');
-      }
-    } else {
-      isConstant = true;
-      constant = Number(array2);
-    }
-
-    let array3 = new Array(array1.length);
-
-    if (isConstant) {
-      for (let i = 0; i < array1.length; i++) {
-        array3[i] = array1[i] + constant;
-      }
-    } else {
-      for (let i = 0; i < array1.length; i++) {
-        array3[i] = array1[i] + array2[i];
-      }
-    }
-
-    return array3;
-  }
-
-  /**
-
-  /**
-   * This function multiply the first array by the second array or a constant value to each element of the first array
-   * @param {Array} array1 - the array that will be rotated
-   * @param {Array|Number} array2
-   * @return {Float64Array}
-   */
-  function multiply(array1, array2) {
-    let isConstant = false;
-    let constant;
-
-    if (Array.isArray(array2)) {
-      if (array1.length !== array2.length) {
-        throw new Error('sub: size of array1 and array2 must be identical');
-      }
-    } else {
-      isConstant = true;
-      constant = Number(array2);
-    }
-
-    let array3 = new Float64Array(array1.length);
-
-    if (isConstant) {
-      for (let i = 0; i < array1.length; i++) {
-        array3[i] = array1[i] * constant;
-      }
-    } else {
-      for (let i = 0; i < array1.length; i++) {
-        array3[i] = array1[i] * array2[i];
-      }
-    }
-
-    return array3;
-  }
-
-  function dotProduct(A, B) {
-    let g = multiply(A, B);
-    let result = 0;
-
-    for (let i = 0; i < A.length; i++) {
-      result += g[i];
-    }
-
-    return result;
-  }
-
-  /**
-   * Calculates the cross-correlation between 2 vectors
-   * @param {Array} [A] - fixed array
-   * @param {Array} [B] - sweeping array
-   * @param {object} [options={}]
-   * @param {number} [options.tau = 1] - sweep increment size (in number of points, min = 1, max = A.length)
-   * @param {number} [options.lag = A.length - 1] - scalar lag parameter
-   */
-
-  function crossCorrelation(A, B, options = {}) {
-    let {
-      tau = 1,
-      lag = A.length - 1
-    } = options;
-    let result = new Float64Array(1 + 2 * lag / tau);
-
-    if (A.length === B.length) {
-      let n = B.length;
-      let g = new Float64Array(2 * n);
-      let q = new Float64Array(2 * n);
-
-      for (let i = 0; i < n; i++) {
-        q[n + i] = B[i];
-      }
-
-      for (let i = n * 2 - (tau - 1); i > 0; i -= tau) {
-        let k = 0;
-
-        for (let j = i; j < n * 2; j++) {
-          g[k] = q[j];
-          k++;
-        }
-
-        let w = [];
-
-        for (let l = 0; l < n; l++) {
-          w[l] = g[l];
-        }
-
-        result[(k - (n - lag)) / tau] = dotProduct(A, w);
-      }
-    }
-
-    return result;
-  }
-
-  /**
-   * Calculates the auto-correlation of a vector
-   * @param {Array} [A] - the array that will be fixed
-   * @param {object} [options={}]
-   * @param {number} [options.tau = 1] - sweep increment size (in number of points, min = 1, max = A.length)
-   * @param {number} [options.lag = A.length - 1] - scalar lag parameter
-   */
-
-  function autoCorrelation(A, options = {}) {
-    return crossCorrelation(A, A, options);
-  }
-
-  /**
-   * This function subtract the first array by the second array or a constant value from each element of the first array
-   * @param {Array} array1 - the array that will be rotated
-   * @return {object}
-   */
-  function boxPlot(array) {
-    array = array.slice(0).sort((a, b) => a - b);
-
-    if (array.length < 5) {
-      throw Error('boxPlot: can not calculate info if array contains less than 3 elements');
-    }
-
-    let info = {
-      Q1: 0.0,
-      Q2: 0.0,
-      Q3: 0.0,
-      min: array[0],
-      max: array[array.length - 1]
-    };
-    let q1max, q3min;
-
-    if (array.length % 2 === 1) {
-      // odd
-      let middle = (array.length - 1) / 2;
-      info.Q2 = array[middle];
-      q1max = middle - 1;
-      q3min = middle + 1;
-    } else {
-      // even
-      q3min = array.length / 2;
-      q1max = q3min - 1;
-      info.Q2 = (array[q1max] + array[q3min]) / 2;
-    }
-
-    if (q1max % 2 === 0) {
-      info.Q1 = array[q1max / 2];
-      info.Q3 = array[(array.length + q3min - 1) / 2];
-    } else {
-      info.Q1 = (array[(q1max + 1) / 2] + array[(q1max - 1) / 2]) / 2;
-      let middleOver = (array.length + q3min) / 2;
-      info.Q3 = (array[middleOver] + array[middleOver - 1]) / 2;
-    }
-
-    return info;
-  }
-
-  /**
-
-  /**
-   * Calculates the correlation between 2 vectors
-   * https://en.wikipedia.org/wiki/Correlation_and_dependence
-   *
-   * @param {Array} [A] - the array that will be rotated
-   * @param {Array} [B]
-   * @return {Array}
-   */
-  function correlation(A, B) {
-    let n = A.length;
-    let sumA = 0;
-    let sumA2 = 0;
-    let sumB = 0;
-    let sumB2 = 0;
-    let sumAB = 0;
-
-    for (let i = 0; i < n; i++) {
-      let a = A[i];
-      let b = B[i];
-      sumA += a;
-      sumA2 += a ** 2;
-      sumB += b;
-      sumB2 += b ** 2;
-      sumAB += a * b;
-    }
-
-    return (n * sumAB - sumA * sumB) / (Math.sqrt(n * sumA2 - sumA ** 2) * Math.sqrt(n * sumB2 - sumB ** 2));
-  }
-
-  /**
-
-  /**
-   * This function divide the first array by the second array or a constant value to each element of the first array
-   * @param {Array} array1 - the array that will be rotated
-   * @param {Array|Number} array2
-   * @return {Array}
-   */
-  function divide(array1, array2) {
-    let isConstant = false;
-    let constant;
-
-    if (Array.isArray(array2)) {
-      if (array1.length !== array2.length) {
-        throw new Error('sub: size of array1 and array2 must be identical');
-      }
-    } else {
-      isConstant = true;
-      constant = Number(array2);
-    }
-
-    let array3 = new Array(array1.length);
-
-    if (isConstant) {
-      for (let i = 0; i < array1.length; i++) {
-        array3[i] = array1[i] / constant;
-      }
-    } else {
-      for (let i = 0; i < array1.length; i++) {
-        array3[i] = array1[i] / array2[i];
-      }
-    }
-
-    return array3;
-  }
-
-  /**
-   * This function performs a circular shift to a new array
-   * Positive values of shifts will shift to the right and negative values will do to the left
-   * @example rotate([1,2,3,4],1) -> [4,1,2,3]
-   * @example rotate([1,2,3,4],-1) -> [2,3,4,1]
-   * @param {Array} array - the array that will be rotated
-   * @param {number} shift
-   * @return {Array}
-   */
-  function rotate(array, shift) {
-    shift = shift % array.length;
-    if (shift < 0) shift += array.length;
-    return array.slice(array.length - shift).concat(array.slice(0, array.length - shift));
-  }
-
-  /**
-   * This function subtract the first array by the second array or a constant value from each element of the first array
-   * @param {Array} array1 - the array that will be rotated
-   * @param {Array|Number} array2
-   * @return {Array}
-   */
-  function subtract(array1, array2) {
-    let isConstant = false;
-    let constant;
-
-    if (Array.isArray(array2)) {
-      if (array1.length !== array2.length) {
-        throw new Error('sub: size of array1 and array2 must be identical');
-      }
-    } else {
-      isConstant = true;
-      constant = Number(array2);
-    }
-
-    let array3 = new Array(array1.length);
-
-    if (isConstant) {
-      for (let i = 0; i < array1.length; i++) {
-        array3[i] = array1[i] - constant;
-      }
-    } else {
-      for (let i = 0; i < array1.length; i++) {
-        array3[i] = array1[i] - array2[i];
-      }
-    }
-
-    return array3;
-  }
-
-  const X = {
-    add,
-    autoCorrelation,
-    boxPlot,
-    correlation,
-    crossCorrelation,
-    divide,
-    findClosestIndex,
-    getFromToIndex,
-    getTargetIndex,
-    multiply,
-    rotate,
-    subtract
-  };
 
   /**
    * @private
@@ -6113,6 +5188,1400 @@
     return ans;
   }
 
+  var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
+
+  function createCommonjsModule(fn, module) {
+  	return module = { exports: {} }, fn(module, module.exports), module.exports;
+  }
+
+  var medianQuickselect_min = createCommonjsModule(function (module) {
+    (function () {
+      function a(d) {
+        for (var e = 0, f = d.length - 1, g = void 0, h = void 0, i = void 0, j = c(e, f); !0;) {
+          if (f <= e) return d[j];
+          if (f == e + 1) return d[e] > d[f] && b(d, e, f), d[j];
+
+          for (g = c(e, f), d[g] > d[f] && b(d, g, f), d[e] > d[f] && b(d, e, f), d[g] > d[e] && b(d, g, e), b(d, g, e + 1), h = e + 1, i = f; !0;) {
+            do h++; while (d[e] > d[h]);
+
+            do i--; while (d[i] > d[e]);
+
+            if (i < h) break;
+            b(d, h, i);
+          }
+
+          b(d, e, i), i <= j && (e = h), i >= j && (f = i - 1);
+        }
+      }
+
+      var b = function b(d, e, f) {
+        var _ref;
+
+        return _ref = [d[f], d[e]], d[e] = _ref[0], d[f] = _ref[1], _ref;
+      },
+          c = function c(d, e) {
+        return ~~((d + e) / 2);
+      };
+
+       module.exports ? module.exports = a : window.median = a;
+    })();
+  });
+
+  /**
+   * Computes the median of the given values
+   * @param {Array<number>} input
+   * @return {number}
+   */
+
+  function median(input) {
+    if (!src(input)) {
+      throw new TypeError('input must be an array');
+    }
+
+    if (input.length === 0) {
+      throw new TypeError('input must not be empty');
+    }
+
+    return medianQuickselect_min(input.slice());
+  }
+
+  /**
+
+  /**
+   * This function divide the first array by the second array or a constant value to each element of the first array
+   * @param {Array<Number>} array1 - the array that will be rotated
+   * @param {Array<Number>|Number} array2
+   * @return {Array}
+   */
+  function xDivide(array1, array2) {
+    let isConstant = false;
+    let constant;
+
+    if (Array.isArray(array2)) {
+      if (array1.length !== array2.length) {
+        throw new Error('sub: size of array1 and array2 must be identical');
+      }
+    } else {
+      isConstant = true;
+      constant = Number(array2);
+    }
+
+    let array3 = new Array(array1.length);
+
+    if (isConstant) {
+      for (let i = 0; i < array1.length; i++) {
+        array3[i] = array1[i] / constant;
+      }
+    } else {
+      for (let i = 0; i < array1.length; i++) {
+        array3[i] = array1[i] / array2[i];
+      }
+    }
+
+    return array3;
+  }
+
+  var toStr = Object.prototype.toString;
+
+  var isArguments = function isArguments(value) {
+    var str = toStr.call(value);
+    var isArgs = str === '[object Arguments]';
+
+    if (!isArgs) {
+      isArgs = str !== '[object Array]' && value !== null && typeof value === 'object' && typeof value.length === 'number' && value.length >= 0 && toStr.call(value.callee) === '[object Function]';
+    }
+
+    return isArgs;
+  };
+
+  var keysShim;
+
+  if (!Object.keys) {
+    // modified from https://github.com/es-shims/es5-shim
+    var has = Object.prototype.hasOwnProperty;
+    var toStr$1 = Object.prototype.toString;
+    var isArgs = isArguments; // eslint-disable-line global-require
+
+    var isEnumerable = Object.prototype.propertyIsEnumerable;
+    var hasDontEnumBug = !isEnumerable.call({
+      toString: null
+    }, 'toString');
+    var hasProtoEnumBug = isEnumerable.call(function () {}, 'prototype');
+    var dontEnums = ['toString', 'toLocaleString', 'valueOf', 'hasOwnProperty', 'isPrototypeOf', 'propertyIsEnumerable', 'constructor'];
+
+    var equalsConstructorPrototype = function (o) {
+      var ctor = o.constructor;
+      return ctor && ctor.prototype === o;
+    };
+
+    var excludedKeys = {
+      $applicationCache: true,
+      $console: true,
+      $external: true,
+      $frame: true,
+      $frameElement: true,
+      $frames: true,
+      $innerHeight: true,
+      $innerWidth: true,
+      $onmozfullscreenchange: true,
+      $onmozfullscreenerror: true,
+      $outerHeight: true,
+      $outerWidth: true,
+      $pageXOffset: true,
+      $pageYOffset: true,
+      $parent: true,
+      $scrollLeft: true,
+      $scrollTop: true,
+      $scrollX: true,
+      $scrollY: true,
+      $self: true,
+      $webkitIndexedDB: true,
+      $webkitStorageInfo: true,
+      $window: true
+    };
+
+    var hasAutomationEqualityBug = function () {
+      /* global window */
+      if (typeof window === 'undefined') {
+        return false;
+      }
+
+      for (var k in window) {
+        try {
+          if (!excludedKeys['$' + k] && has.call(window, k) && window[k] !== null && typeof window[k] === 'object') {
+            try {
+              equalsConstructorPrototype(window[k]);
+            } catch (e) {
+              return true;
+            }
+          }
+        } catch (e) {
+          return true;
+        }
+      }
+
+      return false;
+    }();
+
+    var equalsConstructorPrototypeIfNotBuggy = function (o) {
+      /* global window */
+      if (typeof window === 'undefined' || !hasAutomationEqualityBug) {
+        return equalsConstructorPrototype(o);
+      }
+
+      try {
+        return equalsConstructorPrototype(o);
+      } catch (e) {
+        return false;
+      }
+    };
+
+    keysShim = function keys(object) {
+      var isObject = object !== null && typeof object === 'object';
+      var isFunction = toStr$1.call(object) === '[object Function]';
+      var isArguments = isArgs(object);
+      var isString = isObject && toStr$1.call(object) === '[object String]';
+      var theKeys = [];
+
+      if (!isObject && !isFunction && !isArguments) {
+        throw new TypeError('Object.keys called on a non-object');
+      }
+
+      var skipProto = hasProtoEnumBug && isFunction;
+
+      if (isString && object.length > 0 && !has.call(object, 0)) {
+        for (var i = 0; i < object.length; ++i) {
+          theKeys.push(String(i));
+        }
+      }
+
+      if (isArguments && object.length > 0) {
+        for (var j = 0; j < object.length; ++j) {
+          theKeys.push(String(j));
+        }
+      } else {
+        for (var name in object) {
+          if (!(skipProto && name === 'prototype') && has.call(object, name)) {
+            theKeys.push(String(name));
+          }
+        }
+      }
+
+      if (hasDontEnumBug) {
+        var skipConstructor = equalsConstructorPrototypeIfNotBuggy(object);
+
+        for (var k = 0; k < dontEnums.length; ++k) {
+          if (!(skipConstructor && dontEnums[k] === 'constructor') && has.call(object, dontEnums[k])) {
+            theKeys.push(dontEnums[k]);
+          }
+        }
+      }
+
+      return theKeys;
+    };
+  }
+
+  var implementation = keysShim;
+
+  var slice = Array.prototype.slice;
+  var origKeys = Object.keys;
+  var keysShim$1 = origKeys ? function keys(o) {
+    return origKeys(o);
+  } : implementation;
+  var originalKeys = Object.keys;
+
+  keysShim$1.shim = function shimObjectKeys() {
+    if (Object.keys) {
+      var keysWorksWithArguments = function () {
+        // Safari 5.0 bug
+        var args = Object.keys(arguments);
+        return args && args.length === arguments.length;
+      }(1, 2);
+
+      if (!keysWorksWithArguments) {
+        Object.keys = function keys(object) {
+          // eslint-disable-line func-name-matching
+          if (isArguments(object)) {
+            return originalKeys(slice.call(object));
+          }
+
+          return originalKeys(object);
+        };
+      }
+    } else {
+      Object.keys = keysShim$1;
+    }
+
+    return Object.keys || keysShim$1;
+  };
+
+  var objectKeys = keysShim$1;
+
+  var getKeys = objectKeys.shim(); // COPY ERROR //
+
+  // TYPED ARRAY FUNCTIONS //
+
+  /**
+  * Create functions for copying typed arrays.
+  */
+
+
+  var typedArrays = {
+    'Int8Array': null,
+    'Uint8Array': null,
+    'Uint8ClampedArray': null,
+    'Int16Array': null,
+    'Uint16Array': null,
+    'Int32Array': null,
+    'Uint32Array': null,
+    'Float32Array': null,
+    'Float64Array': null
+  };
+
+  (function createTypedArrayFcns() {
+    /* jshint evil:true */
+    var keys = objectKeys(typedArrays);
+    var len = keys.length;
+    var key;
+    var i;
+
+    for (i = 0; i < len; i++) {
+      key = keys[i];
+      typedArrays[key] = new Function('arr', 'return new ' + key + '( arr );');
+    }
+  })(); // EXPORTS //
+
+  var d3Array = createCommonjsModule(function (module, exports) {
+    (function (global, factory) {
+       factory(exports) ;
+    })(commonjsGlobal, function (exports) {
+
+      function ascending(a, b) {
+        return a < b ? -1 : a > b ? 1 : a >= b ? 0 : NaN;
+      }
+
+      function bisector(compare) {
+        if (compare.length === 1) compare = ascendingComparator(compare);
+        return {
+          left: function (a, x, lo, hi) {
+            if (lo == null) lo = 0;
+            if (hi == null) hi = a.length;
+
+            while (lo < hi) {
+              var mid = lo + hi >>> 1;
+              if (compare(a[mid], x) < 0) lo = mid + 1;else hi = mid;
+            }
+
+            return lo;
+          },
+          right: function (a, x, lo, hi) {
+            if (lo == null) lo = 0;
+            if (hi == null) hi = a.length;
+
+            while (lo < hi) {
+              var mid = lo + hi >>> 1;
+              if (compare(a[mid], x) > 0) hi = mid;else lo = mid + 1;
+            }
+
+            return lo;
+          }
+        };
+      }
+
+      function ascendingComparator(f) {
+        return function (d, x) {
+          return ascending(f(d), x);
+        };
+      }
+
+      var ascendingBisect = bisector(ascending);
+      var bisectRight = ascendingBisect.right;
+      var bisectLeft = ascendingBisect.left;
+
+      function descending(a, b) {
+        return b < a ? -1 : b > a ? 1 : b >= a ? 0 : NaN;
+      }
+
+      function number$1(x) {
+        return x === null ? NaN : +x;
+      }
+
+      function variance(array, f) {
+        var n = array.length,
+            m = 0,
+            a,
+            d,
+            s = 0,
+            i = -1,
+            j = 0;
+
+        if (f == null) {
+          while (++i < n) {
+            if (!isNaN(a = number$1(array[i]))) {
+              d = a - m;
+              m += d / ++j;
+              s += d * (a - m);
+            }
+          }
+        } else {
+          while (++i < n) {
+            if (!isNaN(a = number$1(f(array[i], i, array)))) {
+              d = a - m;
+              m += d / ++j;
+              s += d * (a - m);
+            }
+          }
+        }
+
+        if (j > 1) return s / (j - 1);
+      }
+
+      function deviation(array, f) {
+        var v = variance(array, f);
+        return v ? Math.sqrt(v) : v;
+      }
+
+      function extent(array, f) {
+        var i = -1,
+            n = array.length,
+            a,
+            b,
+            c;
+
+        if (f == null) {
+          while (++i < n) if ((b = array[i]) != null && b >= b) {
+            a = c = b;
+            break;
+          }
+
+          while (++i < n) if ((b = array[i]) != null) {
+            if (a > b) a = b;
+            if (c < b) c = b;
+          }
+        } else {
+          while (++i < n) if ((b = f(array[i], i, array)) != null && b >= b) {
+            a = c = b;
+            break;
+          }
+
+          while (++i < n) if ((b = f(array[i], i, array)) != null) {
+            if (a > b) a = b;
+            if (c < b) c = b;
+          }
+        }
+
+        return [a, c];
+      }
+
+      function constant(x) {
+        return function () {
+          return x;
+        };
+      }
+
+      function identity(x) {
+        return x;
+      }
+
+      function range(start, stop, step) {
+        start = +start, stop = +stop, step = (n = arguments.length) < 2 ? (stop = start, start = 0, 1) : n < 3 ? 1 : +step;
+        var i = -1,
+            n = Math.max(0, Math.ceil((stop - start) / step)) | 0,
+            range = new Array(n);
+
+        while (++i < n) {
+          range[i] = start + i * step;
+        }
+
+        return range;
+      }
+
+      var e10 = Math.sqrt(50);
+      var e5 = Math.sqrt(10);
+      var e2 = Math.sqrt(2);
+
+      function ticks(start, stop, count) {
+        var step = tickStep(start, stop, count);
+        return range(Math.ceil(start / step) * step, Math.floor(stop / step) * step + step / 2, // inclusive
+        step);
+      }
+
+      function tickStep(start, stop, count) {
+        var step0 = Math.abs(stop - start) / Math.max(0, count),
+            step1 = Math.pow(10, Math.floor(Math.log(step0) / Math.LN10)),
+            error = step0 / step1;
+        if (error >= e10) step1 *= 10;else if (error >= e5) step1 *= 5;else if (error >= e2) step1 *= 2;
+        return stop < start ? -step1 : step1;
+      }
+
+      function sturges(values) {
+        return Math.ceil(Math.log(values.length) / Math.LN2) + 1;
+      }
+
+      function number(x) {
+        return +x;
+      }
+
+      function histogram() {
+        var value = identity,
+            domain = extent,
+            threshold = sturges;
+
+        function histogram(data) {
+          var i,
+              n = data.length,
+              x,
+              values = new Array(n); // Coerce values to numbers.
+
+          for (i = 0; i < n; ++i) {
+            values[i] = +value(data[i], i, data);
+          }
+
+          var xz = domain(values),
+              x0 = +xz[0],
+              x1 = +xz[1],
+              tz = threshold(values, x0, x1); // Convert number of thresholds into uniform thresholds.
+
+          if (!Array.isArray(tz)) tz = ticks(x0, x1, +tz); // Coerce thresholds to numbers, ignoring any outside the domain.
+
+          var m = tz.length;
+
+          for (i = 0; i < m; ++i) tz[i] = +tz[i];
+
+          while (tz[0] <= x0) tz.shift(), --m;
+
+          while (tz[m - 1] >= x1) tz.pop(), --m;
+
+          var bins = new Array(m + 1),
+              bin; // Initialize bins.
+
+          for (i = 0; i <= m; ++i) {
+            bin = bins[i] = [];
+            bin.x0 = i > 0 ? tz[i - 1] : x0;
+            bin.x1 = i < m ? tz[i] : x1;
+          } // Assign data to bins by value, ignoring any outside the domain.
+
+
+          for (i = 0; i < n; ++i) {
+            x = values[i];
+
+            if (x0 <= x && x <= x1) {
+              bins[bisectRight(tz, x, 0, m)].push(data[i]);
+            }
+          }
+
+          return bins;
+        }
+
+        histogram.value = function (_) {
+          return arguments.length ? (value = typeof _ === "function" ? _ : constant(+_), histogram) : value;
+        };
+
+        histogram.domain = function (_) {
+          return arguments.length ? (domain = typeof _ === "function" ? _ : constant([+_[0], +_[1]]), histogram) : domain;
+        };
+
+        histogram.thresholds = function (_) {
+          if (!arguments.length) return threshold;
+          threshold = typeof _ === "function" ? _ : Array.isArray(_) ? constant(Array.prototype.map.call(_, number)) : constant(+_);
+          return histogram;
+        };
+
+        return histogram;
+      }
+
+      function quantile(array, p, f) {
+        if (f == null) f = number$1;
+        if (!(n = array.length)) return;
+        if ((p = +p) <= 0 || n < 2) return +f(array[0], 0, array);
+        if (p >= 1) return +f(array[n - 1], n - 1, array);
+        var n,
+            h = (n - 1) * p,
+            i = Math.floor(h),
+            a = +f(array[i], i, array),
+            b = +f(array[i + 1], i + 1, array);
+        return a + (b - a) * (h - i);
+      }
+
+      function freedmanDiaconis(values, min, max) {
+        values.sort(ascending);
+        return Math.ceil((max - min) / (2 * (quantile(values, 0.75) - quantile(values, 0.25)) * Math.pow(values.length, -1 / 3)));
+      }
+
+      function scott(values, min, max) {
+        return Math.ceil((max - min) / (3.5 * deviation(values) * Math.pow(values.length, -1 / 3)));
+      }
+
+      function max(array, f) {
+        var i = -1,
+            n = array.length,
+            a,
+            b;
+
+        if (f == null) {
+          while (++i < n) if ((b = array[i]) != null && b >= b) {
+            a = b;
+            break;
+          }
+
+          while (++i < n) if ((b = array[i]) != null && b > a) a = b;
+        } else {
+          while (++i < n) if ((b = f(array[i], i, array)) != null && b >= b) {
+            a = b;
+            break;
+          }
+
+          while (++i < n) if ((b = f(array[i], i, array)) != null && b > a) a = b;
+        }
+
+        return a;
+      }
+
+      function mean(array, f) {
+        var s = 0,
+            n = array.length,
+            a,
+            i = -1,
+            j = n;
+
+        if (f == null) {
+          while (++i < n) if (!isNaN(a = number$1(array[i]))) s += a;else --j;
+        } else {
+          while (++i < n) if (!isNaN(a = number$1(f(array[i], i, array)))) s += a;else --j;
+        }
+
+        if (j) return s / j;
+      }
+
+      function median(array, f) {
+        var numbers = [],
+            n = array.length,
+            a,
+            i = -1;
+
+        if (f == null) {
+          while (++i < n) if (!isNaN(a = number$1(array[i]))) numbers.push(a);
+        } else {
+          while (++i < n) if (!isNaN(a = number$1(f(array[i], i, array)))) numbers.push(a);
+        }
+
+        return quantile(numbers.sort(ascending), 0.5);
+      }
+
+      function merge(arrays) {
+        var n = arrays.length,
+            m,
+            i = -1,
+            j = 0,
+            merged,
+            array;
+
+        while (++i < n) j += arrays[i].length;
+
+        merged = new Array(j);
+
+        while (--n >= 0) {
+          array = arrays[n];
+          m = array.length;
+
+          while (--m >= 0) {
+            merged[--j] = array[m];
+          }
+        }
+
+        return merged;
+      }
+
+      function min(array, f) {
+        var i = -1,
+            n = array.length,
+            a,
+            b;
+
+        if (f == null) {
+          while (++i < n) if ((b = array[i]) != null && b >= b) {
+            a = b;
+            break;
+          }
+
+          while (++i < n) if ((b = array[i]) != null && a > b) a = b;
+        } else {
+          while (++i < n) if ((b = f(array[i], i, array)) != null && b >= b) {
+            a = b;
+            break;
+          }
+
+          while (++i < n) if ((b = f(array[i], i, array)) != null && a > b) a = b;
+        }
+
+        return a;
+      }
+
+      function pairs(array) {
+        var i = 0,
+            n = array.length - 1,
+            p = array[0],
+            pairs = new Array(n < 0 ? 0 : n);
+
+        while (i < n) pairs[i] = [p, p = array[++i]];
+
+        return pairs;
+      }
+
+      function permute(array, indexes) {
+        var i = indexes.length,
+            permutes = new Array(i);
+
+        while (i--) permutes[i] = array[indexes[i]];
+
+        return permutes;
+      }
+
+      function scan(array, compare) {
+        if (!(n = array.length)) return;
+        var i = 0,
+            n,
+            j = 0,
+            xi,
+            xj = array[j];
+        if (!compare) compare = ascending;
+
+        while (++i < n) if (compare(xi = array[i], xj) < 0 || compare(xj, xj) !== 0) xj = xi, j = i;
+
+        if (compare(xj, xj) === 0) return j;
+      }
+
+      function shuffle(array, i0, i1) {
+        var m = (i1 == null ? array.length : i1) - (i0 = i0 == null ? 0 : +i0),
+            t,
+            i;
+
+        while (m) {
+          i = Math.random() * m-- | 0;
+          t = array[m + i0];
+          array[m + i0] = array[i + i0];
+          array[i + i0] = t;
+        }
+
+        return array;
+      }
+
+      function sum(array, f) {
+        var s = 0,
+            n = array.length,
+            a,
+            i = -1;
+
+        if (f == null) {
+          while (++i < n) if (a = +array[i]) s += a; // Note: zero and null are equivalent.
+
+        } else {
+          while (++i < n) if (a = +f(array[i], i, array)) s += a;
+        }
+
+        return s;
+      }
+
+      function transpose(matrix) {
+        if (!(n = matrix.length)) return [];
+
+        for (var i = -1, m = min(matrix, length), transpose = new Array(m); ++i < m;) {
+          for (var j = -1, n, row = transpose[i] = new Array(n); ++j < n;) {
+            row[j] = matrix[j][i];
+          }
+        }
+
+        return transpose;
+      }
+
+      function length(d) {
+        return d.length;
+      }
+
+      function zip() {
+        return transpose(arguments);
+      }
+
+      var version = "0.7.1";
+      exports.version = version;
+      exports.bisect = bisectRight;
+      exports.bisectRight = bisectRight;
+      exports.bisectLeft = bisectLeft;
+      exports.ascending = ascending;
+      exports.bisector = bisector;
+      exports.descending = descending;
+      exports.deviation = deviation;
+      exports.extent = extent;
+      exports.histogram = histogram;
+      exports.thresholdFreedmanDiaconis = freedmanDiaconis;
+      exports.thresholdScott = scott;
+      exports.thresholdSturges = sturges;
+      exports.max = max;
+      exports.mean = mean;
+      exports.median = median;
+      exports.merge = merge;
+      exports.min = min;
+      exports.pairs = pairs;
+      exports.permute = permute;
+      exports.quantile = quantile;
+      exports.range = range;
+      exports.scan = scan;
+      exports.shuffle = shuffle;
+      exports.sum = sum;
+      exports.ticks = ticks;
+      exports.tickStep = tickStep;
+      exports.transpose = transpose;
+      exports.variance = variance;
+      exports.zip = zip;
+    });
+  });
+
+  /**
+   * This function xSubtract the first array by the second array or a constant value from each element of the first array
+   * @param {Array} array1 - the array that will be rotated
+   * @param {Array|Number} array2
+   * @return {Array}
+   */
+  function xSubtract(array1, array2) {
+    let isConstant = false;
+    let constant;
+
+    if (Array.isArray(array2)) {
+      if (array1.length !== array2.length) {
+        throw new Error('sub: size of array1 and array2 must be identical');
+      }
+    } else {
+      isConstant = true;
+      constant = Number(array2);
+    }
+
+    let array3 = new Array(array1.length);
+
+    if (isConstant) {
+      for (let i = 0; i < array1.length; i++) {
+        array3[i] = array1[i] - constant;
+      }
+    } else {
+      for (let i = 0; i < array1.length; i++) {
+        array3[i] = array1[i] - array2[i];
+      }
+    }
+
+    return array3;
+  }
+
+  var array = createCommonjsModule(function (module, exports) {
+
+    function compareNumbers(a, b) {
+      return a - b;
+    }
+    /**
+     * Computes the sum of the given values
+     * @param {Array} values
+     * @returns {number}
+     */
+
+
+    exports.sum = function sum(values) {
+      var sum = 0;
+
+      for (var i = 0; i < values.length; i++) {
+        sum += values[i];
+      }
+
+      return sum;
+    };
+    /**
+     * Computes the maximum of the given values
+     * @param {Array} values
+     * @returns {number}
+     */
+
+
+    exports.max = function max(values) {
+      var max = values[0];
+      var l = values.length;
+
+      for (var i = 1; i < l; i++) {
+        if (values[i] > max) max = values[i];
+      }
+
+      return max;
+    };
+    /**
+     * Computes the minimum of the given values
+     * @param {Array} values
+     * @returns {number}
+     */
+
+
+    exports.min = function min(values) {
+      var min = values[0];
+      var l = values.length;
+
+      for (var i = 1; i < l; i++) {
+        if (values[i] < min) min = values[i];
+      }
+
+      return min;
+    };
+    /**
+     * Computes the min and max of the given values
+     * @param {Array} values
+     * @returns {{min: number, max: number}}
+     */
+
+
+    exports.minMax = function minMax(values) {
+      var min = values[0];
+      var max = values[0];
+      var l = values.length;
+
+      for (var i = 1; i < l; i++) {
+        if (values[i] < min) min = values[i];
+        if (values[i] > max) max = values[i];
+      }
+
+      return {
+        min: min,
+        max: max
+      };
+    };
+    /**
+     * Computes the arithmetic mean of the given values
+     * @param {Array} values
+     * @returns {number}
+     */
+
+
+    exports.arithmeticMean = function arithmeticMean(values) {
+      var sum = 0;
+      var l = values.length;
+
+      for (var i = 0; i < l; i++) {
+        sum += values[i];
+      }
+
+      return sum / l;
+    };
+    /**
+     * {@link arithmeticMean}
+     */
+
+
+    exports.mean = exports.arithmeticMean;
+    /**
+     * Computes the geometric mean of the given values
+     * @param {Array} values
+     * @returns {number}
+     */
+
+    exports.geometricMean = function geometricMean(values) {
+      var mul = 1;
+      var l = values.length;
+
+      for (var i = 0; i < l; i++) {
+        mul *= values[i];
+      }
+
+      return Math.pow(mul, 1 / l);
+    };
+    /**
+     * Computes the mean of the log of the given values
+     * If the return value is exponentiated, it gives the same result as the
+     * geometric mean.
+     * @param {Array} values
+     * @returns {number}
+     */
+
+
+    exports.logMean = function logMean(values) {
+      var lnsum = 0;
+      var l = values.length;
+
+      for (var i = 0; i < l; i++) {
+        lnsum += Math.log(values[i]);
+      }
+
+      return lnsum / l;
+    };
+    /**
+     * Computes the weighted grand mean for a list of means and sample sizes
+     * @param {Array} means - Mean values for each set of samples
+     * @param {Array} samples - Number of original values for each set of samples
+     * @returns {number}
+     */
+
+
+    exports.grandMean = function grandMean(means, samples) {
+      var sum = 0;
+      var n = 0;
+      var l = means.length;
+
+      for (var i = 0; i < l; i++) {
+        sum += samples[i] * means[i];
+        n += samples[i];
+      }
+
+      return sum / n;
+    };
+    /**
+     * Computes the truncated mean of the given values using a given percentage
+     * @param {Array} values
+     * @param {number} percent - The percentage of values to keep (range: [0,1])
+     * @param {boolean} [alreadySorted=false]
+     * @returns {number}
+     */
+
+
+    exports.truncatedMean = function truncatedMean(values, percent, alreadySorted) {
+      if (alreadySorted === undefined) alreadySorted = false;
+
+      if (!alreadySorted) {
+        values = [].concat(values).sort(compareNumbers);
+      }
+
+      var l = values.length;
+      var k = Math.floor(l * percent);
+      var sum = 0;
+
+      for (var i = k; i < l - k; i++) {
+        sum += values[i];
+      }
+
+      return sum / (l - 2 * k);
+    };
+    /**
+     * Computes the harmonic mean of the given values
+     * @param {Array} values
+     * @returns {number}
+     */
+
+
+    exports.harmonicMean = function harmonicMean(values) {
+      var sum = 0;
+      var l = values.length;
+
+      for (var i = 0; i < l; i++) {
+        if (values[i] === 0) {
+          throw new RangeError('value at index ' + i + 'is zero');
+        }
+
+        sum += 1 / values[i];
+      }
+
+      return l / sum;
+    };
+    /**
+     * Computes the contraharmonic mean of the given values
+     * @param {Array} values
+     * @returns {number}
+     */
+
+
+    exports.contraHarmonicMean = function contraHarmonicMean(values) {
+      var r1 = 0;
+      var r2 = 0;
+      var l = values.length;
+
+      for (var i = 0; i < l; i++) {
+        r1 += values[i] * values[i];
+        r2 += values[i];
+      }
+
+      if (r2 < 0) {
+        throw new RangeError('sum of values is negative');
+      }
+
+      return r1 / r2;
+    };
+    /**
+     * Computes the median of the given values
+     * @param {Array} values
+     * @param {boolean} [alreadySorted=false]
+     * @returns {number}
+     */
+
+
+    exports.median = function median(values, alreadySorted) {
+      if (alreadySorted === undefined) alreadySorted = false;
+
+      if (!alreadySorted) {
+        values = [].concat(values).sort(compareNumbers);
+      }
+
+      var l = values.length;
+      var half = Math.floor(l / 2);
+
+      if (l % 2 === 0) {
+        return (values[half - 1] + values[half]) * 0.5;
+      } else {
+        return values[half];
+      }
+    };
+    /**
+     * Computes the variance of the given values
+     * @param {Array} values
+     * @param {boolean} [unbiased=true] - if true, divide by (n-1); if false, divide by n.
+     * @returns {number}
+     */
+
+
+    exports.variance = function variance(values, unbiased) {
+      if (unbiased === undefined) unbiased = true;
+      var theMean = exports.mean(values);
+      var theVariance = 0;
+      var l = values.length;
+
+      for (var i = 0; i < l; i++) {
+        var x = values[i] - theMean;
+        theVariance += x * x;
+      }
+
+      if (unbiased) {
+        return theVariance / (l - 1);
+      } else {
+        return theVariance / l;
+      }
+    };
+    /**
+     * Computes the standard deviation of the given values
+     * @param {Array} values
+     * @param {boolean} [unbiased=true] - if true, divide by (n-1); if false, divide by n.
+     * @returns {number}
+     */
+
+
+    exports.standardDeviation = function standardDeviation(values, unbiased) {
+      return Math.sqrt(exports.variance(values, unbiased));
+    };
+
+    exports.standardError = function standardError(values) {
+      return exports.standardDeviation(values) / Math.sqrt(values.length);
+    };
+    /**
+     * IEEE Transactions on biomedical engineering, vol. 52, no. 1, january 2005, p. 76-
+     * Calculate the standard deviation via the Median of the absolute deviation
+     *  The formula for the standard deviation only holds for Gaussian random variables.
+     * @returns {{mean: number, stdev: number}}
+     */
+
+
+    exports.robustMeanAndStdev = function robustMeanAndStdev(y) {
+      var mean = 0,
+          stdev = 0;
+      var length = y.length,
+          i = 0;
+
+      for (i = 0; i < length; i++) {
+        mean += y[i];
+      }
+
+      mean /= length;
+      var averageDeviations = new Array(length);
+
+      for (i = 0; i < length; i++) averageDeviations[i] = Math.abs(y[i] - mean);
+
+      averageDeviations.sort(compareNumbers);
+
+      if (length % 2 === 1) {
+        stdev = averageDeviations[(length - 1) / 2] / 0.6745;
+      } else {
+        stdev = 0.5 * (averageDeviations[length / 2] + averageDeviations[length / 2 - 1]) / 0.6745;
+      }
+
+      return {
+        mean: mean,
+        stdev: stdev
+      };
+    };
+
+    exports.quartiles = function quartiles(values, alreadySorted) {
+      if (typeof alreadySorted === 'undefined') alreadySorted = false;
+
+      if (!alreadySorted) {
+        values = [].concat(values).sort(compareNumbers);
+      }
+
+      var quart = values.length / 4;
+      var q1 = values[Math.ceil(quart) - 1];
+      var q2 = exports.median(values, true);
+      var q3 = values[Math.ceil(quart * 3) - 1];
+      return {
+        q1: q1,
+        q2: q2,
+        q3: q3
+      };
+    };
+
+    exports.pooledStandardDeviation = function pooledStandardDeviation(samples, unbiased) {
+      return Math.sqrt(exports.pooledVariance(samples, unbiased));
+    };
+
+    exports.pooledVariance = function pooledVariance(samples, unbiased) {
+      if (typeof unbiased === 'undefined') unbiased = true;
+      var sum = 0;
+      var length = 0,
+          l = samples.length;
+
+      for (var i = 0; i < l; i++) {
+        var values = samples[i];
+        var vari = exports.variance(values);
+        sum += (values.length - 1) * vari;
+        if (unbiased) length += values.length - 1;else length += values.length;
+      }
+
+      return sum / length;
+    };
+
+    exports.mode = function mode(values) {
+      var l = values.length,
+          itemCount = new Array(l),
+          i;
+
+      for (i = 0; i < l; i++) {
+        itemCount[i] = 0;
+      }
+
+      var itemArray = new Array(l);
+      var count = 0;
+
+      for (i = 0; i < l; i++) {
+        var index = itemArray.indexOf(values[i]);
+        if (index >= 0) itemCount[index]++;else {
+          itemArray[count] = values[i];
+          itemCount[count] = 1;
+          count++;
+        }
+      }
+
+      var maxValue = 0,
+          maxIndex = 0;
+
+      for (i = 0; i < count; i++) {
+        if (itemCount[i] > maxValue) {
+          maxValue = itemCount[i];
+          maxIndex = i;
+        }
+      }
+
+      return itemArray[maxIndex];
+    };
+
+    exports.covariance = function covariance(vector1, vector2, unbiased) {
+      if (typeof unbiased === 'undefined') unbiased = true;
+      var mean1 = exports.mean(vector1);
+      var mean2 = exports.mean(vector2);
+      if (vector1.length !== vector2.length) throw 'Vectors do not have the same dimensions';
+      var cov = 0,
+          l = vector1.length;
+
+      for (var i = 0; i < l; i++) {
+        var x = vector1[i] - mean1;
+        var y = vector2[i] - mean2;
+        cov += x * y;
+      }
+
+      if (unbiased) return cov / (l - 1);else return cov / l;
+    };
+
+    exports.skewness = function skewness(values, unbiased) {
+      if (typeof unbiased === 'undefined') unbiased = true;
+      var theMean = exports.mean(values);
+      var s2 = 0,
+          s3 = 0,
+          l = values.length;
+
+      for (var i = 0; i < l; i++) {
+        var dev = values[i] - theMean;
+        s2 += dev * dev;
+        s3 += dev * dev * dev;
+      }
+
+      var m2 = s2 / l;
+      var m3 = s3 / l;
+      var g = m3 / Math.pow(m2, 3 / 2.0);
+
+      if (unbiased) {
+        var a = Math.sqrt(l * (l - 1));
+        var b = l - 2;
+        return a / b * g;
+      } else {
+        return g;
+      }
+    };
+
+    exports.kurtosis = function kurtosis(values, unbiased) {
+      if (typeof unbiased === 'undefined') unbiased = true;
+      var theMean = exports.mean(values);
+      var n = values.length,
+          s2 = 0,
+          s4 = 0;
+
+      for (var i = 0; i < n; i++) {
+        var dev = values[i] - theMean;
+        s2 += dev * dev;
+        s4 += dev * dev * dev * dev;
+      }
+
+      var m2 = s2 / n;
+      var m4 = s4 / n;
+
+      if (unbiased) {
+        var v = s2 / (n - 1);
+        var a = n * (n + 1) / ((n - 1) * (n - 2) * (n - 3));
+        var b = s4 / (v * v);
+        var c = (n - 1) * (n - 1) / ((n - 2) * (n - 3));
+        return a * b - 3 * c;
+      } else {
+        return m4 / (m2 * m2) - 3;
+      }
+    };
+
+    exports.entropy = function entropy(values, eps) {
+      if (typeof eps === 'undefined') eps = 0;
+      var sum = 0,
+          l = values.length;
+
+      for (var i = 0; i < l; i++) sum += values[i] * Math.log(values[i] + eps);
+
+      return -sum;
+    };
+
+    exports.weightedMean = function weightedMean(values, weights) {
+      var sum = 0,
+          l = values.length;
+
+      for (var i = 0; i < l; i++) sum += values[i] * weights[i];
+
+      return sum;
+    };
+
+    exports.weightedStandardDeviation = function weightedStandardDeviation(values, weights) {
+      return Math.sqrt(exports.weightedVariance(values, weights));
+    };
+
+    exports.weightedVariance = function weightedVariance(values, weights) {
+      var theMean = exports.weightedMean(values, weights);
+      var vari = 0,
+          l = values.length;
+      var a = 0,
+          b = 0;
+
+      for (var i = 0; i < l; i++) {
+        var z = values[i] - theMean;
+        var w = weights[i];
+        vari += w * (z * z);
+        b += w;
+        a += w * w;
+      }
+
+      return vari * (b / (b * b - a));
+    };
+
+    exports.center = function center(values, inPlace) {
+      if (typeof inPlace === 'undefined') inPlace = false;
+      var result = values;
+      if (!inPlace) result = [].concat(values);
+      var theMean = exports.mean(result),
+          l = result.length;
+
+      for (var i = 0; i < l; i++) result[i] -= theMean;
+    };
+
+    exports.standardize = function standardize(values, standardDev, inPlace) {
+      if (typeof standardDev === 'undefined') standardDev = exports.standardDeviation(values);
+      if (typeof inPlace === 'undefined') inPlace = false;
+      var l = values.length;
+      var result = inPlace ? values : new Array(l);
+
+      for (var i = 0; i < l; i++) result[i] = values[i] / standardDev;
+
+      return result;
+    };
+
+    exports.cumulativeSum = function cumulativeSum(array) {
+      var l = array.length;
+      var result = new Array(l);
+      result[0] = array[0];
+
+      for (var i = 1; i < l; i++) result[i] = result[i - 1] + array[i];
+
+      return result;
+    };
+  });
+  var array_1 = array.sum;
+  var array_2 = array.max;
+  var array_3 = array.min;
+  var array_4 = array.minMax;
+  var array_5 = array.arithmeticMean;
+  var array_6 = array.mean;
+  var array_7 = array.geometricMean;
+  var array_8 = array.logMean;
+  var array_9 = array.grandMean;
+  var array_10 = array.truncatedMean;
+  var array_11 = array.harmonicMean;
+  var array_12 = array.contraHarmonicMean;
+  var array_13 = array.median;
+  var array_14 = array.variance;
+  var array_15 = array.standardDeviation;
+  var array_16 = array.standardError;
+  var array_17 = array.robustMeanAndStdev;
+  var array_18 = array.quartiles;
+  var array_19 = array.pooledStandardDeviation;
+  var array_20 = array.pooledVariance;
+  var array_21 = array.mode;
+  var array_22 = array.covariance;
+  var array_23 = array.skewness;
+  var array_24 = array.kurtosis;
+  var array_25 = array.entropy;
+  var array_26 = array.weightedMean;
+  var array_27 = array.weightedStandardDeviation;
+  var array_28 = array.weightedVariance;
+  var array_29 = array.center;
+  var array_30 = array.standardize;
+  var array_31 = array.cumulativeSum;
+
   /**
    *
    * @private
@@ -6121,8 +6590,9 @@
    * @param {number} [options.from=spectrum.x[0]]
    * @param {number} [options.to=spectrum.x[spectrum.x.length-1]]
    * @param {number} [options.numberOfPoints]
-   * @param {Array} [options.filters=[]]
+   * @param {Array} [options.filters=[]] Array of object containing 'name' (centerMean, divideSD, normalize, rescale) and 'options'
    * @param {Array} [options.exclusions=[]]
+   * @returns {DataXY}
    */
 
   function getNormalized(spectrum, options = {}) {
@@ -6171,18 +6641,18 @@
     for (let filter of filters) {
       let filterOptions = filter.options || {};
 
-      switch (filter.name) {
-        case 'centerMean':
+      switch (filter.name.toLowerCase()) {
+        case 'centermean':
           {
             let mean = array.mean(y);
-            y = X.subtract(mean);
+            y = xSubtract(y, mean);
             break;
           }
 
-        case 'scaleSD':
+        case 'dividebysd':
           {
             let std = array.standardDeviation(y);
-            y = X.divide(std);
+            y = xDivide(y, std);
             break;
           }
 
@@ -6236,38 +6706,66 @@
     });
   }
 
-  const DEFAULT_FLAVOR = 'weightVersusTemperature';
   /**
-   * Class allowing to store and manipulate a spectrum
-   * @class Spectrum
+   * Class allowing to store and manipulate an analysis.
+   * An analysis may contain one or more spectra that are identified
+   * by a 'flavor'
+   * @class Analysis
    * @param {object} [options={}]
    * @param {string} [options.id=randomString] unique identifier
-   * @param {string} [options.label] human redeable label
+   * @param {string} [options.label=options.id] human redeable label
+   * @param {string} [options.defaultFlavor=''] human redeable label
    */
 
-  class Spectrum {
+  class Analysis {
     constructor(options = {}) {
       this.id = options.id || Math.random().toString(36).substring(2, 10);
       this.label = options.label || this.id;
-      this.flavors = {};
+      this.spectra = {};
+      this.defaultFlavor = options.defaultFlavor === undefined ? '' : options.defaultFlavor;
     }
+    /**
+     * Set a spectrum for a specific flavor
+     * @param {DataXY} data
+     * @param {object} [options={}]
+     * @param {string} [options.defaultFlavor=this.defaultFlavor]
+     * @param {string} [options.xLabel='']
+     * @param {string} [options.yLabel='']
+     * @param {string} [options.title='']
+     * @param {object} [options.meta={}]
+     *
+     */
 
-    set(points, options = {}) {
+
+    set(data, options = {}) {
       const {
-        flavor = DEFAULT_FLAVOR
+        flavor = this.defaultFlavor
       } = options;
-      this.flavors[flavor.toLowerCase()] = standardizeData(points, options);
+      this.spectra[flavor.toLowerCase()] = standardizeData(data, options);
     }
+    /**
+     * Retrieve a Spectrum based on a flavor
+     * @param {object} [options={}]
+     * @param {string} [options.defaultFlavor=this.defaultFlavor]
+     * @returns {Spectrum}
+     */
 
-    get(flavor = DEFAULT_FLAVOR) {
+
+    get(flavor = this.defaultFlavor) {
       flavor = flavor.toLowerCase();
 
-      if (!this.flavors[flavor]) {
+      if (!this.spectra[flavor]) {
         return undefined;
       }
 
-      return this.flavors[flavor];
+      return this.spectra[flavor];
     }
+    /**
+     * Return the data object for a specific flavor with possibly some
+     * normalization options
+     * @param {object} [options={}]
+     */
+
 
     getData(options = {}) {
       const {
@@ -6288,11 +6786,16 @@
     }
 
   }
+  /**
+   * Internal function that ensure the order of x / y array
+   * @param {DataXY} [data]
+   * @param {object} [options={}]
+   * @return {Spectrum}
+   */
 
-  function standardizeData(points, options = {}) {
+  function standardizeData(data, options = {}) {
     const {
       meta = {},
-      tmp = {},
       xLabel = '',
       yLabel = '',
       title = ''
@@ -6300,7 +6803,7 @@
     let {
       x,
       y
-    } = points;
+    } = data;
 
     if (x && x.length > 1 && x[0] > x[x.length - 1]) {
       x = x.reverse();
@@ -6310,164 +6813,18 @@
       y = y || [];
     }
 
-    points = {
+    data = {
       x,
       y
     };
     return {
-      x: points.x,
-      y: points.y,
+      x: data.x,
+      y: data.y,
       xLabel,
       yLabel,
       title,
-      meta,
-      tmp
+      meta
     };
-  }
-
-  class SpectraManager {
-    constructor() {
-      this.spectra = [];
-    }
-
-    addSpectrum(spectrum) {
-      let index = this.getSpectrumIndex(spectrum.id);
-
-      if (index === undefined) {
-        this.spectra.push(spectrum);
-      } else {
-        this.spectra[index] = spectrum;
-      }
-    }
-
-    getSpectra(options = {}) {
-      const {
-        ids
-      } = options;
-      let spectra = [];
-
-      for (const spectrum of this.spectra) {
-        if (!ids || ids.includes(spectrum.id)) {
-          spectra.push(spectrum);
-        }
-      }
-
-      return spectra;
-    }
-    /**
-     * Remove the spectrum from the SpectraProcessor for the specified id
-     * @param {string} id
-     */
-
-
-    removeSpectrum(id) {
-      let index = this.getSpectrumIndex(id);
-      if (index === undefined) return undefined;
-      return this.spectra.splice(index, 1);
-    }
-    /**
-     * Returns the index of the spectrum in the spectra array
-     * @param {string} id
-     * @returns {number}
-     */
-
-
-    getSpectrumIndex(id) {
-      if (!id) return undefined;
-
-      for (let i = 0; i < this.spectra.length; i++) {
-        let spectrum = this.spectra[i];
-        if (spectrum.id === id) return i;
-      }
-
-      return undefined;
-    }
-    /**
-     * Checks if the ID of a spectrum exists in the SpectraProcessor
-     * @param {string} id
-     */
-
-
-    contains(id) {
-      return !isNaN(this.getSpectrumIndex(id));
-    }
-
-  }
-
-  function parsePerkinElmer(text) {
-    let lines = text.split(/[\r\n]+/);
-    let result = {
-      meta: {},
-      data: {
-        time: [],
-        weight: [],
-        temperature: []
-      }
-    };
-    let section = '';
-    let inMethodSteps = false;
-
-    for (let line of lines) {
-      if (inMethodSteps) {
-        if (line.startsWith('1) TGA')) {
-          inMethodSteps = false;
-        } else {
-          if (!result.meta['Method Steps']) result.meta['Method Steps'] = '';
-          result.meta['Method Steps'] += "".concat(line.replace(/\t/g, '  '), "\n");
-        }
-      } else if (line.match(/^[a-zA-Z -]+$/)) {
-        section = trim(line);
-      } else if (line.match(/.*:.*/)) {
-        let position = line.indexOf(':');
-        let description = line.substring(0, position);
-        let value = trim(line.substring(position + 1));
-        result.meta[(section ? "".concat(section, "_") : '') + description] = value;
-      } else if (line.match(/^[0-9\t .]+$/)) {
-        let fields = line.replace(/^\t/, '').split('\t');
-        result.data.time.push(Number(fields[0]));
-        result.data.weight.push(Number(fields[1]));
-        result.data.temperature.push(Number(fields[4]));
-      }
-
-      if (line.startsWith('Method Steps:')) {
-        inMethodSteps = true;
-      }
-    }
-
-    return result;
-  }
-
-  function trim(string) {
-    return string.replace(/^[ \t]*(.*?)[ \t]*$/, '$1');
-  }
-
-  /**
-   * Creates a new Chromatogram element based in a JCAMP string
-   * @param {string} text - String containing the JCAMP data
-   * @return {Spectrum} - New class element with the given data
-   */
-
-  function fromPerkinElmer(text) {
-    let spectrum = new Spectrum();
-    let result = parsePerkinElmer(text);
-    spectrum.set({
-      x: result.data.temperature,
-      y: result.data.weight
-    }, {
-      xLabel: 'Temperature [°C]',
-      yLabel: 'Weight [mg]',
-      title: result.meta['Sample ID'],
-      meta: result.meta,
-      flavor: 'weightVersusTemperature'
-    });
-    spectrum.set(result.data.time, result.data.weight, {
-      xLabel: 'Time [s]',
-      yLabel: 'Weight [mg]',
-      title: result.meta['Sample ID'],
-      meta: result.meta,
-      flavor: 'weightVersusTime'
-    });
-    return spectrum;
   }
 
   const GC_MS_FIELDS = ['TIC', '.RIC', 'SCANNUMBER'];
@@ -6746,57 +7103,6 @@
       currentData.push(parseFloat(values[0]));
       currentData.push(parseFloat(values[1]));
     }
-  }
-
-  var medianQuickselect_min = createCommonjsModule(function (module) {
-    (function () {
-      function a(d) {
-        for (var e = 0, f = d.length - 1, g = void 0, h = void 0, i = void 0, j = c(e, f); !0;) {
-          if (f <= e) return d[j];
-          if (f == e + 1) return d[e] > d[f] && b(d, e, f), d[j];
-
-          for (g = c(e, f), d[g] > d[f] && b(d, g, f), d[e] > d[f] && b(d, e, f), d[g] > d[e] && b(d, g, e), b(d, g, e + 1), h = e + 1, i = f; !0;) {
-            do h++; while (d[e] > d[h]);
-
-            do i--; while (d[i] > d[e]);
-
-            if (i < h) break;
-            b(d, h, i);
-          }
-
-          b(d, e, i), i <= j && (e = h), i >= j && (f = i - 1);
-        }
-      }
-
-      var b = function b(d, e, f) {
-        var _ref;
-
-        return _ref = [d[f], d[e]], d[e] = _ref[0], d[f] = _ref[1], _ref;
-      },
-          c = function c(d, e) {
-        return ~~((d + e) / 2);
-      };
-
-       module.exports ? module.exports = a : window.median = a;
-    })();
-  });
-
-  /**
-   * Computes the median of the given values
-   * @param {Array<number>} input
-   * @return {number}
-   */
-
-  function median(input) {
-    if (!src(input)) {
-      throw new TypeError('input must be an array');
-    }
-
-    if (input.length === 0) {
-      throw new TypeError('input must not be empty');
-    }
-
-    return medianQuickselect_min(input.slice());
   }
 
   function convertTo3DZ(spectra) {
@@ -7111,7 +7417,7 @@
 
   const ntuplesSeparator = /[, \t]+/;
 
-  class Spectrum$1 {}
+  class Spectrum {}
 
   const defaultOptions$2 = {
     keepRecordsRegExp: /^$/,
@@ -7141,7 +7447,7 @@
     };
     let currentEntry = tmpResult;
     let parentsStack = [];
-    let spectrum = new Spectrum$1();
+    let spectrum = new Spectrum();
 
     if (typeof jcamp !== 'string') {
       throw new TypeError('the JCAMP should be a string');
@@ -7251,7 +7557,7 @@
           }
 
           currentEntry.spectra.push(spectrum);
-          spectrum = new Spectrum$1();
+          spectrum = new Spectrum();
         }
 
         continue;
@@ -7260,7 +7566,7 @@
           prepareSpectrum(spectrum);
           parsePeakTable(spectrum, dataValue, result);
           currentEntry.spectra.push(spectrum);
-          spectrum = new Spectrum$1();
+          spectrum = new Spectrum();
         }
 
         continue;
@@ -7274,7 +7580,7 @@
           }
 
           currentEntry.spectra.push(spectrum);
-          spectrum = new Spectrum$1();
+          spectrum = new Spectrum();
         }
 
         continue;
@@ -7439,7 +7745,25 @@
     return result;
   }
 
-  function addJcamp(spectrum, jcamp) {
+  /**
+   * Creates a new Analysis from a JCAMP string
+   * @param {string} jcamp - String containing the JCAMP data
+   * @param {object} [options={}]
+   * @param {object} [options.id=Math.random()]
+   * @param {object} [options.flavor='']
+   * @return {Analysis} - New class element with the given data
+   */
+
+  function fromJcamp(jcamp, options = {}) {
+    let analysis = new Analysis(options);
+    addJcamp(analysis, jcamp, options);
+    return analysis;
+  }
+
+  function addJcamp(analysis, jcamp, options = {}) {
+    const {
+      defaultFlavor
+    } = options;
     let converted = convert(jcamp, {
       keepRecordsRegExp: /.*/,
       canonicDataLabels: false,
@@ -7450,33 +7774,166 @@
       let currentSpectrum = entry.spectra[0];
       let xLabel = currentSpectrum.xUnit;
       let yLabel = currentSpectrum.yUnit;
-      let flavor = '';
-      if (xLabel.match(/\[.*C\]/)) flavor = 'weightVersusTemperature';
-      if (xLabel.match(/\[.*s\]/)) flavor = 'weightVersusTime';
+      let flavor = entry.info.$cheminfoFlavor || defaultFlavor;
+      let meta = {};
 
-      if (flavor) {
-        spectrum.set(currentSpectrum.data, {
-          flavor,
-          xLabel,
-          yLabel,
-          title: currentSpectrum.title
-        });
+      for (let key in entry.info) {
+        if (key.startsWith('$') && key !== '$cheminfoFlavor') {
+          meta[key.substring(1)] = entry.info[key];
+        }
       }
+
+      analysis.set(currentSpectrum.data, {
+        flavor,
+        xLabel,
+        yLabel,
+        title: entry.title,
+        meta
+      });
     }
   }
 
+  function addStyle(serie, spectrum, options = {}) {
+    const {
+      color = 'darkgrey'
+    } = options;
+    serie.style = [{
+      name: 'unselected',
+      style: {
+        line: {
+          color,
+          width: 1,
+          dash: 1
+        }
+      }
+    }, {
+      name: 'selected',
+      style: {
+        line: {
+          color,
+          width: 3,
+          dash: 1
+        }
+      }
+    }];
+    serie.name = spectrum.label || spectrum.id;
+  }
+
+  const COLORS = ['#FFB300', '#803E75', '#FF6800', '#A6BDD7', '#C10020', '#CEA262', '#817066', '#007D34', '#F6768E', '#00538A', '#FF7A5C', '#53377A', '#FF8E00', '#B32851', '#F4C800', '#7F180D', '#93AA00', '#593315', '#F13A13', '#232C16'];
+
   /**
-   * Creates a new Chromatogram element based in a JCAMP string
-   * @param {string} jcamp - String containing the JCAMP data
+   * Generate a jsgraph chart format from an array of Analysis
+   * @param {Array<Analysis>} analyses
    * @param {object} [options={}]
-   * @param {object} [options.id=Math.random()]
-   * @return {Spectrum} - New class element with the given data
+   * @param {Array} [options.ids] List of spectra ids, by all
+   * @param {Array} [options.colors] List of colors
+   * @param {Array} [options.flavor]
+   * @param {object} [options.normalization]
    */
 
-  function fromJcamp(jcamp, options = {}) {
-    let spectrum = new Spectrum(options);
-    addJcamp(spectrum, jcamp);
-    return spectrum;
+  function getJSGraph(analyses, options = {}) {
+    const {
+      colors = COLORS,
+      flavor,
+      normalization
+    } = options;
+    let series = [];
+    let xLabel = '';
+    let yLabel = '';
+
+    for (let i = 0; i < analyses.length; i++) {
+      const analysis = analyses[i];
+      let serie = {};
+      let currentData = analysis.getData({
+        flavor,
+        normalization
+      });
+      if (!currentData) continue;
+      if (!xLabel) xLabel = analysis.getXLabel(flavor);
+      if (!yLabel) yLabel = analysis.getYLabel(flavor);
+      addStyle(serie, analysis, {
+        color: colors[i]
+      });
+      serie.data = currentData;
+      series.push(serie);
+    }
+
+    return {
+      axes: {
+        x: {
+          label: xLabel,
+          unit: '',
+          unitWrapperBefore: '',
+          unitWrapperAfter: '',
+          flipped: false,
+          display: true
+        },
+        y: {
+          label: yLabel,
+          unit: '',
+          unitWrapperBefore: '',
+          unitWrapperAfter: '',
+          flipped: false,
+          display: true
+        }
+      },
+      series
+    };
+  }
+
+  function getNormalizationAnnotations(filter = {}, boundary) {
+    let {
+      exclusions = []
+    } = filter;
+    let annotations = [];
+    exclusions = exclusions.filter(exclusion => !exclusion.ignore);
+    annotations = exclusions.map(exclusion => {
+      let annotation = {
+        type: 'rect',
+        position: [{
+          x: exclusion.from,
+          y: boundary.y.min
+        }, {
+          x: exclusion.to,
+          y: boundary.y.max
+        }],
+        strokeWidth: 0,
+        fillColor: 'rgba(255,255,224,1)'
+      };
+      return annotation;
+    });
+
+    if (filter.from !== undefined) {
+      annotations.push({
+        type: 'rect',
+        position: [{
+          x: Number.MIN_SAFE_INTEGER,
+          y: boundary.y.min
+        }, {
+          x: filter.from,
+          y: boundary.y.max
+        }],
+        strokeWidth: 0,
+        fillColor: 'rgba(255,255,224,1)'
+      });
+    }
+
+    if (filter.to !== undefined) {
+      annotations.push({
+        type: 'rect',
+        position: [{
+          x: filter.to,
+          y: boundary.y.min
+        }, {
+          x: Number.MAX_SAFE_INTEGER,
+          y: boundary.y.max
+        }],
+        strokeWidth: 0,
+        fillColor: 'rgba(255,255,224,1)'
+      });
+    }
+
+    return annotations;
   }
 
   function fromXxyyArray(data) {
@@ -7699,133 +8156,984 @@
     return creator(parsed, meta);
   }
 
-  function toJcamp(spectrum) {
+  function toJcamp(analysis, options = {}) {
+    const {
+      dataType = ''
+    } = options;
     let jcamps = [];
-    let weightVersusTemperature = spectrum.get('weightVersusTemperature');
 
-    if (weightVersusTemperature) {
-      jcamps.push(getJcamp(weightVersusTemperature));
-    }
-
-    let weightVersusTime = spectrum.get('weightVersusTime');
-
-    if (weightVersusTime) {
-      jcamps.push(getJcamp(weightVersusTime));
+    for (let flavorName in analysis.spectra) {
+      let data = analysis.get(flavorName);
+      jcamps.push(getJcamp(data, {
+        dataType,
+        flavorName
+      }));
     }
 
     return jcamps.join('\n');
   }
 
-  function getJcamp(spectrum) {
-    let options = {
-      xUnit: spectrum.xLabel,
-      yUnit: spectrum.yLabel,
-      title: spectrum.title,
-      type: 'TGA',
-      info: spectrum.meta
+  function getJcamp(flavor, options) {
+    let jcampOptions = {
+      xUnit: flavor.xLabel,
+      yUnit: flavor.yLabel,
+      title: flavor.title,
+      type: options.dataType,
+      info: { ...flavor.meta,
+        cheminfoFlavor: options.flavorName
+      }
     };
     return fromJSON({
-      x: spectrum.x,
-      y: spectrum.y
-    }, options);
-  }
-
-  function addStyle(serie, spectrum, options = {}) {
-    const {
-      color = 'darkgrey'
-    } = options;
-    serie.style = [{
-      name: 'unselected',
-      style: {
-        line: {
-          color,
-          width: 1,
-          dash: 1
-        }
-      }
-    }, {
-      name: 'selected',
-      style: {
-        line: {
-          color,
-          width: 3,
-          dash: 1
-        }
-      }
-    }];
-    serie.name = spectrum.label || spectrum.id;
+      x: flavor.x,
+      y: flavor.y
+    }, jcampOptions);
   }
 
   /**
-   * Retrieve a chart with selected original data
-   * @param {SpectraManager} spectraManager
-   * @param {object} [options={}]
-   * @param {Array} [options.ids] List of spectra ids, by default all
-   * @param {Array} [options.colors] List of colors
-   * @param {Array} [options.flavor]
-   * @param {object} [options.normalization]
+   * @typedef {Object} DataXY
+   * @property {Array<Number>} x Array of x values
+   * @property {Array<Number>} y Array of y values
    */
-
-  function getJSGraph(spectraManager, options = {}) {
+  function CommonSpectrum(options = {}) {
     const {
-      ids,
-      colors,
-      flavor,
-      normalization
+      dataType = '',
+      defaultFlavor = ''
     } = options;
-    let spectra = spectraManager.getSpectra({
-      ids
-    });
-    let series = [];
-    let xLabel = '';
-    let yLabel = '';
 
-    for (let i = 0; i < spectra.length; i++) {
-      const spectrum = spectra[i];
-      let serie = {};
-      let currentData = spectrum.getData({
-        flavor,
-        normalization
-      });
-      if (!currentData) continue;
-      if (!xLabel) xLabel = spectrum.getXLabel(flavor);
-      if (!yLabel) yLabel = spectrum.getYLabel(flavor);
-      addStyle(serie, spectrum, {
-        color: colors[i]
-      });
-      serie.data = currentData;
-      series.push(serie);
+    class CustomAnalysis extends Analysis {
+      constructor(analysisOptions) {
+        super(analysisOptions);
+        this.defaultFlavor = defaultFlavor;
+      }
+
     }
 
     return {
-      axes: {
-        x: {
-          label: xLabel,
-          unit: '',
-          unitWrapperBefore: '',
-          unitWrapperAfter: '',
-          flipped: false,
-          display: true
-        },
-        y: {
-          label: yLabel,
-          unit: '',
-          unitWrapperBefore: '',
-          unitWrapperAfter: '',
-          flipped: false,
-          display: true
-        }
-      },
-      series
+      Analysis: CustomAnalysis,
+      AnalysesManager,
+      getNormalized,
+      fromJcamp: (jcamp, fromOptions) => fromJcamp(jcamp, {
+        flavor: defaultFlavor,
+        ...fromOptions
+      }),
+      toJcamp: spectrum => toJcamp(spectrum, {
+        dataType
+      }),
+      getJSGraph: (analyses, jsGraphOptions) => getJSGraph(analyses, {
+        flavor: defaultFlavor,
+        ...jsGraphOptions
+      }),
+      getNormalizationAnnotations
     };
   }
 
-  exports.SpectraManager = SpectraManager;
-  exports.Spectrum = Spectrum;
-  exports.fromJcamp = fromJcamp;
+  function parsePerkinElmer(text) {
+    let lines = text.split(/[\r\n]+/);
+    let result = {
+      meta: {},
+      data: {
+        time: [],
+        weight: [],
+        temperature: []
+      }
+    };
+    let section = '';
+    let inMethodSteps = false;
+
+    for (let line of lines) {
+      if (inMethodSteps) {
+        if (line.startsWith('1) TGA')) {
+          inMethodSteps = false;
+        } else {
+          if (!result.meta['Method Steps']) result.meta['Method Steps'] = '';
+          result.meta['Method Steps'] += "".concat(line.replace(/\t/g, '  '), "\n");
+        }
+      } else if (line.match(/^[a-zA-Z -]+$/)) {
+        section = trim(line);
+      } else if (line.match(/.*:.*/)) {
+        let position = line.indexOf(':');
+        let description = line.substring(0, position);
+        let value = trim(line.substring(position + 1));
+        result.meta[(section ? "".concat(section, "_") : '') + description] = value;
+      } else if (line.match(/^[0-9\t .]+$/)) {
+        let fields = line.replace(/^\t/, '').split('\t');
+        result.data.time.push(Number(fields[0]));
+        result.data.weight.push(Number(fields[1]));
+        result.data.temperature.push(Number(fields[4]));
+      }
+
+      if (line.startsWith('Method Steps:')) {
+        inMethodSteps = true;
+      }
+    }
+
+    return result;
+  }
+
+  function trim(string) {
+    return string.replace(/^[ \t]*(.*?)[ \t]*$/, '$1');
+  }
+
+  /**
+   * Creates a new Chromatogram element based in a JCAMP string
+   * @param {string} text - String containing the JCAMP data
+   * @return {Analysis} - New class element with the given data
+   */
+
+  function fromPerkinElmer(text) {
+    let analysis = new Analysis$1();
+    let result = parsePerkinElmer(text);
+    analysis.set({
+      x: result.data.temperature,
+      y: result.data.weight
+    }, {
+      xLabel: 'Temperature [°C]',
+      yLabel: 'Weight [mg]',
+      title: result.meta['Sample ID'],
+      meta: result.meta,
+      flavor: 'weightVersusTemperature'
+    });
+    analysis.set({
+      x: result.data.time,
+      y: result.data.weight
+    }, {
+      xLabel: 'Time [s]',
+      yLabel: 'Weight [mg]',
+      title: result.meta['Sample ID'],
+      meta: result.meta,
+      flavor: 'weightVersusTime'
+    });
+    return analysis;
+  }
+
+  var papaparse_min = createCommonjsModule(function (module, exports) {
+    /* @license
+    Papa Parse
+    v5.2.0
+    https://github.com/mholt/PapaParse
+    License: MIT
+    */
+    !function (e, t) {
+        module.exports = t() ;
+    }(commonjsGlobal, function s() {
+
+      var f = "undefined" != typeof self ? self : "undefined" != typeof window ? window : void 0 !== f ? f : {};
+      var n = !f.document && !!f.postMessage,
+          o = n && /blob:/i.test((f.location || {}).protocol),
+          a = {},
+          h = 0,
+          b = {
+        parse: function (e, t) {
+          var i = (t = t || {}).dynamicTyping || !1;
+          U(i) && (t.dynamicTypingFunction = i, i = {});
+
+          if (t.dynamicTyping = i, t.transform = !!U(t.transform) && t.transform, t.worker && b.WORKERS_SUPPORTED) {
+            var r = function () {
+              if (!b.WORKERS_SUPPORTED) return !1;
+              var e = (i = f.URL || f.webkitURL || null, r = s.toString(), b.BLOB_URL || (b.BLOB_URL = i.createObjectURL(new Blob(["(", r, ")();"], {
+                type: "text/javascript"
+              })))),
+                  t = new f.Worker(e);
+              var i, r;
+              return t.onmessage = _, t.id = h++, a[t.id] = t;
+            }();
+
+            return r.userStep = t.step, r.userChunk = t.chunk, r.userComplete = t.complete, r.userError = t.error, t.step = U(t.step), t.chunk = U(t.chunk), t.complete = U(t.complete), t.error = U(t.error), delete t.worker, void r.postMessage({
+              input: e,
+              config: t,
+              workerId: r.id
+            });
+          }
+
+          var n = null;
+          "string" == typeof e ? n = t.download ? new l(t) : new p(t) : !0 === e.readable && U(e.read) && U(e.on) ? n = new g(t) : (f.File && e instanceof File || e instanceof Object) && (n = new c(t));
+          return n.stream(e);
+        },
+        unparse: function (e, t) {
+          var n = !1,
+              _ = !0,
+              m = ",",
+              v = "\r\n",
+              s = '"',
+              a = s + s,
+              i = !1,
+              r = null;
+
+          !function () {
+            if ("object" != typeof t) return;
+            "string" != typeof t.delimiter || b.BAD_DELIMITERS.filter(function (e) {
+              return -1 !== t.delimiter.indexOf(e);
+            }).length || (m = t.delimiter);
+            ("boolean" == typeof t.quotes || "function" == typeof t.quotes || Array.isArray(t.quotes)) && (n = t.quotes);
+            "boolean" != typeof t.skipEmptyLines && "string" != typeof t.skipEmptyLines || (i = t.skipEmptyLines);
+            "string" == typeof t.newline && (v = t.newline);
+            "string" == typeof t.quoteChar && (s = t.quoteChar);
+            "boolean" == typeof t.header && (_ = t.header);
+
+            if (Array.isArray(t.columns)) {
+              if (0 === t.columns.length) throw new Error("Option columns is empty");
+              r = t.columns;
+            }
+
+            void 0 !== t.escapeChar && (a = t.escapeChar + s);
+          }();
+          var o = new RegExp(q(s), "g");
+          "string" == typeof e && (e = JSON.parse(e));
+
+          if (Array.isArray(e)) {
+            if (!e.length || Array.isArray(e[0])) return u(null, e, i);
+            if ("object" == typeof e[0]) return u(r || h(e[0]), e, i);
+          } else if ("object" == typeof e) return "string" == typeof e.data && (e.data = JSON.parse(e.data)), Array.isArray(e.data) && (e.fields || (e.fields = e.meta && e.meta.fields), e.fields || (e.fields = Array.isArray(e.data[0]) ? e.fields : h(e.data[0])), Array.isArray(e.data[0]) || "object" == typeof e.data[0] || (e.data = [e.data])), u(e.fields || [], e.data || [], i);
+
+          throw new Error("Unable to serialize unrecognized input");
+
+          function h(e) {
+            if ("object" != typeof e) return [];
+            var t = [];
+
+            for (var i in e) t.push(i);
+
+            return t;
+          }
+
+          function u(e, t, i) {
+            var r = "";
+            "string" == typeof e && (e = JSON.parse(e)), "string" == typeof t && (t = JSON.parse(t));
+            var n = Array.isArray(e) && 0 < e.length,
+                s = !Array.isArray(t[0]);
+
+            if (n && _) {
+              for (var a = 0; a < e.length; a++) 0 < a && (r += m), r += y(e[a], a);
+
+              0 < t.length && (r += v);
+            }
+
+            for (var o = 0; o < t.length; o++) {
+              var h = n ? e.length : t[o].length,
+                  u = !1,
+                  f = n ? 0 === Object.keys(t[o]).length : 0 === t[o].length;
+
+              if (i && !n && (u = "greedy" === i ? "" === t[o].join("").trim() : 1 === t[o].length && 0 === t[o][0].length), "greedy" === i && n) {
+                for (var d = [], l = 0; l < h; l++) {
+                  var c = s ? e[l] : l;
+                  d.push(t[o][c]);
+                }
+
+                u = "" === d.join("").trim();
+              }
+
+              if (!u) {
+                for (var p = 0; p < h; p++) {
+                  0 < p && !f && (r += m);
+                  var g = n && s ? e[p] : p;
+                  r += y(t[o][g], p);
+                }
+
+                o < t.length - 1 && (!i || 0 < h && !f) && (r += v);
+              }
+            }
+
+            return r;
+          }
+
+          function y(e, t) {
+            if (null == e) return "";
+            if (e.constructor === Date) return JSON.stringify(e).slice(1, 25);
+
+            var i = e.toString().replace(o, a),
+                r = "boolean" == typeof n && n || "function" == typeof n && n(e, t) || Array.isArray(n) && n[t] || function (e, t) {
+              for (var i = 0; i < t.length; i++) if (-1 < e.indexOf(t[i])) return !0;
+
+              return !1;
+            }(i, b.BAD_DELIMITERS) || -1 < i.indexOf(m) || " " === i.charAt(0) || " " === i.charAt(i.length - 1);
+
+            return r ? s + i + s : i;
+          }
+        }
+      };
+
+      if (b.RECORD_SEP = String.fromCharCode(30), b.UNIT_SEP = String.fromCharCode(31), b.BYTE_ORDER_MARK = "\ufeff", b.BAD_DELIMITERS = ["\r", "\n", '"', b.BYTE_ORDER_MARK], b.WORKERS_SUPPORTED = !n && !!f.Worker, b.NODE_STREAM_INPUT = 1, b.LocalChunkSize = 10485760, b.RemoteChunkSize = 5242880, b.DefaultDelimiter = ",", b.Parser = w, b.ParserHandle = i, b.NetworkStreamer = l, b.FileStreamer = c, b.StringStreamer = p, b.ReadableStreamStreamer = g, f.jQuery) {
+        var d = f.jQuery;
+
+        d.fn.parse = function (o) {
+          var i = o.config || {},
+              h = [];
+          return this.each(function (e) {
+            if (!("INPUT" === d(this).prop("tagName").toUpperCase() && "file" === d(this).attr("type").toLowerCase() && f.FileReader) || !this.files || 0 === this.files.length) return !0;
+
+            for (var t = 0; t < this.files.length; t++) h.push({
+              file: this.files[t],
+              inputElem: this,
+              instanceConfig: d.extend({}, i)
+            });
+          }), e(), this;
+
+          function e() {
+            if (0 !== h.length) {
+              var e,
+                  t,
+                  i,
+                  r,
+                  n = h[0];
+
+              if (U(o.before)) {
+                var s = o.before(n.file, n.inputElem);
+
+                if ("object" == typeof s) {
+                  if ("abort" === s.action) return e = "AbortError", t = n.file, i = n.inputElem, r = s.reason, void (U(o.error) && o.error({
+                    name: e
+                  }, t, i, r));
+                  if ("skip" === s.action) return void u();
+                  "object" == typeof s.config && (n.instanceConfig = d.extend(n.instanceConfig, s.config));
+                } else if ("skip" === s) return void u();
+              }
+
+              var a = n.instanceConfig.complete;
+              n.instanceConfig.complete = function (e) {
+                U(a) && a(e, n.file, n.inputElem), u();
+              }, b.parse(n.file, n.instanceConfig);
+            } else U(o.complete) && o.complete();
+          }
+
+          function u() {
+            h.splice(0, 1), e();
+          }
+        };
+      }
+
+      function u(e) {
+        this._handle = null, this._finished = !1, this._completed = !1, this._halted = !1, this._input = null, this._baseIndex = 0, this._partialLine = "", this._rowCount = 0, this._start = 0, this._nextChunk = null, this.isFirstChunk = !0, this._completeResults = {
+          data: [],
+          errors: [],
+          meta: {}
+        }, function (e) {
+          var t = E(e);
+          t.chunkSize = parseInt(t.chunkSize), e.step || e.chunk || (t.chunkSize = null);
+          this._handle = new i(t), (this._handle.streamer = this)._config = t;
+        }.call(this, e), this.parseChunk = function (e, t) {
+          if (this.isFirstChunk && U(this._config.beforeFirstChunk)) {
+            var i = this._config.beforeFirstChunk(e);
+
+            void 0 !== i && (e = i);
+          }
+
+          this.isFirstChunk = !1, this._halted = !1;
+          var r = this._partialLine + e;
+          this._partialLine = "";
+
+          var n = this._handle.parse(r, this._baseIndex, !this._finished);
+
+          if (!this._handle.paused() && !this._handle.aborted()) {
+            var s = n.meta.cursor;
+            this._finished || (this._partialLine = r.substring(s - this._baseIndex), this._baseIndex = s), n && n.data && (this._rowCount += n.data.length);
+            var a = this._finished || this._config.preview && this._rowCount >= this._config.preview;
+            if (o) f.postMessage({
+              results: n,
+              workerId: b.WORKER_ID,
+              finished: a
+            });else if (U(this._config.chunk) && !t) {
+              if (this._config.chunk(n, this._handle), this._handle.paused() || this._handle.aborted()) return void (this._halted = !0);
+              n = void 0, this._completeResults = void 0;
+            }
+            return this._config.step || this._config.chunk || (this._completeResults.data = this._completeResults.data.concat(n.data), this._completeResults.errors = this._completeResults.errors.concat(n.errors), this._completeResults.meta = n.meta), this._completed || !a || !U(this._config.complete) || n && n.meta.aborted || (this._config.complete(this._completeResults, this._input), this._completed = !0), a || n && n.meta.paused || this._nextChunk(), n;
+          }
+
+          this._halted = !0;
+        }, this._sendError = function (e) {
+          U(this._config.error) ? this._config.error(e) : o && this._config.error && f.postMessage({
+            workerId: b.WORKER_ID,
+            error: e,
+            finished: !1
+          });
+        };
+      }
+
+      function l(e) {
+        var r;
+        (e = e || {}).chunkSize || (e.chunkSize = b.RemoteChunkSize), u.call(this, e), this._nextChunk = n ? function () {
+          this._readChunk(), this._chunkLoaded();
+        } : function () {
+          this._readChunk();
+        }, this.stream = function (e) {
+          this._input = e, this._nextChunk();
+        }, this._readChunk = function () {
+          if (this._finished) this._chunkLoaded();else {
+            if (r = new XMLHttpRequest(), this._config.withCredentials && (r.withCredentials = this._config.withCredentials), n || (r.onload = y(this._chunkLoaded, this), r.onerror = y(this._chunkError, this)), r.open(this._config.downloadRequestBody ? "POST" : "GET", this._input, !n), this._config.downloadRequestHeaders) {
+              var e = this._config.downloadRequestHeaders;
+
+              for (var t in e) r.setRequestHeader(t, e[t]);
+            }
+
+            if (this._config.chunkSize) {
+              var i = this._start + this._config.chunkSize - 1;
+              r.setRequestHeader("Range", "bytes=" + this._start + "-" + i);
+            }
+
+            try {
+              r.send(this._config.downloadRequestBody);
+            } catch (e) {
+              this._chunkError(e.message);
+            }
+
+            n && 0 === r.status && this._chunkError();
+          }
+        }, this._chunkLoaded = function () {
+          4 === r.readyState && (r.status < 200 || 400 <= r.status ? this._chunkError() : (this._start += this._config.chunkSize ? this._config.chunkSize : r.responseText.length, this._finished = !this._config.chunkSize || this._start >= function (e) {
+            var t = e.getResponseHeader("Content-Range");
+            if (null === t) return -1;
+            return parseInt(t.substring(t.lastIndexOf("/") + 1));
+          }(r), this.parseChunk(r.responseText)));
+        }, this._chunkError = function (e) {
+          var t = r.statusText || e;
+
+          this._sendError(new Error(t));
+        };
+      }
+
+      function c(e) {
+        var r, n;
+        (e = e || {}).chunkSize || (e.chunkSize = b.LocalChunkSize), u.call(this, e);
+        var s = "undefined" != typeof FileReader;
+        this.stream = function (e) {
+          this._input = e, n = e.slice || e.webkitSlice || e.mozSlice, s ? ((r = new FileReader()).onload = y(this._chunkLoaded, this), r.onerror = y(this._chunkError, this)) : r = new FileReaderSync(), this._nextChunk();
+        }, this._nextChunk = function () {
+          this._finished || this._config.preview && !(this._rowCount < this._config.preview) || this._readChunk();
+        }, this._readChunk = function () {
+          var e = this._input;
+
+          if (this._config.chunkSize) {
+            var t = Math.min(this._start + this._config.chunkSize, this._input.size);
+            e = n.call(e, this._start, t);
+          }
+
+          var i = r.readAsText(e, this._config.encoding);
+          s || this._chunkLoaded({
+            target: {
+              result: i
+            }
+          });
+        }, this._chunkLoaded = function (e) {
+          this._start += this._config.chunkSize, this._finished = !this._config.chunkSize || this._start >= this._input.size, this.parseChunk(e.target.result);
+        }, this._chunkError = function () {
+          this._sendError(r.error);
+        };
+      }
+
+      function p(e) {
+        var i;
+        u.call(this, e = e || {}), this.stream = function (e) {
+          return i = e, this._nextChunk();
+        }, this._nextChunk = function () {
+          if (!this._finished) {
+            var e,
+                t = this._config.chunkSize;
+            return t ? (e = i.substring(0, t), i = i.substring(t)) : (e = i, i = ""), this._finished = !i, this.parseChunk(e);
+          }
+        };
+      }
+
+      function g(e) {
+        u.call(this, e = e || {});
+        var t = [],
+            i = !0,
+            r = !1;
+        this.pause = function () {
+          u.prototype.pause.apply(this, arguments), this._input.pause();
+        }, this.resume = function () {
+          u.prototype.resume.apply(this, arguments), this._input.resume();
+        }, this.stream = function (e) {
+          this._input = e, this._input.on("data", this._streamData), this._input.on("end", this._streamEnd), this._input.on("error", this._streamError);
+        }, this._checkIsFinished = function () {
+          r && 1 === t.length && (this._finished = !0);
+        }, this._nextChunk = function () {
+          this._checkIsFinished(), t.length ? this.parseChunk(t.shift()) : i = !0;
+        }, this._streamData = y(function (e) {
+          try {
+            t.push("string" == typeof e ? e : e.toString(this._config.encoding)), i && (i = !1, this._checkIsFinished(), this.parseChunk(t.shift()));
+          } catch (e) {
+            this._streamError(e);
+          }
+        }, this), this._streamError = y(function (e) {
+          this._streamCleanUp(), this._sendError(e);
+        }, this), this._streamEnd = y(function () {
+          this._streamCleanUp(), r = !0, this._streamData("");
+        }, this), this._streamCleanUp = y(function () {
+          this._input.removeListener("data", this._streamData), this._input.removeListener("end", this._streamEnd), this._input.removeListener("error", this._streamError);
+        }, this);
+      }
+
+      function i(m) {
+        var a,
+            o,
+            h,
+            r = Math.pow(2, 53),
+            n = -r,
+            s = /^\s*-?(\d+\.?|\.\d+|\d+\.\d+)(e[-+]?\d+)?\s*$/,
+            u = /(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+([+-][0-2]\d:[0-5]\d|Z))|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d([+-][0-2]\d:[0-5]\d|Z))|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d([+-][0-2]\d:[0-5]\d|Z))/,
+            t = this,
+            i = 0,
+            f = 0,
+            d = !1,
+            e = !1,
+            l = [],
+            c = {
+          data: [],
+          errors: [],
+          meta: {}
+        };
+
+        if (U(m.step)) {
+          var p = m.step;
+
+          m.step = function (e) {
+            if (c = e, _()) g();else {
+              if (g(), 0 === c.data.length) return;
+              i += e.data.length, m.preview && i > m.preview ? o.abort() : (c.data = c.data[0], p(c, t));
+            }
+          };
+        }
+
+        function v(e) {
+          return "greedy" === m.skipEmptyLines ? "" === e.join("").trim() : 1 === e.length && 0 === e[0].length;
+        }
+
+        function g() {
+          if (c && h && (k("Delimiter", "UndetectableDelimiter", "Unable to auto-detect delimiting character; defaulted to '" + b.DefaultDelimiter + "'"), h = !1), m.skipEmptyLines) for (var e = 0; e < c.data.length; e++) v(c.data[e]) && c.data.splice(e--, 1);
+          return _() && function () {
+            if (!c) return;
+
+            function e(e) {
+              U(m.transformHeader) && (e = m.transformHeader(e)), l.push(e);
+            }
+
+            if (Array.isArray(c.data[0])) {
+              for (var t = 0; _() && t < c.data.length; t++) c.data[t].forEach(e);
+
+              c.data.splice(0, 1);
+            } else c.data.forEach(e);
+          }(), function () {
+            if (!c || !m.header && !m.dynamicTyping && !m.transform) return c;
+
+            function e(e, t) {
+              var i,
+                  r = m.header ? {} : [];
+
+              for (i = 0; i < e.length; i++) {
+                var n = i,
+                    s = e[i];
+                m.header && (n = i >= l.length ? "__parsed_extra" : l[i]), m.transform && (s = m.transform(s, n)), s = y(n, s), "__parsed_extra" === n ? (r[n] = r[n] || [], r[n].push(s)) : r[n] = s;
+              }
+
+              return m.header && (i > l.length ? k("FieldMismatch", "TooManyFields", "Too many fields: expected " + l.length + " fields but parsed " + i, f + t) : i < l.length && k("FieldMismatch", "TooFewFields", "Too few fields: expected " + l.length + " fields but parsed " + i, f + t)), r;
+            }
+
+            var t = 1;
+            !c.data.length || Array.isArray(c.data[0]) ? (c.data = c.data.map(e), t = c.data.length) : c.data = e(c.data, 0);
+            m.header && c.meta && (c.meta.fields = l);
+            return f += t, c;
+          }();
+        }
+
+        function _() {
+          return m.header && 0 === l.length;
+        }
+
+        function y(e, t) {
+          return i = e, m.dynamicTypingFunction && void 0 === m.dynamicTyping[i] && (m.dynamicTyping[i] = m.dynamicTypingFunction(i)), !0 === (m.dynamicTyping[i] || m.dynamicTyping) ? "true" === t || "TRUE" === t || "false" !== t && "FALSE" !== t && (function (e) {
+            if (s.test(e)) {
+              var t = parseFloat(e);
+              if (n < t && t < r) return !0;
+            }
+
+            return !1;
+          }(t) ? parseFloat(t) : u.test(t) ? new Date(t) : "" === t ? null : t) : t;
+          var i;
+        }
+
+        function k(e, t, i, r) {
+          var n = {
+            type: e,
+            code: t,
+            message: i
+          };
+          void 0 !== r && (n.row = r), c.errors.push(n);
+        }
+
+        this.parse = function (e, t, i) {
+          var r = m.quoteChar || '"';
+          if (m.newline || (m.newline = function (e, t) {
+            e = e.substring(0, 1048576);
+            var i = new RegExp(q(t) + "([^]*?)" + q(t), "gm"),
+                r = (e = e.replace(i, "")).split("\r"),
+                n = e.split("\n"),
+                s = 1 < n.length && n[0].length < r[0].length;
+            if (1 === r.length || s) return "\n";
+
+            for (var a = 0, o = 0; o < r.length; o++) "\n" === r[o][0] && a++;
+
+            return a >= r.length / 2 ? "\r\n" : "\r";
+          }(e, r)), h = !1, m.delimiter) U(m.delimiter) && (m.delimiter = m.delimiter(e), c.meta.delimiter = m.delimiter);else {
+            var n = function (e, t, i, r, n) {
+              var s, a, o, h;
+              n = n || [",", "\t", "|", ";", b.RECORD_SEP, b.UNIT_SEP];
+
+              for (var u = 0; u < n.length; u++) {
+                var f = n[u],
+                    d = 0,
+                    l = 0,
+                    c = 0;
+                o = void 0;
+
+                for (var p = new w({
+                  comments: r,
+                  delimiter: f,
+                  newline: t,
+                  preview: 10
+                }).parse(e), g = 0; g < p.data.length; g++) if (i && v(p.data[g])) c++;else {
+                  var _ = p.data[g].length;
+                  l += _, void 0 !== o ? 0 < _ && (d += Math.abs(_ - o), o = _) : o = _;
+                }
+
+                0 < p.data.length && (l /= p.data.length - c), (void 0 === a || d <= a) && (void 0 === h || h < l) && 1.99 < l && (a = d, s = f, h = l);
+              }
+
+              return {
+                successful: !!(m.delimiter = s),
+                bestDelimiter: s
+              };
+            }(e, m.newline, m.skipEmptyLines, m.comments, m.delimitersToGuess);
+
+            n.successful ? m.delimiter = n.bestDelimiter : (h = !0, m.delimiter = b.DefaultDelimiter), c.meta.delimiter = m.delimiter;
+          }
+          var s = E(m);
+          return m.preview && m.header && s.preview++, a = e, o = new w(s), c = o.parse(a, t, i), g(), d ? {
+            meta: {
+              paused: !0
+            }
+          } : c || {
+            meta: {
+              paused: !1
+            }
+          };
+        }, this.paused = function () {
+          return d;
+        }, this.pause = function () {
+          d = !0, o.abort(), a = U(m.chunk) ? "" : a.substring(o.getCharIndex());
+        }, this.resume = function () {
+          t.streamer._halted ? (d = !1, t.streamer.parseChunk(a, !0)) : setTimeout(t.resume, 3);
+        }, this.aborted = function () {
+          return e;
+        }, this.abort = function () {
+          e = !0, o.abort(), c.meta.aborted = !0, U(m.complete) && m.complete(c), a = "";
+        };
+      }
+
+      function q(e) {
+        return e.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      }
+
+      function w(e) {
+        var O,
+            D = (e = e || {}).delimiter,
+            I = e.newline,
+            T = e.comments,
+            A = e.step,
+            L = e.preview,
+            F = e.fastMode,
+            z = O = void 0 === e.quoteChar ? '"' : e.quoteChar;
+        if (void 0 !== e.escapeChar && (z = e.escapeChar), ("string" != typeof D || -1 < b.BAD_DELIMITERS.indexOf(D)) && (D = ","), T === D) throw new Error("Comment character same as delimiter");
+        !0 === T ? T = "#" : ("string" != typeof T || -1 < b.BAD_DELIMITERS.indexOf(T)) && (T = !1), "\n" !== I && "\r" !== I && "\r\n" !== I && (I = "\n");
+        var M = 0,
+            j = !1;
+        this.parse = function (a, t, i) {
+          if ("string" != typeof a) throw new Error("Input must be a string");
+          var r = a.length,
+              e = D.length,
+              n = I.length,
+              s = T.length,
+              o = U(A),
+              h = [],
+              u = [],
+              f = [],
+              d = M = 0;
+          if (!a) return R();
+
+          if (F || !1 !== F && -1 === a.indexOf(O)) {
+            for (var l = a.split(I), c = 0; c < l.length; c++) {
+              if (f = l[c], M += f.length, c !== l.length - 1) M += I.length;else if (i) return R();
+
+              if (!T || f.substring(0, s) !== T) {
+                if (o) {
+                  if (h = [], b(f.split(D)), S(), j) return R();
+                } else b(f.split(D));
+
+                if (L && L <= c) return h = h.slice(0, L), R(!0);
+              }
+            }
+
+            return R();
+          }
+
+          for (var p = a.indexOf(D, M), g = a.indexOf(I, M), _ = new RegExp(q(z) + q(O), "g"), m = a.indexOf(O, M);;) if (a[M] !== O) {
+            if (T && 0 === f.length && a.substring(M, M + s) === T) {
+              if (-1 === g) return R();
+              M = g + n, g = a.indexOf(I, M), p = a.indexOf(D, M);
+            } else {
+              if (-1 !== p && (p < g || -1 === g)) {
+                if (!(p < m)) {
+                  f.push(a.substring(M, p)), M = p + e, p = a.indexOf(D, M);
+                  continue;
+                }
+
+                var v = x(p, m, g);
+
+                if (v && void 0 !== v.nextDelim) {
+                  p = v.nextDelim, m = v.quoteSearch, f.push(a.substring(M, p)), M = p + e, p = a.indexOf(D, M);
+                  continue;
+                }
+              }
+
+              if (-1 === g) break;
+              if (f.push(a.substring(M, g)), C(g + n), o && (S(), j)) return R();
+              if (L && h.length >= L) return R(!0);
+            }
+          } else for (m = M, M++;;) {
+            if (-1 === (m = a.indexOf(O, m + 1))) return i || u.push({
+              type: "Quotes",
+              code: "MissingQuotes",
+              message: "Quoted field unterminated",
+              row: h.length,
+              index: M
+            }), E();
+            if (m === r - 1) return E(a.substring(M, m).replace(_, O));
+
+            if (O !== z || a[m + 1] !== z) {
+              if (O === z || 0 === m || a[m - 1] !== z) {
+                -1 !== p && p < m + 1 && (p = a.indexOf(D, m + 1)), -1 !== g && g < m + 1 && (g = a.indexOf(I, m + 1));
+                var y = w(-1 === g ? p : Math.min(p, g));
+
+                if (a[m + 1 + y] === D) {
+                  f.push(a.substring(M, m).replace(_, O)), a[M = m + 1 + y + e] !== O && (m = a.indexOf(O, M)), p = a.indexOf(D, M), g = a.indexOf(I, M);
+                  break;
+                }
+
+                var k = w(g);
+
+                if (a.substring(m + 1 + k, m + 1 + k + n) === I) {
+                  if (f.push(a.substring(M, m).replace(_, O)), C(m + 1 + k + n), p = a.indexOf(D, M), m = a.indexOf(O, M), o && (S(), j)) return R();
+                  if (L && h.length >= L) return R(!0);
+                  break;
+                }
+
+                u.push({
+                  type: "Quotes",
+                  code: "InvalidQuotes",
+                  message: "Trailing quote on quoted field is malformed",
+                  row: h.length,
+                  index: M
+                }), m++;
+              }
+            } else m++;
+          }
+
+          return E();
+
+          function b(e) {
+            h.push(e), d = M;
+          }
+
+          function w(e) {
+            var t = 0;
+
+            if (-1 !== e) {
+              var i = a.substring(m + 1, e);
+              i && "" === i.trim() && (t = i.length);
+            }
+
+            return t;
+          }
+
+          function E(e) {
+            return i || (void 0 === e && (e = a.substring(M)), f.push(e), M = r, b(f), o && S()), R();
+          }
+
+          function C(e) {
+            M = e, b(f), f = [], g = a.indexOf(I, M);
+          }
+
+          function R(e) {
+            return {
+              data: h,
+              errors: u,
+              meta: {
+                delimiter: D,
+                linebreak: I,
+                aborted: j,
+                truncated: !!e,
+                cursor: d + (t || 0)
+              }
+            };
+          }
+
+          function S() {
+            A(R()), h = [], u = [];
+          }
+
+          function x(e, t, i) {
+            var r = {
+              nextDelim: void 0,
+              quoteSearch: void 0
+            },
+                n = a.indexOf(O, t + 1);
+
+            if (t < e && e < n && (n < i || -1 === i)) {
+              var s = a.indexOf(D, n);
+              if (-1 === s) return r;
+              n < s && (n = a.indexOf(O, n + 1)), r = x(s, n, i);
+            } else r = {
+              nextDelim: e,
+              quoteSearch: t
+            };
+
+            return r;
+          }
+        }, this.abort = function () {
+          j = !0;
+        }, this.getCharIndex = function () {
+          return M;
+        };
+      }
+
+      function _(e) {
+        var t = e.data,
+            i = a[t.workerId],
+            r = !1;
+        if (t.error) i.userError(t.error, t.file);else if (t.results && t.results.data) {
+          var n = {
+            abort: function () {
+              r = !0, m(t.workerId, {
+                data: [],
+                errors: [],
+                meta: {
+                  aborted: !0
+                }
+              });
+            },
+            pause: v,
+            resume: v
+          };
+
+          if (U(i.userStep)) {
+            for (var s = 0; s < t.results.data.length && (i.userStep({
+              data: t.results.data[s],
+              errors: t.results.errors,
+              meta: t.results.meta
+            }, n), !r); s++);
+
+            delete t.results;
+          } else U(i.userChunk) && (i.userChunk(t.results, n, t.file), delete t.results);
+        }
+        t.finished && !r && m(t.workerId, t.results);
+      }
+
+      function m(e, t) {
+        var i = a[e];
+        U(i.userComplete) && i.userComplete(t), i.terminate(), delete a[e];
+      }
+
+      function v() {
+        throw new Error("Not implemented.");
+      }
+
+      function E(e) {
+        if ("object" != typeof e || null === e) return e;
+        var t = Array.isArray(e) ? [] : {};
+
+        for (var i in e) t[i] = E(e[i]);
+
+        return t;
+      }
+
+      function y(e, t) {
+        return function () {
+          e.apply(t, arguments);
+        };
+      }
+
+      function U(e) {
+        return "function" == typeof e;
+      }
+
+      return o && (f.onmessage = function (e) {
+        var t = e.data;
+        void 0 === b.WORKER_ID && t && (b.WORKER_ID = t.workerId);
+        if ("string" == typeof t.input) f.postMessage({
+          workerId: b.WORKER_ID,
+          results: b.parse(t.input, t.config),
+          finished: !0
+        });else if (f.File && t.input instanceof File || t.input instanceof Object) {
+          var i = b.parse(t.input, t.config);
+          i && f.postMessage({
+            workerId: b.WORKER_ID,
+            results: i,
+            finished: !0
+          });
+        }
+      }), (l.prototype = Object.create(u.prototype)).constructor = l, (c.prototype = Object.create(u.prototype)).constructor = c, (p.prototype = Object.create(p.prototype)).constructor = p, (g.prototype = Object.create(u.prototype)).constructor = g, b;
+    });
+  });
+
+  /**
+   * Creates a new Chromatogram element based in a JCAMP string
+   * @param {string} text - String containing the JCAMP data
+   * @return {Analysis} - New class element with the given data
+   */
+
+  function fromPerkinElmerCSV(text) {
+    let parsed = papaparse_min.parse(text, {
+      header: true,
+      dynamicTyping: true
+    }).data;
+    let analysis = new Analysis$1();
+    analysis.set({
+      x: parsed.map(d => d['Sample Temperature']),
+      y: parsed.map(d => d['Unsubtracted Weight'])
+    }, {
+      xLabel: 'Temperature [°C]',
+      yLabel: 'Weight [mg]',
+      flavor: 'weightVersusTemperature'
+    });
+    analysis.set({
+      x: parsed.map(d => d.Time),
+      y: parsed.map(d => d['Unsubtracted Weight'])
+    }, {
+      xLabel: 'Time [s]',
+      yLabel: 'Weight [mg]',
+      flavor: 'weightVersusTime'
+    });
+    return analysis;
+  }
+
+  const {
+    Analysis: Analysis$1,
+    AnalysesManager: AnalysesManager$1,
+    fromJcamp: fromJcamp$1,
+    toJcamp: toJcamp$1,
+    getJSGraph: getJSGraph$1,
+    getNormalizationAnnotations: getNormalizationAnnotations$1
+  } = new CommonSpectrum({
+    dataType: 'TGA',
+    defaultFlavor: 'weightVersusTemperature'
+  });
+
+  exports.AnalysesManager = AnalysesManager$1;
+  exports.Analysis = Analysis$1;
+  exports.fromJcamp = fromJcamp$1;
   exports.fromPerkinElmer = fromPerkinElmer;
-  exports.getJSGraph = getJSGraph;
-  exports.toJcamp = toJcamp;
+  exports.fromPerkinElmerCSV = fromPerkinElmerCSV;
+  exports.getJSGraph = getJSGraph$1;
+  exports.getNormalizationAnnotations = getNormalizationAnnotations$1;
+  exports.toJcamp = toJcamp$1;
 
   Object.defineProperty(exports, '__esModule', { value: true });
 
