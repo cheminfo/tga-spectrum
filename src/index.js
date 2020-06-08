@@ -7,7 +7,7 @@ export const {
   toJcamp,
   getJSGraph,
   getNormalizationAnnotations,
-} = new CommonSpectrum({
+} = CommonSpectrum({
   dataType: 'TGA',
   defaultFlavor: 'weightVersusTemperature',
 });
