@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset='utf-8'>
-  <title>tga-spectrum 0.4.0 | Documentation</title>
+  <title>tga-spectrum 0.6.0 | Documentation</title>
   <meta name='viewport' content='width=device-width,initial-scale=1'>
   <link href='assets/bass.css' rel='stylesheet'>
   <link href='assets/style.css' rel='stylesheet'>
@@ -14,7 +14,7 @@
       <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
         <div class='py1 px2'>
           <h3 class='mb0 no-anchor'>tga-spectrum</h3>
-          <div class='mb1'><code>0.4.0</code></div>
+          <div class='mb1'><code>0.6.0</code></div>
           <input
             placeholder='Filter'
             id='filter-input'
@@ -25,46 +25,6 @@
             type='text' />
           <div id='toc'>
             <ul class='list-reset h5 py1-ul'>
-              
-                
-                <li><a
-                  href='#contains'
-                  class="">
-                  contains
-                  
-                </a>
-                
-                </li>
-              
-                
-                <li><a
-                  href='#getspectrumindex'
-                  class="">
-                  getSpectrumIndex
-                  
-                </a>
-                
-                </li>
-              
-                
-                <li><a
-                  href='#removespectrum'
-                  class="">
-                  removeSpectrum
-                  
-                </a>
-                
-                </li>
-              
-                
-                <li><a
-                  href='#fromjcamp'
-                  class="">
-                  fromJcamp
-                  
-                </a>
-                
-                </li>
               
                 
                 <li><a
@@ -86,26 +46,6 @@
                 
                 </li>
               
-                
-                <li><a
-                  href='#getjsgraph'
-                  class="">
-                  getJSGraph
-                  
-                </a>
-                
-                </li>
-              
-                
-                <li><a
-                  href='#spectrum'
-                  class="">
-                  Spectrum
-                  
-                </a>
-                
-                </li>
-              
             </ul>
           </div>
           <div class='mt1 h6 quiet'>
@@ -121,332 +61,12 @@
   
   <div class='clearfix'>
     
-    <h3 class='fl m0' id='contains'>
-      contains
-    </h3>
-    
-    
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/cheminfo/tga-spectrum/blob/5e86907d03ccad8acc3f9a1b3f0418b3b65bd1d8/src/SpectraManager.js#L54-L56'>
-      <span>src/SpectraManager.js</span>
-      </a>
-    
-  </div>
-  
-
-  <p>Checks if the ID of a spectrum exists in the SpectraProcessor</p>
-
-    <div class='pre p1 fill-light mt0'>contains(id: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</div>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>id</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
-	    
-          </div>
-          
-        </div>
-      
-    </div>
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-</section>
-
-          
-        
-          
-          <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-  <div class='clearfix'>
-    
-    <h3 class='fl m0' id='getspectrumindex'>
-      getSpectrumIndex
-    </h3>
-    
-    
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/cheminfo/tga-spectrum/blob/5e86907d03ccad8acc3f9a1b3f0418b3b65bd1d8/src/SpectraManager.js#L41-L48'>
-      <span>src/SpectraManager.js</span>
-      </a>
-    
-  </div>
-  
-
-  <p>Returns the index of the spectrum in the spectra array</p>
-
-    <div class='pre p1 fill-light mt0'>getSpectrumIndex(id: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></div>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>id</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
-	    
-          </div>
-          
-        </div>
-      
-    </div>
-  
-
-  
-
-  
-    
-      <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></code>:
-        
-
-      
-    
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-</section>
-
-          
-        
-          
-          <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-  <div class='clearfix'>
-    
-    <h3 class='fl m0' id='removespectrum'>
-      removeSpectrum
-    </h3>
-    
-    
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/cheminfo/tga-spectrum/blob/5e86907d03ccad8acc3f9a1b3f0418b3b65bd1d8/src/SpectraManager.js#L30-L34'>
-      <span>src/SpectraManager.js</span>
-      </a>
-    
-  </div>
-  
-
-  <p>Remove the spectrum from the SpectraProcessor for the specified id</p>
-
-    <div class='pre p1 fill-light mt0'>removeSpectrum(id: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</div>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>id</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
-	    
-          </div>
-          
-        </div>
-      
-    </div>
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-</section>
-
-          
-        
-          
-          <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-  <div class='clearfix'>
-    
-    <h3 class='fl m0' id='fromjcamp'>
-      fromJcamp
-    </h3>
-    
-    
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/cheminfo/tga-spectrum/blob/5e86907d03ccad8acc3f9a1b3f0418b3b65bd1d8/src/from/fromJcamp.js#L10-L14'>
-      <span>src/from/fromJcamp.js</span>
-      </a>
-    
-  </div>
-  
-
-  <p>Creates a new Chromatogram element based in a JCAMP string</p>
-
-    <div class='pre p1 fill-light mt0'>fromJcamp(jcamp: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, options: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>): <a href="#spectrum">Spectrum</a></div>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>jcamp</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
-	    String containing the JCAMP data
-
-          </div>
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>options</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>
-            = <code>{}</code>)</code>
-	    
-          </div>
-          
-          <table class='mt1 mb2 fixed-table h5 col-12'>
-            <colgroup>
-              <col width='30%' />
-              <col width='70%' />
-            </colgroup>
-            <thead>
-              <tr class='bold fill-light'>
-                <th>Name</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody class='mt1'>
-              
-                <tr>
-  <td class='break-word'><span class='code bold'>options.id</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></code>
-  
-    (default <code>Math.random()</code>)
-  </td>
-  <td class='break-word'><span></span></td>
-</tr>
-
-
-              
-            </tbody>
-          </table>
-          
-        </div>
-      
-    </div>
-  
-
-  
-
-  
-    
-      <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="#spectrum">Spectrum</a></code>:
-        New class element with the given data
-
-      
-    
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-</section>
-
-          
-        
-          
-          <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-  <div class='clearfix'>
-    
     <h3 class='fl m0' id='fromperkinelmer'>
       fromPerkinElmer
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/cheminfo/tga-spectrum/blob/5e86907d03ccad8acc3f9a1b3f0418b3b65bd1d8/src/from/fromPerkinElmer.js#L10-L34'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/cheminfo/tga-spectrum/blob/6788bb140827afd2203d6187c73f2fb24424b49e/src/from/fromPerkinElmer.js#L10-L35'>
       <span>src/from/fromPerkinElmer.js</span>
       </a>
     
@@ -455,7 +75,7 @@
 
   <p>Creates a new Chromatogram element based in a JCAMP string</p>
 
-    <div class='pre p1 fill-light mt0'>fromPerkinElmer(text: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): <a href="#spectrum">Spectrum</a></div>
+    <div class='pre p1 fill-light mt0'>fromPerkinElmer(text: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): Analysis</div>
   
   
 
@@ -487,7 +107,7 @@
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="#spectrum">Spectrum</a></code>:
+      <code>Analysis</code>:
         New class element with the given data
 
       
@@ -522,7 +142,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/cheminfo/tga-spectrum/blob/5e86907d03ccad8acc3f9a1b3f0418b3b65bd1d8/src/from/fromPerkinElmerCSV.js#L10-L37'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/cheminfo/tga-spectrum/blob/6788bb140827afd2203d6187c73f2fb24424b49e/src/from/fromPerkinElmerCSV.js#L10-L35'>
       <span>src/from/fromPerkinElmerCSV.js</span>
       </a>
     
@@ -531,7 +151,7 @@
 
   <p>Creates a new Chromatogram element based in a JCAMP string</p>
 
-    <div class='pre p1 fill-light mt0'>fromPerkinElmerCSV(text: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): <a href="#spectrum">Spectrum</a></div>
+    <div class='pre p1 fill-light mt0'>fromPerkinElmerCSV(text: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): Analysis</div>
   
   
 
@@ -563,241 +183,11 @@
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="#spectrum">Spectrum</a></code>:
+      <code>Analysis</code>:
         New class element with the given data
 
       
     
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-</section>
-
-          
-        
-          
-          <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-  <div class='clearfix'>
-    
-    <h3 class='fl m0' id='getjsgraph'>
-      getJSGraph
-    </h3>
-    
-    
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/cheminfo/tga-spectrum/blob/5e86907d03ccad8acc3f9a1b3f0418b3b65bd1d8/src/jsgraph/getJSGraph.js#L12-L52'>
-      <span>src/jsgraph/getJSGraph.js</span>
-      </a>
-    
-  </div>
-  
-
-  <p>Retrieve a chart with selected original data</p>
-
-    <div class='pre p1 fill-light mt0'>getJSGraph(spectraManager: SpectraManager, options: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>)</div>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>spectraManager</span> <code class='quiet'>(SpectraManager)</code>
-	    
-          </div>
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>options</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>
-            = <code>{}</code>)</code>
-	    
-          </div>
-          
-          <table class='mt1 mb2 fixed-table h5 col-12'>
-            <colgroup>
-              <col width='30%' />
-              <col width='70%' />
-            </colgroup>
-            <thead>
-              <tr class='bold fill-light'>
-                <th>Name</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody class='mt1'>
-              
-                <tr>
-  <td class='break-word'><span class='code bold'>options.ids</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>?</code>
-  </td>
-  <td class='break-word'><span>List of spectra ids, by default all
-</span></td>
-</tr>
-
-
-              
-                <tr>
-  <td class='break-word'><span class='code bold'>options.colors</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>?</code>
-  </td>
-  <td class='break-word'><span>List of colors
-</span></td>
-</tr>
-
-
-              
-                <tr>
-  <td class='break-word'><span class='code bold'>options.flavor</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>?</code>
-  </td>
-  <td class='break-word'><span></span></td>
-</tr>
-
-
-              
-                <tr>
-  <td class='break-word'><span class='code bold'>options.normalization</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>?</code>
-  </td>
-  <td class='break-word'><span></span></td>
-</tr>
-
-
-              
-            </tbody>
-          </table>
-          
-        </div>
-      
-    </div>
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-</section>
-
-          
-        
-          
-          <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-  <div class='clearfix'>
-    
-    <h3 class='fl m0' id='spectrum'>
-      Spectrum
-    </h3>
-    
-    
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/cheminfo/tga-spectrum/blob/5e86907d03ccad8acc3f9a1b3f0418b3b65bd1d8/src/Spectrum.js#L12-L46'>
-      <span>src/Spectrum.js</span>
-      </a>
-    
-  </div>
-  
-
-  <p>Class allowing to store and manipulate a spectrum</p>
-
-    <div class='pre p1 fill-light mt0'>new Spectrum(options: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>)</div>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>options</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>
-            = <code>{}</code>)</code>
-	    
-          </div>
-          
-          <table class='mt1 mb2 fixed-table h5 col-12'>
-            <colgroup>
-              <col width='30%' />
-              <col width='70%' />
-            </colgroup>
-            <thead>
-              <tr class='bold fill-light'>
-                <th>Name</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody class='mt1'>
-              
-                <tr>
-  <td class='break-word'><span class='code bold'>options.id</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>
-  
-    (default <code>randomString</code>)
-  </td>
-  <td class='break-word'><span>unique identifier
-</span></td>
-</tr>
-
-
-              
-                <tr>
-  <td class='break-word'><span class='code bold'>options.label</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?</code>
-  </td>
-  <td class='break-word'><span>human redeable label
-</span></td>
-</tr>
-
-
-              
-            </tbody>
-          </table>
-          
-        </div>
-      
-    </div>
-  
-
-  
-
   
 
   
