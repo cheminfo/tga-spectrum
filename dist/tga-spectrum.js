@@ -1,6 +1,6 @@
 /**
  * tga-spectrum
- * @version v0.5.0
+ * @version v0.6.1
  * @link https://github.com/cheminfo/tga-spectrum#readme
  * @license MIT
  */
@@ -6595,7 +6595,7 @@
    * @returns {DataXY}
    */
 
-  function getNormalized(spectrum, options = {}) {
+  function getNormalizedData(spectrum, options = {}) {
     let {
       from = spectrum.x[0],
       to = spectrum.x[spectrum.x.length - 1],
@@ -6714,75 +6714,95 @@
    * @param {object} [options={}]
    * @param {string} [options.id=randomString] unique identifier
    * @param {string} [options.label=options.id] human redeable label
-   * @param {string} [options.defaultFlavor=''] human redeable label
    */
 
   class Analysis {
     constructor(options = {}) {
       this.id = options.id || Math.random().toString(36).substring(2, 10);
       this.label = options.label || this.id;
-      this.spectra = {};
-      this.defaultFlavor = options.defaultFlavor === undefined ? '' : options.defaultFlavor;
+      this.spectra = [];
     }
     /**
      * Set a spectrum for a specific flavor
      * @param {DataXY} data
      * @param {object} [options={}]
-     * @param {string} [options.defaultFlavor=this.defaultFlavor]
-     * @param {string} [options.xLabel='']
-     * @param {string} [options.yLabel='']
+     * @param {string} [options.xLabel='x']
+     * @param {string} [options.yLabel='y']
+     * @param {string} [options.xUnits='x']
+     * @param {string} [options.yUnits='y']
+     * @param {string} [options.dataType='']
      * @param {string} [options.title='']
-     * @param {object} [options.meta={}]
+     * @param {object} [options.flavor={}]
      *
      */
 
 
-    set(data, options = {}) {
-      const {
-        flavor = this.defaultFlavor
-      } = options;
-      this.spectra[flavor.toLowerCase()] = standardizeData(data, options);
+    pushSpectrum(data, options = {}) {
+      this.spectra.push(standardizeData(data, options));
     }
     /**
      * Retrieve a Spectrum based on a flavor
-     * @param {object} [options={}]
-     * @param {string} [options.defaultFlavor=this.defaultFlavor]
+     * @param {object} [selector={}]
+     * @param {string} [selector.index]
+     * @param {string} [selector.flavor]
      * @returns {Spectrum}
      */
 
 
-    get(flavor = this.defaultFlavor) {
-      flavor = flavor.toLowerCase();
+    getSpectrum(selector = {}) {
+      let spectra = this.getSpectra(selector);
+      return spectra ? spectra[0] : undefined;
+    }
+    /**
+     * Retrieve a Spectrum based on a flavor
+     * @param {object} [selector={}]
+     * @param {string} [selector.index]
+     * @param {string} [selector.flavor]
+     * @returns {Spectrum}
+     */
 
-      if (!this.spectra[flavor]) {
-        return undefined;
+
+    getSpectra(selector = {}) {
+      const {
+        index,
+        flavor
+      } = selector;
+
+      if (index !== undefined) {
+        return this.spectra[index] ? [this.spectra[index]] : undefined;
       }
 
-      return this.spectra[flavor];
+      if (flavor === undefined) return this.spectra;
+      return this.spectra.filter(spectrum => spectrum.flavor === flavor);
     }
     /**
      * Return the data object for a specific flavor with possibly some
      * normalization options
      * @param {object} [options={}]
+     * @param {object} [options.selector]
+     * @param {string} [options.selector.index]
+     * @param {string} [options.selector.flavor]
+     * @param {object} [options.normalization]
+     *
      */
 
 
-    getData(options = {}) {
+    getNormalizedData(options = {}) {
       const {
-        flavor,
-        normalization
+        normalization,
+        selector
       } = options;
-      let data = this.get(flavor);
-      if (!data) return undefined;
-      return getNormalized(data, normalization);
+      const spectrum = this.getSpectrum(selector);
+      if (!spectrum) return undefined;
+      return getNormalizedData(spectrum, normalization);
     }
 
-    getXLabel(flavor) {
-      return this.get(flavor).xLabel;
+    getXLabel(selector) {
+      return this.getSpectrum(selector).xLabel;
     }
 
-    getYLabel(flavor) {
-      return this.get(flavor).yLabel;
+    getYLabel(selector) {
+      return this.getSpectrum(selector).yLabel;
     }
 
   }
@@ -6794,12 +6814,17 @@
    */
 
   function standardizeData(data, options = {}) {
-    const {
+    let {
       meta = {},
-      xLabel = '',
-      yLabel = '',
+      xLabel = 'x',
+      yLabel = 'y',
+      xUnits = '',
+      yUnits = '',
+      dataType = '',
       title = ''
     } = options;
+    xUnits = xUnits || xLabel.replace(/^.*[([](.*)[)\]].*$/, '$1');
+    yUnits = yUnits || yLabel.replace(/^.*[([](.*)[)\]].*$/, '$1');
     let {
       x,
       y
@@ -6822,8 +6847,12 @@
       y: data.y,
       xLabel,
       yLabel,
+      xUnits,
+      yUnits,
       title,
-      meta
+      dataType,
+      meta,
+      flavor: "".concat(yUnits, " vs ").concat(xUnits)
     };
   }
 
@@ -6892,9 +6921,11 @@
     // we check if deltaX is defined otherwise we calculate it
     let yFactor = spectrum.yFactor;
     let deltaX = spectrum.deltaX;
-    spectrum.isXYdata = true; // TODO to be improved using 2 array {x:[], y:[]}
-
-    let currentData = [];
+    spectrum.isXYdata = true;
+    let currentData = {
+      x: [],
+      y: []
+    };
     spectrum.data = currentData;
     let currentX = spectrum.firstX;
     let currentY = spectrum.firstY; // we skip the first line
@@ -6989,8 +7020,8 @@
                     currentY = lastValue;
                   }
 
-                  currentData.push(currentX);
-                  currentData.push(currentY * yFactor);
+                  currentData.x.push(currentX);
+                  currentData.y.push(currentY * yFactor);
                   currentX += deltaX;
                 }
               }
@@ -7065,24 +7096,58 @@
     }
   }
 
+  const removeCommentRegExp = /\$\$.*/;
+  const peakTableSplitRegExp = /[,\t ]+/;
   function parsePeakTable(spectrum, value, result) {
-    let removeCommentRegExp = /\$\$.*/;
-    let peakTableSplitRegExp = /[,\t ]+/;
     spectrum.isPeaktable = true;
-    let values;
-    let currentData = [];
+
+    if (!spectrum.variables || Object.keys(spectrum.variables) === 2) {
+      parseXY(spectrum, value, result);
+    } else {
+      parseXYZ(spectrum, value, result);
+    }
+  }
+
+  function parseXY(spectrum, value, result) {
+    let currentData = {
+      x: [],
+      y: []
+    };
     spectrum.data = currentData; // counts for around 20% of the time
 
     let lines = value.split(/,? *,?[;\r\n]+ */);
 
     for (let i = 1; i < lines.length; i++) {
-      values = lines[i].trim().replace(removeCommentRegExp, '').split(peakTableSplitRegExp);
+      let values = lines[i].trim().replace(removeCommentRegExp, '').split(peakTableSplitRegExp);
 
       if (values.length % 2 === 0) {
         for (let j = 0; j < values.length; j = j + 2) {
           // takes around 40% of the time to add and parse the 2 values nearly exclusively because of parseFloat
-          currentData.push(parseFloat(values[j]) * spectrum.xFactor);
-          currentData.push(parseFloat(values[j + 1]) * spectrum.yFactor);
+          currentData.x.push(parseFloat(values[j]) * spectrum.xFactor);
+          currentData.y.push(parseFloat(values[j + 1]) * spectrum.yFactor);
+        }
+      } else {
+        result.logs.push("Format error: ".concat(values));
+      }
+    }
+  }
+
+  function parseXYZ(spectrum, value, result) {
+    let currentData = {};
+    let variables = Object.keys(spectrum.variables).map(variable => variable.toLowerCase());
+    let numberOfVariables = variables.length;
+    variables.forEach(variable => currentData[variable] = []);
+    spectrum.data = currentData; // counts for around 20% of the time
+
+    let lines = value.split(/,? *,?[;\r\n]+ */);
+
+    for (let i = 1; i < lines.length; i++) {
+      let values = lines[i].trim().replace(removeCommentRegExp, '').split(peakTableSplitRegExp);
+
+      if (values.length % numberOfVariables === 0) {
+        for (let j = 0; j < values.length; j++) {
+          // todo should try to find a xFactor (y, ...)
+          currentData[variables[j % numberOfVariables]].push(parseFloat(values[j]));
         }
       } else {
         result.logs.push("Format error: ".concat(values));
@@ -7094,38 +7159,39 @@
     let removeSymbolRegExp = /(\(+|\)+|<+|>+|\s+)/g;
     spectrum.isXYAdata = true;
     let values;
-    let currentData = [];
+    let currentData = {
+      x: [],
+      y: []
+    };
     spectrum.data = currentData;
     let lines = value.split(/,? *,?[;\r\n]+ */);
 
     for (let i = 1; i < lines.length; i++) {
       values = lines[i].trim().replace(removeSymbolRegExp, '').split(',');
-      currentData.push(parseFloat(values[0]));
-      currentData.push(parseFloat(values[1]));
+      currentData.x.push(parseFloat(values[0]));
+      currentData.y.push(parseFloat(values[1]));
     }
   }
 
   function convertTo3DZ(spectra) {
-    let minZ = spectra[0].data[0];
+    let minZ = spectra[0].data.y[0];
     let maxZ = minZ;
     let ySize = spectra.length;
-    let xSize = spectra[0].data.length / 2;
+    let xSize = spectra[0].data.x.length;
     let z = new Array(ySize);
 
     for (let i = 0; i < ySize; i++) {
-      z[i] = new Array(xSize);
-      let xVector = spectra[i].data;
+      z[i] = spectra[i].data.y;
 
       for (let j = 0; j < xSize; j++) {
-        let value = xVector[j * 2 + 1];
-        z[i][j] = value;
+        let value = z[i][j];
         if (value < minZ) minZ = value;
         if (value > maxZ) maxZ = value;
       }
     }
 
-    const firstX = spectra[0].data[0];
-    const lastX = spectra[0].data[spectra[0].data.length - 2]; // has to be -2 because it is a 1D array [x,y,x,y,...]
+    const firstX = spectra[0].data.x[0];
+    const lastX = spectra[0].data.x[spectra[0].data.x.length - 1]; // has to be -2 because it is a 1D array [x,y,x,y,...]
 
     const firstY = spectra[0].pageValue;
     const lastY = spectra[ySize - 1].pageValue; // Because the min / max value are the only information about the matrix if we invert
@@ -7353,32 +7419,6 @@
         if (!options.keepSpectra) {
           delete entry.spectra;
         }
-      }
-
-      if (options.chromatogram) {
-        options.xy = true;
-      }
-
-      if (options.xy && options.wantXY) {
-        // the spectraData should not be a oneD array but an object with x and y
-        if (entry.spectra && entry.spectra.length > 0) {
-          for (let spectrum of entry.spectra) {
-            if (spectrum.data) {
-              let data = spectrum.data;
-              let newData = {
-                x: new Array(data.length / 2),
-                y: new Array(data.length / 2)
-              };
-
-              for (let k = 0; k < data.length; k = k + 2) {
-                newData.x[k / 2] = data[k];
-                newData.y[k / 2] = data[k + 1];
-              }
-
-              spectrum.data = newData;
-            }
-          }
-        }
       } // maybe it is a GC (HPLC) / MS. In this case we add a new format
 
 
@@ -7394,13 +7434,92 @@
     }
   }
 
+  function prepareNtuplesDatatable(currentEntry, spectrum, kind) {
+    let xIndex = -1;
+    let yIndex = -1;
+    let firstVariable = '';
+    let secondVariable = '';
+
+    if (kind.indexOf('++') > 0) {
+      firstVariable = kind.replace(/.*\(([a-zA-Z0-9]+)\+\+.*/, '$1');
+      secondVariable = kind.replace(/.*\.\.([a-zA-Z0-9]+).*/, '$1');
+    } else {
+      kind = kind.replace(/[^a-zA-Z]/g, '');
+      firstVariable = kind.charAt(0);
+      secondVariable = kind.charAt(1);
+      spectrum.variables = {};
+
+      for (let symbol of kind) {
+        let index = currentEntry.ntuples.symbol.indexOf(symbol);
+        if (index === -1) throw Error("Symbol undefined: ".concat(symbol));
+        let lowercaseSymbol = symbol.toLowerCase();
+        spectrum.variables[lowercaseSymbol] = {};
+
+        for (let key in currentEntry.ntuples) {
+          if (currentEntry.ntuples[key][index]) {
+            spectrum.variables[lowercaseSymbol][key] = currentEntry.ntuples[key][index];
+          }
+        }
+      }
+    }
+
+    xIndex = currentEntry.ntuples.symbol.indexOf(firstVariable);
+    yIndex = currentEntry.ntuples.symbol.indexOf(secondVariable);
+    if (xIndex === -1) xIndex = 0;
+    if (yIndex === -1) yIndex = 0;
+
+    if (currentEntry.ntuples.first) {
+      if (currentEntry.ntuples.first.length > xIndex) {
+        spectrum.firstX = currentEntry.ntuples.first[xIndex];
+      }
+
+      if (currentEntry.ntuples.first.length > yIndex) {
+        spectrum.firstY = currentEntry.ntuples.first[yIndex];
+      }
+    }
+
+    if (currentEntry.ntuples.last) {
+      if (currentEntry.ntuples.last.length > xIndex) {
+        spectrum.lastX = currentEntry.ntuples.last[xIndex];
+      }
+
+      if (currentEntry.ntuples.last.length > yIndex) {
+        spectrum.lastY = currentEntry.ntuples.last[yIndex];
+      }
+    }
+
+    if (currentEntry.ntuples.vardim && currentEntry.ntuples.vardim.length > xIndex) {
+      spectrum.nbPoints = currentEntry.ntuples.vardim[xIndex];
+    }
+
+    if (currentEntry.ntuples.factor) {
+      if (currentEntry.ntuples.factor.length > xIndex) {
+        spectrum.xFactor = currentEntry.ntuples.factor[xIndex];
+      }
+
+      if (currentEntry.ntuples.factor.length > yIndex) {
+        spectrum.yFactor = currentEntry.ntuples.factor[yIndex];
+      }
+    }
+
+    if (currentEntry.ntuples.units) {
+      if (currentEntry.ntuples.units.length > xIndex) {
+        spectrum.xUnits = currentEntry.ntuples.units[xIndex];
+      }
+
+      if (currentEntry.ntuples.units.length > yIndex) {
+        spectrum.yUnits = currentEntry.ntuples.units[yIndex];
+      }
+    }
+  }
+
   function prepareSpectrum(spectrum) {
     if (!spectrum.xFactor) spectrum.xFactor = 1;
     if (!spectrum.yFactor) spectrum.yFactor = 1;
 
     if (spectrum.observeFrequency) {
-      if (spectrum.xUnit && spectrum.xUnit.toUpperCase() === 'HZ') {
-        spectrum.xUnit = 'PPM';
+      if (spectrum.xUnits && spectrum.xUnits.toUpperCase() === 'HZ') {
+        spectrum.xUnits = 'PPM';
         spectrum.xFactor = spectrum.xFactor / spectrum.observeFrequency;
         spectrum.firstX = spectrum.firstX / spectrum.observeFrequency;
         spectrum.lastX = spectrum.lastX / spectrum.observeFrequency;
@@ -7415,15 +7534,15 @@
     }
   }
 
-  const ntuplesSeparator = /[, \t]+/;
+  const ntuplesSeparator = /[ \t]*,[ \t]*/;
 
   class Spectrum {}
 
   const defaultOptions$2 = {
     keepRecordsRegExp: /^$/,
     canonicDataLabels: true,
-    dynamicTyping: false,
-    xy: true,
+    canonicMetadataLabels: false,
+    dynamicTyping: true,
     withoutXY: false,
     chromatogram: false,
     keepSpectra: false,
@@ -7432,7 +7551,24 @@
     noiseMultiplier: 5,
     profiling: false
   };
-  function convert(jcamp, options) {
+  /**
+   *
+   * @param {text} jcamp
+   * @param {object} [options]
+   * @param {number} [options.keepRecordsRegExp=/^$/] By default we don't keep meta information
+   * @param {number} [options.canonicDataLabels=true] Canonize the Labels (uppercase without symbol)
+   * @param {number} [options.canonicMetadataLabels=false] Canonize the metadata Labels (uppercase without symbol)
+   * @param {number} [options.dynamicTyping=false] Convert numbers to Number
+   * @param {number} [options.withoutXY=false] Remove the XY data
+   * @param {number} [options.chromatogram=false] Special post-processing for GC / HPLC / MS
+   * @param {number} [options.keepSpectra=false] Force to keep the spectra in case of 2D
+   * @param {number} [options.noContour=false] Don't calculate countour in case of 2D
+   * @param {number} [options.nbContourLevels=7] Number of positive / negative contour levels to calculate
+   * @param {number} [options.noiseMultiplier=5] Define for 2D the level as 5 times the median as default
+   * @param {number} [options.profiling=false] Add profiling information
+   */
+
+  function convert(jcamp, options = {}) {
     options = Object.assign({}, defaultOptions$2, options);
     options.wantXY = !options.withoutXY;
     options.start = Date.now();
@@ -7470,66 +7606,10 @@
         if (endLine === -1) endLine = dataValue.indexOf('\r');
 
         if (endLine > 0) {
-          let xIndex = -1;
-          let yIndex = -1; // ##DATA TABLE= (X++(I..I)), XYDATA
+          // ##DATA TABLE= (X++(I..I)), XYDATA
           // We need to find the variables
-
           let infos = dataValue.substring(0, endLine).split(/[ ,;\t]+/);
-
-          if (infos[0].indexOf('++') > 0) {
-            let firstVariable = infos[0].replace(/.*\(([a-zA-Z0-9]+)\+\+.*/, '$1');
-            let secondVariable = infos[0].replace(/.*\.\.([a-zA-Z0-9]+).*/, '$1');
-            xIndex = currentEntry.ntuples.symbol.indexOf(firstVariable);
-            yIndex = currentEntry.ntuples.symbol.indexOf(secondVariable);
-          }
-
-          if (xIndex === -1) xIndex = 0;
-          if (yIndex === -1) yIndex = 0;
-
-          if (currentEntry.ntuples.first) {
-            if (currentEntry.ntuples.first.length > xIndex) {
-              spectrum.firstX = currentEntry.ntuples.first[xIndex];
-            }
-
-            if (currentEntry.ntuples.first.length > yIndex) {
-              spectrum.firstY = currentEntry.ntuples.first[yIndex];
-            }
-          }
-
-          if (currentEntry.ntuples.last) {
-            if (currentEntry.ntuples.last.length > xIndex) {
-              spectrum.lastX = currentEntry.ntuples.last[xIndex];
-            }
-
-            if (currentEntry.ntuples.last.length > yIndex) {
-              spectrum.lastY = currentEntry.ntuples.last[yIndex];
-            }
-          }
-
-          if (currentEntry.ntuples.vardim && currentEntry.ntuples.vardim.length > xIndex) {
-            spectrum.nbPoints = currentEntry.ntuples.vardim[xIndex];
-          }
-
-          if (currentEntry.ntuples.factor) {
-            if (currentEntry.ntuples.factor.length > xIndex) {
-              spectrum.xFactor = currentEntry.ntuples.factor[xIndex];
-            }
-
-            if (currentEntry.ntuples.factor.length > yIndex) {
-              spectrum.yFactor = currentEntry.ntuples.factor[yIndex];
-            }
-          }
-
-          if (currentEntry.ntuples.units) {
-            if (currentEntry.ntuples.units.length > xIndex) {
-              spectrum.xUnit = currentEntry.ntuples.units[xIndex];
-            }
-
-            if (currentEntry.ntuples.units.length > yIndex) {
-              spectrum.yUnit = currentEntry.ntuples.units[yIndex];
-            }
-          }
-
+          prepareNtuplesDatatable(currentEntry, spectrum, infos[0]);
           spectrum.datatable = infos[0];
 
           if (infos[1] && infos[1].indexOf('PEAKS') > -1) {
@@ -7596,7 +7676,8 @@
         currentEntry = {
           spectra: [],
           ntuples: {},
-          info: {}
+          info: {},
+          meta: {}
         };
         parentEntry.children.push(currentEntry);
         parentsStack.push(parentEntry);
@@ -7605,19 +7686,19 @@
       } else if (canonicDataLabel === 'DATATYPE') {
         currentEntry.dataType = dataValue;
 
-        if (dataValue.indexOf('nD') > -1) {
+        if (dataValue.toLowerCase().indexOf('nd') > -1) {
           currentEntry.twoD = true;
         }
       } else if (canonicDataLabel === 'NTUPLES') {
-        if (dataValue.indexOf('nD') > -1) {
+        if (dataValue.toLowerCase().indexOf('nd') > -1) {
           currentEntry.twoD = true;
         }
       } else if (canonicDataLabel === 'DATACLASS') {
         currentEntry.dataClass = dataValue;
       } else if (canonicDataLabel === 'XUNITS') {
-        spectrum.xUnit = dataValue;
+        spectrum.xUnits = dataValue;
       } else if (canonicDataLabel === 'YUNITS') {
-        spectrum.yUnit = dataValue;
+        spectrum.yUnits = dataValue;
       } else if (canonicDataLabel === 'FIRSTX') {
         spectrum.firstX = parseFloat(dataValue);
       } else if (canonicDataLabel === 'LASTX') {
@@ -7711,22 +7792,31 @@
         currentEntry = parentsStack.pop();
       }
 
-      if (currentEntry && currentEntry.info && canonicDataLabel.match(options.keepRecordsRegExp)) {
-        let label = options.canonicDataLabels ? canonicDataLabel : dataLabel;
+      if (currentEntry && currentEntry.info && currentEntry.meta && canonicDataLabel.match(options.keepRecordsRegExp)) {
         let value = dataValue.trim();
+        let target, label;
 
-        if (options.dynamicTyping && !isNaN(value)) {
-          value = Number(value);
+        if (dataLabel.startsWith('$')) {
+          label = options.canonicMetadataLabels ? canonicDataLabel.substring(1) : dataLabel.substring(1);
+          target = currentEntry.meta;
+        } else {
+          label = options.canonicDataLabels ? canonicDataLabel : dataLabel;
+          target = currentEntry.info;
         }
 
-        if (currentEntry.info[label]) {
-          if (!Array.isArray(currentEntry.info[label])) {
-            currentEntry.info[label] = [currentEntry.info[label]];
+        if (options.dynamicTyping) {
+          let parsedValue = Number.parseFloat(value);
+          if (!Number.isNaN(parsedValue)) value = parsedValue;
+        }
+
+        if (target[label]) {
+          if (!Array.isArray(target[label])) {
+            target[label] = [target[label]];
           }
 
-          currentEntry.info[label].push(value);
+          target[label].push(value);
         } else {
-          currentEntry.info[label] = value;
+          target[label] = value;
         }
       }
     }
@@ -7750,45 +7840,31 @@
    * @param {string} jcamp - String containing the JCAMP data
    * @param {object} [options={}]
    * @param {object} [options.id=Math.random()]
-   * @param {object} [options.flavor='']
+   * @param {string} [options.label=options.id] human redeable label
    * @return {Analysis} - New class element with the given data
    */
 
   function fromJcamp(jcamp, options = {}) {
     let analysis = new Analysis(options);
-    addJcamp(analysis, jcamp, options);
+    addJcamp(analysis, jcamp);
     return analysis;
   }
 
-  function addJcamp(analysis, jcamp, options = {}) {
-    const {
-      defaultFlavor
-    } = options;
+  function addJcamp(analysis, jcamp) {
     let converted = convert(jcamp, {
-      keepRecordsRegExp: /.*/,
-      canonicDataLabels: false,
-      dynamicTyping: true
+      keepRecordsRegExp: /.*/
     });
 
     for (let entry of converted.flatten) {
       let currentSpectrum = entry.spectra[0];
-      let xLabel = currentSpectrum.xUnit;
-      let yLabel = currentSpectrum.yUnit;
-      let flavor = entry.info.$cheminfoFlavor || defaultFlavor;
-      let meta = {};
-
-      for (let key in entry.info) {
-        if (key.startsWith('$') && key !== '$cheminfoFlavor') {
-          meta[key.substring(1)] = entry.info[key];
-        }
-      }
-
-      analysis.set(currentSpectrum.data, {
-        flavor,
+      let xLabel = currentSpectrum.xUnits || 'x';
+      let yLabel = currentSpectrum.yUnits || 'y';
+      analysis.pushSpectrum(currentSpectrum.data, {
         xLabel,
         yLabel,
+        dataType: entry.dataType,
         title: entry.title,
-        meta
+        meta: entry.meta
       });
     }
   }
@@ -7827,14 +7903,14 @@
    * @param {object} [options={}]
    * @param {Array} [options.ids] List of spectra ids, by all
    * @param {Array} [options.colors] List of colors
-   * @param {Array} [options.flavor]
+   * @param {object} [options.selector={}]
    * @param {object} [options.normalization]
    */
 
   function getJSGraph(analyses, options = {}) {
     const {
       colors = COLORS,
-      flavor,
+      selector,
       normalization
     } = options;
     let series = [];
@@ -7844,13 +7920,13 @@
     for (let i = 0; i < analyses.length; i++) {
       const analysis = analyses[i];
       let serie = {};
-      let currentData = analysis.getData({
-        flavor,
+      let currentData = analysis.getNormalizedData({
+        selector,
         normalization
       });
       if (!currentData) continue;
-      if (!xLabel) xLabel = analysis.getXLabel(flavor);
-      if (!yLabel) yLabel = analysis.getYLabel(flavor);
+      if (!xLabel) xLabel = analysis.getXLabel(selector);
+      if (!yLabel) yLabel = analysis.getYLabel(selector);
       addStyle(serie, analysis, {
         color: colors[i]
       });
@@ -7936,173 +8012,25 @@
     return annotations;
   }
 
-  function fromXxyyArray(data) {
-    return {
-      x: data[0],
-      y: data[1]
-    };
-  }
-  function fromXyxyArray(data) {
-    var x = [];
-    var y = [];
-
-    for (const point of data) {
-      x.push(point[0]);
-      y.push(point[1]);
-    }
-
-    return {
-      x,
-      y
-    };
-  }
-  function fromXyxyObject(data) {
-    var x = [];
-    var y = [];
-
-    for (const point of data) {
-      x.push(point.x);
-      y.push(point.y);
-    }
-
-    return {
-      x,
-      y
-    };
-  }
-  function fromGeneral(data) {
-    if (Array.isArray(data)) {
-      if (data.length === 0) return {
-        x: [],
-        y: []
-      };
-
-      if (Array.isArray(data[0])) {
-        if (data.length === 2) {
-          return fromXxyyArray(data);
-        } else {
-          return fromXyxyArray(data);
-        }
-      } else {
-        return fromXyxyObject(data);
-      }
-    } else {
-      if (Array.isArray(data.x) && Array.isArray(data.x)) {
-        return data;
-      } else {
-        throw new TypeError('unknown data format');
-      }
-    }
-  }
-
-  function toXxyyArray({
-    x,
-    y
-  }) {
-    return [x, y];
-  }
-  function toXyxyArray({
-    x,
-    y
-  }) {
-    var ans = [];
-
-    for (var index = 0; index < x.length; index++) {
-      ans.push([x[index], y[index]]);
-    }
-
-    return ans;
-  }
-  function toXyxyObject({
-    x,
-    y
-  }) {
-    var ans = [];
-
-    for (var index = 0; index < x.length; index++) {
-      ans.push({
-        x: x[index],
-        y: y[index]
-      });
-    }
-
-    return ans;
-  }
-
-  /**
-   * Convert between different xy formats
-   * @param {*} data - input set of points to parse
-   * @param {object} [options] - input and output options
-   * @param {string} [options.inputFormat] - input format, if not in list infers the kind
-   * @param {string} [options.outputFormat = 'xxyyObject'] - output format
-   * @return {*} - output set of points
-   */
-
-  function xyConvert(data, options = {}) {
-    const {
-      inputFormat,
-      outputFormat = 'xxyyObject'
-    } = options;
-    if (inputFormat === outputFormat) return data;
-    let middleData;
-
-    switch (inputFormat) {
-      case 'xxyyArray':
-        middleData = fromXxyyArray(data);
-        break;
-
-      case 'xyxyArray':
-        middleData = fromXyxyArray(data);
-        break;
-
-      case 'xxyyObject':
-        // this is the base case
-        middleData = data;
-        break;
-
-      case 'xyxyObject':
-        middleData = fromXyxyObject(data);
-        break;
-
-      default:
-        middleData = fromGeneral(data);
-        break;
-    }
-
-    switch (outputFormat) {
-      case 'xxyyArray':
-        return toXxyyArray(middleData);
-
-      case 'xyxyArray':
-        return toXyxyArray(middleData);
-
-      case 'xxyyObject':
-        return middleData;
-
-      case 'xyxyObject':
-        return toXyxyObject(middleData);
-
-      default:
-        throw new TypeError("unknown output format ".concat(outputFormat));
-    }
-  }
-
   /**
    * Parse from a xyxy data array
    * @param {Array<Array<number>>} data
    * @param {object} [meta] - same metadata object format that the fromText
    * @return {string} JCAMP of the input
    */
-  function creator(data, meta = {}) {
+  function creator(data, options = {}) {
+    const {
+      meta = {},
+      info = {}
+    } = options;
     const {
       title = '',
       owner = '',
       origin = '',
-      type = '',
-      xUnit = '',
-      yUnit = '',
-      info = {}
-    } = meta;
+      dataType = '',
+      xUnits = '',
+      yUnits = ''
+    } = info;
     let firstX = Number.POSITIVE_INFINITY;
     let lastX = Number.NEGATIVE_INFINITY;
     let firstY = Number.POSITIVE_INFINITY;
@@ -8132,10 +8060,10 @@
       points.push("".concat(x, " ").concat(y));
     }
 
-    let header = "##TITLE=".concat(title, "\n##JCAMP-DX=4.24\n##DATA TYPE=").concat(type, "\n##ORIGIN=").concat(origin, "\n##OWNER=").concat(owner, "\n##XUNITS=").concat(xUnit, "\n##YUNITS=").concat(yUnit, "\n##FIRSTX=").concat(firstX, "\n##LASTX=").concat(lastX, "\n##FIRSTY=").concat(firstY, "\n##LASTY=").concat(lastY, "\n");
+    let header = "##TITLE=".concat(title, "\n##JCAMP-DX=4.24\n##DATA TYPE=").concat(dataType, "\n##ORIGIN=").concat(origin, "\n##OWNER=").concat(owner, "\n##XUNITS=").concat(xUnits, "\n##YUNITS=").concat(yUnits, "\n##FIRSTX=").concat(firstX, "\n##LASTX=").concat(lastX, "\n##FIRSTY=").concat(firstY, "\n##LASTY=").concat(lastY, "\n");
 
-    for (const key of Object.keys(info)) {
-      header += "##$".concat(key, "=").concat(info[key], "\n");
+    for (const key of Object.keys(meta)) {
+      header += "##$".concat(key, "=").concat(meta[key], "\n");
     } // we leave the header and utf8 fonts ${header.replace(/[^\t\r\n\x20-\x7F]/g, '')
 
 
@@ -8143,88 +8071,131 @@
   }
 
   /**
-   * Parse from any supported format in ml-xy-convert
-   * @param {*} data - object or array with a set of points
-   * @param {object} [meta] - metadata object
+   * Parse from a xyxy data array
+   * @param {Array<Array<number>>} data
+   * @param {object} [meta] - same metadata object format that the fromText
    * @return {string} JCAMP of the input
    */
 
-  function fromJSON(data, meta = {}) {
-    const parsed = xyConvert(data, {
-      outputFormat: 'xxyyObject'
-    });
-    return creator(parsed, meta);
+  function creatorNtuples(data, options) {
+    const {
+      variables,
+      meta = {},
+      info = {}
+    } = options;
+    const {
+      title = '',
+      owner = '',
+      origin = '',
+      dataType = ''
+    } = info;
+    const symbol = [];
+    const varName = [];
+    const varType = [];
+    const varDim = [];
+    const units = [];
+    const first = [];
+    const last = [];
+    const min$1 = [];
+    const max$1 = [];
+    const keys = Object.keys(variables);
+
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i];
+      let variable = variables[key];
+      symbol.push(key.toUpperCase());
+      varName.push(variable.varName || key);
+      varDim.push(data[key].length);
+      varType.push(i === 0 ? 'INDEPENDENT' : 'DEPENDENT');
+      units.push(variable.units || '');
+      first.push(data[key][0]);
+      last.push(data[key][data[key].length - 1]);
+      min$1.push(min(data[key]));
+      max$1.push(max(data[key]));
+    }
+
+    let header = "##TITLE=".concat(title, "\n##JCAMP-DX=6.00\n##DATA TYPE=").concat(dataType, "\n##ORIGIN=").concat(origin, "\n##OWNER=").concat(owner, "\n##NTUPLES= ").concat(dataType, "\n##VAR_NAME=  Weight,        Temperature,     Time\n##SYMBOL=    ").concat(symbol.join(), "\n##VAR_TYPE=  ").concat(varType.join(), "\n##VAR_DIM=   ").concat(varDim.join(), "\n##UNITS=     ").concat(units.join(), "\n##PAGE= N=1\n");
+
+    for (const key of Object.keys(meta)) {
+      header += "##$".concat(key, "=").concat(meta[key], "\n");
+    }
+
+    header += "##DATA TABLE= (".concat(symbol.join(''), "..").concat(symbol.join(''), "), PEAKS\n");
+
+    for (let i = 0; i < data[keys[0]].length; i++) {
+      let point = [];
+
+      for (let key of keys) {
+        point.push(data[key][i]);
+      }
+
+      header += "".concat(point.join('\t'), "\n");
+    }
+
+    header += '##END';
+    return header;
+  }
+
+  /**
+   * Create a jcamp or if variables is specified a NTUPLES JCAMP
+   * @param {object} data - object of array
+   * @param {object} [options={}] - metadata object
+   * @param {object} [options.variables={}] - variables metadata like {x:{units:'°C'},y:{units:'s'}}
+   * @param {string} [options.info={}] - metadata of the file
+   * @param {string} [options.info.title = ''] - title of the file
+   * @param {string} [options.info.owner = ''] - owner of the file
+   * @param {string} [options.info.origin = ''] - origin of the file
+   * @param {string} [options.info.dataType = ''] - type of data
+   * @param {string} [options.info.xUnits = ''] - units for the x axis for variables===undefined
+   * @param {string} [options.info.yUnits = ''] - units for the y axis for variables===undefined
+   * @param {object} [options.meta = {}] - comments to add to the file
+
+   * @return {string} JCAMP of the input
+   */
+
+  function fromJSON(data, options = {}) {
+    const {
+      variables
+    } = options;
+
+    if (variables) {
+      return creatorNtuples(data, options);
+    } else {
+      return creator(data, options);
+    }
   }
 
   function toJcamp(analysis, options = {}) {
-    const {
-      dataType = ''
-    } = options;
     let jcamps = [];
 
-    for (let flavorName in analysis.spectra) {
-      let data = analysis.get(flavorName);
-      jcamps.push(getJcamp(data, {
-        dataType,
-        flavorName
-      }));
+    for (let spectrum of analysis.spectra) {
+      jcamps.push(getJcamp(spectrum, options));
     }
 
     return jcamps.join('\n');
   }
 
-  function getJcamp(flavor, options) {
+  function getJcamp(spectrum, options) {
+    const {
+      info = {},
+      meta = {}
+    } = options;
     let jcampOptions = {
-      xUnit: flavor.xLabel,
-      yUnit: flavor.yLabel,
-      title: flavor.title,
-      type: options.dataType,
-      info: { ...flavor.meta,
-        cheminfoFlavor: options.flavorName
+      info: {
+        xUnits: spectrum.xLabel === spectrum.xUnits ? spectrum.xLabel : "".concat(spectrum.xLabel, " [").concat(spectrum.xUnits, "]"),
+        yUnits: spectrum.yLabel === spectrum.yUnits ? spectrum.yLabel : "".concat(spectrum.yLabel, " [").concat(spectrum.yUnits, "]"),
+        title: spectrum.title,
+        dataType: spectrum.dataType,
+        ...info
+      },
+      meta: { ...spectrum.meta,
+        ...meta
       }
     };
     return fromJSON({
-      x: flavor.x,
-      y: flavor.y
+      x: spectrum.x,
+      y: spectrum.y
     }, jcampOptions);
-  }
-
-  /**
-   * @typedef {Object} DataXY
-   * @property {Array<Number>} x Array of x values
-   * @property {Array<Number>} y Array of y values
-   */
-  function CommonSpectrum(options = {}) {
-    const {
-      dataType = '',
-      defaultFlavor = ''
-    } = options;
-
-    class CustomAnalysis extends Analysis {
-      constructor(analysisOptions) {
-        super(analysisOptions);
-        this.defaultFlavor = defaultFlavor;
-      }
-
-    }
-
-    return {
-      Analysis: CustomAnalysis,
-      AnalysesManager,
-      getNormalized,
-      fromJcamp: (jcamp, fromOptions) => fromJcamp(jcamp, {
-        flavor: defaultFlavor,
-        ...fromOptions
-      }),
-      toJcamp: spectrum => toJcamp(spectrum, {
-        dataType
-      }),
-      getJSGraph: (analyses, jsGraphOptions) => getJSGraph(analyses, {
-        flavor: defaultFlavor,
-        ...jsGraphOptions
-      }),
-      getNormalizationAnnotations
-    };
   }
 
   function parsePerkinElmer(text) {
@@ -8281,26 +8252,27 @@
    */
 
   function fromPerkinElmer(text) {
-    let analysis = new Analysis$1();
-    let result = parsePerkinElmer(text);
-    analysis.set({
-      x: result.data.temperature,
-      y: result.data.weight
+    let analysis = new Analysis();
+    let spectrum = parsePerkinElmer(text);
+    analysis.pushSpectrum({
+      x: spectrum.data.temperature,
+      y: spectrum.data.weight
     }, {
       xLabel: 'Temperature [°C]',
       yLabel: 'Weight [mg]',
-      title: result.meta['Sample ID'],
-      meta: result.meta,
-      flavor: 'weightVersusTemperature'
+      dataType: 'TGA',
+      title: spectrum.meta['Sample ID'],
+      meta: spectrum.meta
     });
-    analysis.set({
-      x: result.data.time,
-      y: result.data.weight
+    analysis.pushSpectrum({
+      x: spectrum.data.time,
+      y: spectrum.data.weight
     }, {
       xLabel: 'Time [s]',
       yLabel: 'Weight [mg]',
-      title: result.meta['Sample ID'],
-      meta: result.meta,
+      dataType: 'TGA',
+      title: spectrum.meta['Sample ID'],
+      meta: spectrum.meta,
       flavor: 'weightVersusTime'
     });
     return analysis;
@@ -9094,46 +9066,32 @@
       header: true,
       dynamicTyping: true
     }).data;
-    let analysis = new Analysis$1();
-    analysis.set({
+    let analysis = new Analysis();
+    analysis.pushSpectrum({
       x: parsed.map(d => d['Sample Temperature']),
       y: parsed.map(d => d['Unsubtracted Weight'])
     }, {
       xLabel: 'Temperature [°C]',
-      yLabel: 'Weight [mg]',
-      flavor: 'weightVersusTemperature'
+      yLabel: 'Weight [mg]'
     });
-    analysis.set({
+    analysis.pushSpectrum({
       x: parsed.map(d => d.Time),
       y: parsed.map(d => d['Unsubtracted Weight'])
     }, {
       xLabel: 'Time [s]',
-      yLabel: 'Weight [mg]',
-      flavor: 'weightVersusTime'
+      yLabel: 'Weight [mg]'
     });
     return analysis;
   }
 
-  const {
-    Analysis: Analysis$1,
-    AnalysesManager: AnalysesManager$1,
-    fromJcamp: fromJcamp$1,
-    toJcamp: toJcamp$1,
-    getJSGraph: getJSGraph$1,
-    getNormalizationAnnotations: getNormalizationAnnotations$1
-  } = new CommonSpectrum({
-    dataType: 'TGA',
-    defaultFlavor: 'weightVersusTemperature'
-  });
-
-  exports.AnalysesManager = AnalysesManager$1;
-  exports.Analysis = Analysis$1;
-  exports.fromJcamp = fromJcamp$1;
+  exports.AnalysesManager = AnalysesManager;
+  exports.Analysis = Analysis;
+  exports.fromJcamp = fromJcamp;
   exports.fromPerkinElmer = fromPerkinElmer;
   exports.fromPerkinElmerCSV = fromPerkinElmerCSV;
-  exports.getJSGraph = getJSGraph$1;
-  exports.getNormalizationAnnotations = getNormalizationAnnotations$1;
-  exports.toJcamp = toJcamp$1;
+  exports.getJSGraph = getJSGraph;
+  exports.getNormalizationAnnotations = getNormalizationAnnotations;
+  exports.toJcamp = toJcamp;
 
   Object.defineProperty(exports, '__esModule', { value: true });
 
