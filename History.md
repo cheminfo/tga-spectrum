@@ -1,3 +1,12 @@
+# [0.6.0](https://github.com/cheminfo/tga-spectrum/compare/v0.5.0...v0.6.0) (2020-06-12)
+
+
+### Bug Fixes
+
+* remove useless "new" CommonSpectrum ([943c4b4](https://github.com/cheminfo/tga-spectrum/commit/943c4b46e4d68aa79d1a3e000f0042706e5858c4))
+
+
+
 # [0.4.0](https://github.com/cheminfo/tga-spectrum/compare/v0.3.0...v0.4.0) (2020-05-26)
 
 
