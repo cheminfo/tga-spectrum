@@ -1,16 +1,20 @@
-import { CommonSpectrum } from 'common-spectrum';
-
-export const {
+import {
   Analysis,
   AnalysesManager,
   fromJcamp,
   toJcamp,
   getJSGraph,
   getNormalizationAnnotations,
-} = CommonSpectrum({
-  dataType: 'TGA',
-  defaultFlavor: 'weightVersusTemperature',
-});
+} from 'common-spectrum';
+
+export {
+  Analysis,
+  AnalysesManager,
+  fromJcamp,
+  toJcamp,
+  getJSGraph,
+  getNormalizationAnnotations,
+};
 
 export { fromPerkinElmer } from './from/fromPerkinElmer';
 export { fromPerkinElmerCSV } from './from/fromPerkinElmerCSV';

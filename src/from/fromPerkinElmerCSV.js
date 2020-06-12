@@ -11,7 +11,7 @@ export function fromPerkinElmerCSV(text) {
   let parsed = Papa.parse(text, { header: true, dynamicTyping: true }).data;
 
   let analysis = new Analysis();
-  analysis.set(
+  analysis.pushSpectrum(
     {
       x: parsed.map((d) => d['Sample Temperature']),
       y: parsed.map((d) => d['Unsubtracted Weight']),
@@ -19,10 +19,9 @@ export function fromPerkinElmerCSV(text) {
     {
       xLabel: 'Temperature [°C]',
       yLabel: 'Weight [mg]',
-      flavor: 'weightVersusTemperature',
     },
   );
-  analysis.set(
+  analysis.pushSpectrum(
     {
       x: parsed.map((d) => d.Time),
       y: parsed.map((d) => d['Unsubtracted Weight']),
@@ -30,7 +29,6 @@ export function fromPerkinElmerCSV(text) {
     {
       xLabel: 'Time [s]',
       yLabel: 'Weight [mg]',
-      flavor: 'weightVersusTime',
     },
   );
   return analysis;

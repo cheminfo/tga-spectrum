@@ -8,17 +8,19 @@ test('fromJcamp', () => {
     join(__dirname, '../../../testFiles/jcamp.jdx'),
     'utf8',
   );
-  let result = fromJcamp(jcamp);
+  let analysis = fromJcamp(jcamp);
 
-  expect(result.get('weightVersusTime').x).toHaveLength(2251);
-  expect(result.get('weightVersusTime').y).toHaveLength(2251);
-  expect(result.get('weightVersusTime').xLabel).toStrictEqual('t [s]');
-  expect(result.get('weightVersusTime').yLabel).toStrictEqual('Value [mg]');
+  let spectrum1 = analysis.getSpectrum({ index: 0 });
 
-  expect(result.get('weightversustemperature').x).toHaveLength(2251);
-  expect(result.get('weightversustemperature').y).toHaveLength(2251);
-  expect(result.get('weightversustemperature').xLabel).toStrictEqual('Ts [°C]');
-  expect(result.get('weightversustemperature').yLabel).toStrictEqual(
-    'Value [mg]',
-  );
+  expect(spectrum1.x).toHaveLength(2251);
+  expect(spectrum1.y).toHaveLength(2251);
+  expect(spectrum1.xLabel).toStrictEqual('Ts [°C]');
+  expect(spectrum1.yLabel).toStrictEqual('Value [mg]');
+
+  let spectrum2 = analysis.getSpectrum({ index: 1 });
+
+  expect(spectrum2.x).toHaveLength(2251);
+  expect(spectrum2.y).toHaveLength(2251);
+  expect(spectrum2.xLabel).toStrictEqual('t [s]');
+  expect(spectrum2.yLabel).toStrictEqual('Value [mg]');
 });

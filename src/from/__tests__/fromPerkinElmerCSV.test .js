@@ -8,19 +8,19 @@ test('fromPerkinElmer', () => {
     join(__dirname, '../../../testFiles/perkinElmer_csv.txt'),
     'latin1',
   );
-  let result = fromPerkinElmerCSV(jcamp);
+  let analysis = fromPerkinElmerCSV(jcamp);
 
-  expect(result.get('weightVersusTime').x).toHaveLength(8637);
-  expect(result.get('weightVersusTime').y).toHaveLength(8637);
-  expect(result.get('weightVersusTime').xLabel).toStrictEqual('Time [s]');
-  expect(result.get('weightVersusTime').yLabel).toStrictEqual('Weight [mg]');
+  let spectrum1 = analysis.getSpectrum({ index: 0 });
 
-  expect(result.get('weightversustemperature').x).toHaveLength(8637);
-  expect(result.get('weightversustemperature').y).toHaveLength(8637);
-  expect(result.get('weightversustemperature').xLabel).toStrictEqual(
-    'Temperature [°C]',
-  );
-  expect(result.get('weightversustemperature').yLabel).toStrictEqual(
-    'Weight [mg]',
-  );
+  expect(spectrum1.x).toHaveLength(8637);
+  expect(spectrum1.y).toHaveLength(8637);
+  expect(spectrum1.xLabel).toStrictEqual('Temperature [°C]');
+  expect(spectrum1.yLabel).toStrictEqual('Weight [mg]');
+
+  let spectrum2 = analysis.getSpectrum({ index: 1 });
+
+  expect(spectrum2.x).toHaveLength(8637);
+  expect(spectrum2.y).toHaveLength(8637);
+  expect(spectrum2.xLabel).toStrictEqual('Time [s]');
+  expect(spectrum2.yLabel).toStrictEqual('Weight [mg]');
 });
