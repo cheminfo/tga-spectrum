@@ -8,8 +8,11 @@ import { Analysis } from '..';
  * @return {Analysis} - New class element with the given data
  */
 export function fromPerkinElmerCSV(text) {
-  let parsed = Papa.parse(text, { header: true, dynamicTyping: true }).data;
-
+  let parsed = Papa.parse(text, {
+    skipEmptyLines: true,
+    header: true,
+    dynamicTyping: true,
+  }).data;
   let analysis = new Analysis();
   analysis.pushSpectrum(
     {
