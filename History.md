@@ -1,3 +1,12 @@
+## [0.6.2](https://github.com/cheminfo/tga-spectrum/compare/v0.6.1...v0.6.2) (2020-06-16)
+
+
+### Bug Fixes
+
+* remove empty lines in perkin CSV ([5f5e1b7](https://github.com/cheminfo/tga-spectrum/commit/5f5e1b728e922597389a1b8e6c180353854b6020))
+
+
+
 # [0.6.0](https://github.com/cheminfo/tga-spectrum/compare/v0.5.0...v0.6.0) (2020-06-12)
 
 
