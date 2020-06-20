@@ -1,6 +1,6 @@
 /**
  * tga-spectrum
- * @version v0.6.1
+ * @version v0.7.1
  * @link https://github.com/cheminfo/tga-spectrum#readme
  * @license MIT
  */
@@ -6772,7 +6772,7 @@
         return this.spectra[index] ? [this.spectra[index]] : undefined;
       }
 
-      if (flavor === undefined) return this.spectra;
+      if (flavor === undefined || flavor === '') return this.spectra;
       return this.spectra.filter(spectrum => spectrum.flavor === flavor);
     }
     /**
@@ -7504,11 +7504,19 @@
 
     if (currentEntry.ntuples.units) {
       if (currentEntry.ntuples.units.length > xIndex) {
-        spectrum.xUnits = currentEntry.ntuples.units[xIndex];
+        if (currentEntry.ntuples.varname && currentEntry.ntuples.varname[xIndex]) {
+          spectrum.xUnits = "".concat(currentEntry.ntuples.varname[xIndex], " [").concat(currentEntry.ntuples.units[xIndex], "]");
+        } else {
+          spectrum.xUnits = currentEntry.ntuples.units[xIndex];
+        }
       }
 
       if (currentEntry.ntuples.units.length > yIndex) {
-        spectrum.yUnits = currentEntry.ntuples.units[yIndex];
+        if (currentEntry.ntuples.varname && currentEntry.ntuples.varname[yIndex]) {
+          spectrum.yUnits = "".concat(currentEntry.ntuples.varname[yIndex], " [").concat(currentEntry.ntuples.units[yIndex], "]");
+        } else {
+          spectrum.yUnits = currentEntry.ntuples.units[yIndex];
+        }
       }
     }
   }
@@ -8182,8 +8190,8 @@
     } = options;
     let jcampOptions = {
       info: {
-        xUnits: spectrum.xLabel === spectrum.xUnits ? spectrum.xLabel : "".concat(spectrum.xLabel, " [").concat(spectrum.xUnits, "]"),
-        yUnits: spectrum.yLabel === spectrum.yUnits ? spectrum.yLabel : "".concat(spectrum.yLabel, " [").concat(spectrum.yUnits, "]"),
+        xUnits: spectrum.xLabel.includes(spectrum.xUnits) ? spectrum.xLabel : "".concat(spectrum.xLabel, " [").concat(spectrum.xUnits, "]"),
+        yUnits: spectrum.yLabel.includes(spectrum.yUnits) ? spectrum.yLabel : "".concat(spectrum.yLabel, " [").concat(spectrum.yUnits, "]"),
         title: spectrum.title,
         dataType: spectrum.dataType,
         ...info
@@ -9063,6 +9071,7 @@
 
   function fromPerkinElmerCSV(text) {
     let parsed = papaparse_min.parse(text, {
+      skipEmptyLines: true,
       header: true,
       dynamicTyping: true
     }).data;
