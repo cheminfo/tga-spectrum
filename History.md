@@ -1,3 +1,12 @@
+# [0.7.0](https://github.com/cheminfo/tga-spectrum/compare/v0.6.2...v0.7.0) (2020-06-20)
+
+
+### Features
+
+* add support for ntuples jcamp ([3843985](https://github.com/cheminfo/tga-spectrum/commit/3843985a9c7164db420da1100268bc69c39fabb9))
+
+
+
 ## [0.6.2](https://github.com/cheminfo/tga-spectrum/compare/v0.6.1...v0.6.2) (2020-06-16)
 
 
