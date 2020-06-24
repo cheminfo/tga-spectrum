@@ -1,6 +1,6 @@
 /**
  * tga-spectrum
- * @version v0.7.1
+ * @version v0.7.2
  * @link https://github.com/cheminfo/tga-spectrum#readme
  * @license MIT
  */
@@ -85,12 +85,17 @@
   }
 
   const toString$1 = Object.prototype.toString;
-
   function isAnyArray$1(object) {
     return toString$1.call(object).endsWith('Array]');
   }
 
-  var src = isAnyArray$1;
+  const toString$2 = Object.prototype.toString;
+
+  function isAnyArray$2(object) {
+    return toString$2.call(object).endsWith('Array]');
+  }
+
+  var src = isAnyArray$2;
 
   /**
    * Computes the maximum of the given values
@@ -160,14 +165,14 @@
         _options$maxValue = options.maxValue,
         maxValue = _options$maxValue === void 0 ? 1 : _options$maxValue;
 
-    if (!isAnyArray(input)) {
+    if (!isAnyArray$1(input)) {
       throw new Error('input must be an array');
     }
 
     var output;
 
     if (options.output !== undefined) {
-      if (!isAnyArray(options.output)) {
+      if (!isAnyArray$1(options.output)) {
         throw new TypeError('output option must be an array if specified');
       }
 
@@ -6596,9 +6601,13 @@
    */
 
   function getNormalizedData(spectrum, options = {}) {
+    let data = {
+      x: spectrum.variables.x.data,
+      y: spectrum.variables.y.data
+    };
     let {
-      from = spectrum.x[0],
-      to = spectrum.x[spectrum.x.length - 1],
+      from = data.x[0],
+      to = data.x[data.x.length - 1],
       numberOfPoints,
       filters = [],
       exclusions = [],
@@ -6607,7 +6616,7 @@
     let {
       x,
       y
-    } = filterX(spectrum, {
+    } = filterX(data, {
       from,
       to
     });
@@ -6724,12 +6733,16 @@
     }
     /**
      * Set a spectrum for a specific flavor
-     * @param {DataXY} data
+     * @param {object} [variables]
+     * @param {object} [variables.x]
+     * @param {array} [variables.x.data]
+     * @param {array} [variables.x.units='x']
+     * @param {array} [variables.x.label='x']
+     * @param {object} [variables.y]
+     * @param {array} [variables.y.data]
+     * @param {array} [variables.y.units='y']
+     * @param {array} [variables.y.label='y']
      * @param {object} [options={}]
-     * @param {string} [options.xLabel='x']
-     * @param {string} [options.yLabel='y']
-     * @param {string} [options.xUnits='x']
-     * @param {string} [options.yUnits='y']
      * @param {string} [options.dataType='']
      * @param {string} [options.title='']
      * @param {object} [options.flavor={}]
@@ -6737,8 +6750,8 @@
      */
 
 
-    pushSpectrum(data, options = {}) {
-      this.spectra.push(standardizeData(data, options));
+    pushSpectrum(variables, options = {}) {
+      this.spectra.push(standardizeData(variables, options));
     }
     /**
      * Retrieve a Spectrum based on a flavor
@@ -6798,61 +6811,54 @@
     }
 
     getXLabel(selector) {
-      return this.getSpectrum(selector).xLabel;
+      return this.getSpectrum(selector).variables.x.label;
     }
 
     getYLabel(selector) {
-      return this.getSpectrum(selector).yLabel;
+      return this.getSpectrum(selector).variables.y.label;
     }
 
   }
   /**
    * Internal function that ensure the order of x / y array
-   * @param {DataXY} [data]
+   * @param {DataXY} [variables]
    * @param {object} [options={}]
    * @return {Spectrum}
    */
 
-  function standardizeData(data, options = {}) {
+  function standardizeData(variables, options = {}) {
     let {
       meta = {},
-      xLabel = 'x',
-      yLabel = 'y',
-      xUnits = '',
-      yUnits = '',
       dataType = '',
       title = ''
     } = options;
-    xUnits = xUnits || xLabel.replace(/^.*[([](.*)[)\]].*$/, '$1');
-    yUnits = yUnits || yLabel.replace(/^.*[([](.*)[)\]].*$/, '$1');
-    let {
-      x,
-      y
-    } = data;
+    let xVariable = variables.x;
+    let yVariable = variables.y;
 
-    if (x && x.length > 1 && x[0] > x[x.length - 1]) {
-      x = x.reverse();
-      y = y.reverse();
-    } else {
-      x = x || [];
-      y = y || [];
+    if (!xVariable || !yVariable) {
+      throw Error('A spectrum must contain at least x and y variables');
     }
 
-    data = {
-      x,
-      y
-    };
+    if (!isAnyArray(xVariable.data) || !isAnyArray(yVariable.data)) {
+      throw Error('x and y variables must contain an array data');
+    }
+
+    let x = xVariable.data;
+    let reverse = x && x.length > 1 && x[0] > x[x.length - 1];
+
+    for (let key in variables) {
+      let variable = variables[key];
+      if (reverse) variable.data = variable.data.reverse();
+      variable.label = variable.label || key;
+      variable.units = variable.units || variable.label.replace(/^.*[([](.*)[)\]].*$/, '$1');
+    }
+
     return {
-      x: data.x,
-      y: data.y,
-      xLabel,
-      yLabel,
-      xUnits,
-      yUnits,
+      variables,
       title,
       dataType,
       meta,
-      flavor: "".concat(yUnits, " vs ").concat(xUnits)
+      flavor: "".concat(yVariable.units, " vs ").concat(xVariable.units)
     };
   }
 
@@ -7105,6 +7111,13 @@
       parseXY(spectrum, value, result);
     } else {
       parseXYZ(spectrum, value, result);
+    } // we will add the data in the variables
+
+
+    if (spectrum.variables) {
+      for (let key in spectrum.variables) {
+        spectrum.variables[key].data = spectrum.data[key];
+      }
     }
   }
 
@@ -7134,7 +7147,7 @@
 
   function parseXYZ(spectrum, value, result) {
     let currentData = {};
-    let variables = Object.keys(spectrum.variables).map(variable => variable.toLowerCase());
+    let variables = Object.keys(spectrum.variables);
     let numberOfVariables = variables.length;
     variables.forEach(variable => currentData[variable] = []);
     spectrum.data = currentData; // counts for around 20% of the time
@@ -7371,6 +7384,1415 @@
     result.minMax = zData;
   }
 
+  var fftlib = createCommonjsModule(function (module, exports) {
+    /**
+     * Fast Fourier Transform module
+     * 1D-FFT/IFFT, 2D-FFT/IFFT (radix-2)
+     */
+    var FFT = function () {
+      var FFT;
+
+      {
+        FFT = exports; // for CommonJS
+      }
+
+      var version = {
+        release: '0.3.0',
+        date: '2013-03'
+      };
+
+      FFT.toString = function () {
+        return "version " + version.release + ", released " + version.date;
+      }; // core operations
+
+
+      var _n = 0,
+          // order
+      _bitrev = null,
+          // bit reversal table
+      _cstb = null; // sin/cos table
+
+      var core = {
+        init: function (n) {
+          if (n !== 0 && (n & n - 1) === 0) {
+            _n = n;
+
+            core._initArray();
+
+            core._makeBitReversalTable();
+
+            core._makeCosSinTable();
+          } else {
+            throw new Error("init: radix-2 required");
+          }
+        },
+        // 1D-FFT
+        fft1d: function (re, im) {
+          core.fft(re, im, 1);
+        },
+        // 1D-IFFT
+        ifft1d: function (re, im) {
+          var n = 1 / _n;
+          core.fft(re, im, -1);
+
+          for (var i = 0; i < _n; i++) {
+            re[i] *= n;
+            im[i] *= n;
+          }
+        },
+        // 1D-IFFT
+        bt1d: function (re, im) {
+          core.fft(re, im, -1);
+        },
+        // 2D-FFT Not very useful if the number of rows have to be equal to cols
+        fft2d: function (re, im) {
+          var tre = [],
+              tim = [],
+              i = 0; // x-axis
+
+          for (var y = 0; y < _n; y++) {
+            i = y * _n;
+
+            for (var x1 = 0; x1 < _n; x1++) {
+              tre[x1] = re[x1 + i];
+              tim[x1] = im[x1 + i];
+            }
+
+            core.fft1d(tre, tim);
+
+            for (var x2 = 0; x2 < _n; x2++) {
+              re[x2 + i] = tre[x2];
+              im[x2 + i] = tim[x2];
+            }
+          } // y-axis
+
+
+          for (var x = 0; x < _n; x++) {
+            for (var y1 = 0; y1 < _n; y1++) {
+              i = x + y1 * _n;
+              tre[y1] = re[i];
+              tim[y1] = im[i];
+            }
+
+            core.fft1d(tre, tim);
+
+            for (var y2 = 0; y2 < _n; y2++) {
+              i = x + y2 * _n;
+              re[i] = tre[y2];
+              im[i] = tim[y2];
+            }
+          }
+        },
+        // 2D-IFFT
+        ifft2d: function (re, im) {
+          var tre = [],
+              tim = [],
+              i = 0; // x-axis
+
+          for (var y = 0; y < _n; y++) {
+            i = y * _n;
+
+            for (var x1 = 0; x1 < _n; x1++) {
+              tre[x1] = re[x1 + i];
+              tim[x1] = im[x1 + i];
+            }
+
+            core.ifft1d(tre, tim);
+
+            for (var x2 = 0; x2 < _n; x2++) {
+              re[x2 + i] = tre[x2];
+              im[x2 + i] = tim[x2];
+            }
+          } // y-axis
+
+
+          for (var x = 0; x < _n; x++) {
+            for (var y1 = 0; y1 < _n; y1++) {
+              i = x + y1 * _n;
+              tre[y1] = re[i];
+              tim[y1] = im[i];
+            }
+
+            core.ifft1d(tre, tim);
+
+            for (var y2 = 0; y2 < _n; y2++) {
+              i = x + y2 * _n;
+              re[i] = tre[y2];
+              im[i] = tim[y2];
+            }
+          }
+        },
+        // core operation of FFT
+        fft: function (re, im, inv) {
+          var d,
+              h,
+              ik,
+              m,
+              tmp,
+              wr,
+              wi,
+              xr,
+              xi,
+              n4 = _n >> 2; // bit reversal
+
+          for (var l = 0; l < _n; l++) {
+            m = _bitrev[l];
+
+            if (l < m) {
+              tmp = re[l];
+              re[l] = re[m];
+              re[m] = tmp;
+              tmp = im[l];
+              im[l] = im[m];
+              im[m] = tmp;
+            }
+          } // butterfly operation
+
+
+          for (var k = 1; k < _n; k <<= 1) {
+            h = 0;
+            d = _n / (k << 1);
+
+            for (var j = 0; j < k; j++) {
+              wr = _cstb[h + n4];
+              wi = inv * _cstb[h];
+
+              for (var i = j; i < _n; i += k << 1) {
+                ik = i + k;
+                xr = wr * re[ik] + wi * im[ik];
+                xi = wr * im[ik] - wi * re[ik];
+                re[ik] = re[i] - xr;
+                re[i] += xr;
+                im[ik] = im[i] - xi;
+                im[i] += xi;
+              }
+
+              h += d;
+            }
+          }
+        },
+        // initialize the array (supports TypedArray)
+        _initArray: function () {
+          if (typeof Uint32Array !== 'undefined') {
+            _bitrev = new Uint32Array(_n);
+          } else {
+            _bitrev = [];
+          }
+
+          if (typeof Float64Array !== 'undefined') {
+            _cstb = new Float64Array(_n * 1.25);
+          } else {
+            _cstb = [];
+          }
+        },
+        // zero padding
+        _paddingZero: function () {// TODO
+        },
+        // makes bit reversal table
+        _makeBitReversalTable: function () {
+          var i = 0,
+              j = 0,
+              k = 0;
+          _bitrev[0] = 0;
+
+          while (++i < _n) {
+            k = _n >> 1;
+
+            while (k <= j) {
+              j -= k;
+              k >>= 1;
+            }
+
+            j += k;
+            _bitrev[i] = j;
+          }
+        },
+        // makes trigonometiric function table
+        _makeCosSinTable: function () {
+          var n2 = _n >> 1,
+              n4 = _n >> 2,
+              n8 = _n >> 3,
+              n2p4 = n2 + n4,
+              t = Math.sin(Math.PI / _n),
+              dc = 2 * t * t,
+              ds = Math.sqrt(dc * (2 - dc)),
+              c = _cstb[n4] = 1,
+              s = _cstb[0] = 0;
+          t = 2 * dc;
+
+          for (var i = 1; i < n8; i++) {
+            c -= dc;
+            dc += t * c;
+            s += ds;
+            ds -= t * s;
+            _cstb[i] = s;
+            _cstb[n4 - i] = c;
+          }
+
+          if (n8 !== 0) {
+            _cstb[n8] = Math.sqrt(0.5);
+          }
+
+          for (var j = 0; j < n4; j++) {
+            _cstb[n2 - j] = _cstb[j];
+          }
+
+          for (var k = 0; k < n2p4; k++) {
+            _cstb[k + n2] = -_cstb[k];
+          }
+        }
+      }; // aliases (public APIs)
+
+      var apis = ['init', 'fft1d', 'ifft1d', 'fft2d', 'ifft2d'];
+
+      for (var i = 0; i < apis.length; i++) {
+        FFT[apis[i]] = core[apis[i]];
+      }
+
+      FFT.bt = core.bt1d;
+      FFT.fft = core.fft1d;
+      FFT.ifft = core.ifft1d;
+      return FFT;
+    }.call(commonjsGlobal);
+  });
+
+  var matrix = createCommonjsModule(function (module, exports) {
+
+    function compareNumbers(a, b) {
+      return a - b;
+    }
+
+    exports.max = function max(matrix) {
+      var max = -Infinity;
+
+      for (var i = 0; i < matrix.length; i++) {
+        for (var j = 0; j < matrix[i].length; j++) {
+          if (matrix[i][j] > max) max = matrix[i][j];
+        }
+      }
+
+      return max;
+    };
+
+    exports.min = function min(matrix) {
+      var min = Infinity;
+
+      for (var i = 0; i < matrix.length; i++) {
+        for (var j = 0; j < matrix[i].length; j++) {
+          if (matrix[i][j] < min) min = matrix[i][j];
+        }
+      }
+
+      return min;
+    };
+
+    exports.minMax = function minMax(matrix) {
+      var min = Infinity;
+      var max = -Infinity;
+
+      for (var i = 0; i < matrix.length; i++) {
+        for (var j = 0; j < matrix[i].length; j++) {
+          if (matrix[i][j] < min) min = matrix[i][j];
+          if (matrix[i][j] > max) max = matrix[i][j];
+        }
+      }
+
+      return {
+        min: min,
+        max: max
+      };
+    };
+
+    exports.entropy = function entropy(matrix, eps) {
+      if (typeof eps === 'undefined') {
+        eps = 0;
+      }
+
+      var sum = 0,
+          l1 = matrix.length,
+          l2 = matrix[0].length;
+
+      for (var i = 0; i < l1; i++) {
+        for (var j = 0; j < l2; j++) {
+          sum += matrix[i][j] * Math.log(matrix[i][j] + eps);
+        }
+      }
+
+      return -sum;
+    };
+
+    exports.mean = function mean(matrix, dimension) {
+      if (typeof dimension === 'undefined') {
+        dimension = 0;
+      }
+
+      var rows = matrix.length,
+          cols = matrix[0].length,
+          theMean,
+          N,
+          i,
+          j;
+
+      if (dimension === -1) {
+        theMean = [0];
+        N = rows * cols;
+
+        for (i = 0; i < rows; i++) {
+          for (j = 0; j < cols; j++) {
+            theMean[0] += matrix[i][j];
+          }
+        }
+
+        theMean[0] /= N;
+      } else if (dimension === 0) {
+        theMean = new Array(cols);
+        N = rows;
+
+        for (j = 0; j < cols; j++) {
+          theMean[j] = 0;
+
+          for (i = 0; i < rows; i++) {
+            theMean[j] += matrix[i][j];
+          }
+
+          theMean[j] /= N;
+        }
+      } else if (dimension === 1) {
+        theMean = new Array(rows);
+        N = cols;
+
+        for (j = 0; j < rows; j++) {
+          theMean[j] = 0;
+
+          for (i = 0; i < cols; i++) {
+            theMean[j] += matrix[j][i];
+          }
+
+          theMean[j] /= N;
+        }
+      } else {
+        throw new Error('Invalid dimension');
+      }
+
+      return theMean;
+    };
+
+    exports.sum = function sum(matrix, dimension) {
+      if (typeof dimension === 'undefined') {
+        dimension = 0;
+      }
+
+      var rows = matrix.length,
+          cols = matrix[0].length,
+          theSum,
+          i,
+          j;
+
+      if (dimension === -1) {
+        theSum = [0];
+
+        for (i = 0; i < rows; i++) {
+          for (j = 0; j < cols; j++) {
+            theSum[0] += matrix[i][j];
+          }
+        }
+      } else if (dimension === 0) {
+        theSum = new Array(cols);
+
+        for (j = 0; j < cols; j++) {
+          theSum[j] = 0;
+
+          for (i = 0; i < rows; i++) {
+            theSum[j] += matrix[i][j];
+          }
+        }
+      } else if (dimension === 1) {
+        theSum = new Array(rows);
+
+        for (j = 0; j < rows; j++) {
+          theSum[j] = 0;
+
+          for (i = 0; i < cols; i++) {
+            theSum[j] += matrix[j][i];
+          }
+        }
+      } else {
+        throw new Error('Invalid dimension');
+      }
+
+      return theSum;
+    };
+
+    exports.product = function product(matrix, dimension) {
+      if (typeof dimension === 'undefined') {
+        dimension = 0;
+      }
+
+      var rows = matrix.length,
+          cols = matrix[0].length,
+          theProduct,
+          i,
+          j;
+
+      if (dimension === -1) {
+        theProduct = [1];
+
+        for (i = 0; i < rows; i++) {
+          for (j = 0; j < cols; j++) {
+            theProduct[0] *= matrix[i][j];
+          }
+        }
+      } else if (dimension === 0) {
+        theProduct = new Array(cols);
+
+        for (j = 0; j < cols; j++) {
+          theProduct[j] = 1;
+
+          for (i = 0; i < rows; i++) {
+            theProduct[j] *= matrix[i][j];
+          }
+        }
+      } else if (dimension === 1) {
+        theProduct = new Array(rows);
+
+        for (j = 0; j < rows; j++) {
+          theProduct[j] = 1;
+
+          for (i = 0; i < cols; i++) {
+            theProduct[j] *= matrix[j][i];
+          }
+        }
+      } else {
+        throw new Error('Invalid dimension');
+      }
+
+      return theProduct;
+    };
+
+    exports.standardDeviation = function standardDeviation(matrix, means, unbiased) {
+      var vari = exports.variance(matrix, means, unbiased),
+          l = vari.length;
+
+      for (var i = 0; i < l; i++) {
+        vari[i] = Math.sqrt(vari[i]);
+      }
+
+      return vari;
+    };
+
+    exports.variance = function variance(matrix, means, unbiased) {
+      if (typeof unbiased === 'undefined') {
+        unbiased = true;
+      }
+
+      means = means || exports.mean(matrix);
+      var rows = matrix.length;
+      if (rows === 0) return [];
+      var cols = matrix[0].length;
+      var vari = new Array(cols);
+
+      for (var j = 0; j < cols; j++) {
+        var sum1 = 0,
+            sum2 = 0,
+            x = 0;
+
+        for (var i = 0; i < rows; i++) {
+          x = matrix[i][j] - means[j];
+          sum1 += x;
+          sum2 += x * x;
+        }
+
+        if (unbiased) {
+          vari[j] = (sum2 - sum1 * sum1 / rows) / (rows - 1);
+        } else {
+          vari[j] = (sum2 - sum1 * sum1 / rows) / rows;
+        }
+      }
+
+      return vari;
+    };
+
+    exports.median = function median(matrix) {
+      var rows = matrix.length,
+          cols = matrix[0].length;
+      var medians = new Array(cols);
+
+      for (var i = 0; i < cols; i++) {
+        var data = new Array(rows);
+
+        for (var j = 0; j < rows; j++) {
+          data[j] = matrix[j][i];
+        }
+
+        data.sort(compareNumbers);
+        var N = data.length;
+
+        if (N % 2 === 0) {
+          medians[i] = (data[N / 2] + data[N / 2 - 1]) * 0.5;
+        } else {
+          medians[i] = data[Math.floor(N / 2)];
+        }
+      }
+
+      return medians;
+    };
+
+    exports.mode = function mode(matrix) {
+      var rows = matrix.length,
+          cols = matrix[0].length,
+          modes = new Array(cols),
+          i,
+          j;
+
+      for (i = 0; i < cols; i++) {
+        var itemCount = new Array(rows);
+
+        for (var k = 0; k < rows; k++) {
+          itemCount[k] = 0;
+        }
+
+        var itemArray = new Array(rows);
+        var count = 0;
+
+        for (j = 0; j < rows; j++) {
+          var index = itemArray.indexOf(matrix[j][i]);
+
+          if (index >= 0) {
+            itemCount[index]++;
+          } else {
+            itemArray[count] = matrix[j][i];
+            itemCount[count] = 1;
+            count++;
+          }
+        }
+
+        var maxValue = 0,
+            maxIndex = 0;
+
+        for (j = 0; j < count; j++) {
+          if (itemCount[j] > maxValue) {
+            maxValue = itemCount[j];
+            maxIndex = j;
+          }
+        }
+
+        modes[i] = itemArray[maxIndex];
+      }
+
+      return modes;
+    };
+
+    exports.skewness = function skewness(matrix, unbiased) {
+      if (typeof unbiased === 'undefined') unbiased = true;
+      var means = exports.mean(matrix);
+      var n = matrix.length,
+          l = means.length;
+      var skew = new Array(l);
+
+      for (var j = 0; j < l; j++) {
+        var s2 = 0,
+            s3 = 0;
+
+        for (var i = 0; i < n; i++) {
+          var dev = matrix[i][j] - means[j];
+          s2 += dev * dev;
+          s3 += dev * dev * dev;
+        }
+
+        var m2 = s2 / n;
+        var m3 = s3 / n;
+        var g = m3 / Math.pow(m2, 3 / 2);
+
+        if (unbiased) {
+          var a = Math.sqrt(n * (n - 1));
+          var b = n - 2;
+          skew[j] = a / b * g;
+        } else {
+          skew[j] = g;
+        }
+      }
+
+      return skew;
+    };
+
+    exports.kurtosis = function kurtosis(matrix, unbiased) {
+      if (typeof unbiased === 'undefined') unbiased = true;
+      var means = exports.mean(matrix);
+      var n = matrix.length,
+          m = matrix[0].length;
+      var kurt = new Array(m);
+
+      for (var j = 0; j < m; j++) {
+        var s2 = 0,
+            s4 = 0;
+
+        for (var i = 0; i < n; i++) {
+          var dev = matrix[i][j] - means[j];
+          s2 += dev * dev;
+          s4 += dev * dev * dev * dev;
+        }
+
+        var m2 = s2 / n;
+        var m4 = s4 / n;
+
+        if (unbiased) {
+          var v = s2 / (n - 1);
+          var a = n * (n + 1) / ((n - 1) * (n - 2) * (n - 3));
+          var b = s4 / (v * v);
+          var c = (n - 1) * (n - 1) / ((n - 2) * (n - 3));
+          kurt[j] = a * b - 3 * c;
+        } else {
+          kurt[j] = m4 / (m2 * m2) - 3;
+        }
+      }
+
+      return kurt;
+    };
+
+    exports.standardError = function standardError(matrix) {
+      var samples = matrix.length;
+      var standardDeviations = exports.standardDeviation(matrix);
+      var l = standardDeviations.length;
+      var standardErrors = new Array(l);
+      var sqrtN = Math.sqrt(samples);
+
+      for (var i = 0; i < l; i++) {
+        standardErrors[i] = standardDeviations[i] / sqrtN;
+      }
+
+      return standardErrors;
+    };
+
+    exports.covariance = function covariance(matrix, dimension) {
+      return exports.scatter(matrix, undefined, dimension);
+    };
+
+    exports.scatter = function scatter(matrix, divisor, dimension) {
+      if (typeof dimension === 'undefined') {
+        dimension = 0;
+      }
+
+      if (typeof divisor === 'undefined') {
+        if (dimension === 0) {
+          divisor = matrix.length - 1;
+        } else if (dimension === 1) {
+          divisor = matrix[0].length - 1;
+        }
+      }
+
+      var means = exports.mean(matrix, dimension);
+      var rows = matrix.length;
+
+      if (rows === 0) {
+        return [[]];
+      }
+
+      var cols = matrix[0].length,
+          cov,
+          i,
+          j,
+          s,
+          k;
+
+      if (dimension === 0) {
+        cov = new Array(cols);
+
+        for (i = 0; i < cols; i++) {
+          cov[i] = new Array(cols);
+        }
+
+        for (i = 0; i < cols; i++) {
+          for (j = i; j < cols; j++) {
+            s = 0;
+
+            for (k = 0; k < rows; k++) {
+              s += (matrix[k][j] - means[j]) * (matrix[k][i] - means[i]);
+            }
+
+            s /= divisor;
+            cov[i][j] = s;
+            cov[j][i] = s;
+          }
+        }
+      } else if (dimension === 1) {
+        cov = new Array(rows);
+
+        for (i = 0; i < rows; i++) {
+          cov[i] = new Array(rows);
+        }
+
+        for (i = 0; i < rows; i++) {
+          for (j = i; j < rows; j++) {
+            s = 0;
+
+            for (k = 0; k < cols; k++) {
+              s += (matrix[j][k] - means[j]) * (matrix[i][k] - means[i]);
+            }
+
+            s /= divisor;
+            cov[i][j] = s;
+            cov[j][i] = s;
+          }
+        }
+      } else {
+        throw new Error('Invalid dimension');
+      }
+
+      return cov;
+    };
+
+    exports.correlation = function correlation(matrix) {
+      var means = exports.mean(matrix),
+          standardDeviations = exports.standardDeviation(matrix, true, means),
+          scores = exports.zScores(matrix, means, standardDeviations),
+          rows = matrix.length,
+          cols = matrix[0].length,
+          i,
+          j;
+      var cor = new Array(cols);
+
+      for (i = 0; i < cols; i++) {
+        cor[i] = new Array(cols);
+      }
+
+      for (i = 0; i < cols; i++) {
+        for (j = i; j < cols; j++) {
+          var c = 0;
+
+          for (var k = 0, l = scores.length; k < l; k++) {
+            c += scores[k][j] * scores[k][i];
+          }
+
+          c /= rows - 1;
+          cor[i][j] = c;
+          cor[j][i] = c;
+        }
+      }
+
+      return cor;
+    };
+
+    exports.zScores = function zScores(matrix, means, standardDeviations) {
+      means = means || exports.mean(matrix);
+      if (typeof standardDeviations === 'undefined') standardDeviations = exports.standardDeviation(matrix, true, means);
+      return exports.standardize(exports.center(matrix, means, false), standardDeviations, true);
+    };
+
+    exports.center = function center(matrix, means, inPlace) {
+      means = means || exports.mean(matrix);
+      var result = matrix,
+          l = matrix.length,
+          i,
+          j,
+          jj;
+
+      if (!inPlace) {
+        result = new Array(l);
+
+        for (i = 0; i < l; i++) {
+          result[i] = new Array(matrix[i].length);
+        }
+      }
+
+      for (i = 0; i < l; i++) {
+        var row = result[i];
+
+        for (j = 0, jj = row.length; j < jj; j++) {
+          row[j] = matrix[i][j] - means[j];
+        }
+      }
+
+      return result;
+    };
+
+    exports.standardize = function standardize(matrix, standardDeviations, inPlace) {
+      if (typeof standardDeviations === 'undefined') standardDeviations = exports.standardDeviation(matrix);
+      var result = matrix,
+          l = matrix.length,
+          i,
+          j,
+          jj;
+
+      if (!inPlace) {
+        result = new Array(l);
+
+        for (i = 0; i < l; i++) {
+          result[i] = new Array(matrix[i].length);
+        }
+      }
+
+      for (i = 0; i < l; i++) {
+        var resultRow = result[i];
+        var sourceRow = matrix[i];
+
+        for (j = 0, jj = resultRow.length; j < jj; j++) {
+          if (standardDeviations[j] !== 0 && !isNaN(standardDeviations[j])) {
+            resultRow[j] = sourceRow[j] / standardDeviations[j];
+          }
+        }
+      }
+
+      return result;
+    };
+
+    exports.weightedVariance = function weightedVariance(matrix, weights) {
+      var means = exports.mean(matrix);
+      var rows = matrix.length;
+      if (rows === 0) return [];
+      var cols = matrix[0].length;
+      var vari = new Array(cols);
+
+      for (var j = 0; j < cols; j++) {
+        var sum = 0;
+        var a = 0,
+            b = 0;
+
+        for (var i = 0; i < rows; i++) {
+          var z = matrix[i][j] - means[j];
+          var w = weights[i];
+          sum += w * (z * z);
+          b += w;
+          a += w * w;
+        }
+
+        vari[j] = sum * (b / (b * b - a));
+      }
+
+      return vari;
+    };
+
+    exports.weightedMean = function weightedMean(matrix, weights, dimension) {
+      if (typeof dimension === 'undefined') {
+        dimension = 0;
+      }
+
+      var rows = matrix.length;
+      if (rows === 0) return [];
+      var cols = matrix[0].length,
+          means,
+          i,
+          ii,
+          j,
+          w,
+          row;
+
+      if (dimension === 0) {
+        means = new Array(cols);
+
+        for (i = 0; i < cols; i++) {
+          means[i] = 0;
+        }
+
+        for (i = 0; i < rows; i++) {
+          row = matrix[i];
+          w = weights[i];
+
+          for (j = 0; j < cols; j++) {
+            means[j] += row[j] * w;
+          }
+        }
+      } else if (dimension === 1) {
+        means = new Array(rows);
+
+        for (i = 0; i < rows; i++) {
+          means[i] = 0;
+        }
+
+        for (j = 0; j < rows; j++) {
+          row = matrix[j];
+          w = weights[j];
+
+          for (i = 0; i < cols; i++) {
+            means[j] += row[i] * w;
+          }
+        }
+      } else {
+        throw new Error('Invalid dimension');
+      }
+
+      var weightSum = array.sum(weights);
+
+      if (weightSum !== 0) {
+        for (i = 0, ii = means.length; i < ii; i++) {
+          means[i] /= weightSum;
+        }
+      }
+
+      return means;
+    };
+
+    exports.weightedCovariance = function weightedCovariance(matrix, weights, means, dimension) {
+      dimension = dimension || 0;
+      means = means || exports.weightedMean(matrix, weights, dimension);
+      var s1 = 0,
+          s2 = 0;
+
+      for (var i = 0, ii = weights.length; i < ii; i++) {
+        s1 += weights[i];
+        s2 += weights[i] * weights[i];
+      }
+
+      var factor = s1 / (s1 * s1 - s2);
+      return exports.weightedScatter(matrix, weights, means, factor, dimension);
+    };
+
+    exports.weightedScatter = function weightedScatter(matrix, weights, means, factor, dimension) {
+      dimension = dimension || 0;
+      means = means || exports.weightedMean(matrix, weights, dimension);
+
+      if (typeof factor === 'undefined') {
+        factor = 1;
+      }
+
+      var rows = matrix.length;
+
+      if (rows === 0) {
+        return [[]];
+      }
+
+      var cols = matrix[0].length,
+          cov,
+          i,
+          j,
+          k,
+          s;
+
+      if (dimension === 0) {
+        cov = new Array(cols);
+
+        for (i = 0; i < cols; i++) {
+          cov[i] = new Array(cols);
+        }
+
+        for (i = 0; i < cols; i++) {
+          for (j = i; j < cols; j++) {
+            s = 0;
+
+            for (k = 0; k < rows; k++) {
+              s += weights[k] * (matrix[k][j] - means[j]) * (matrix[k][i] - means[i]);
+            }
+
+            cov[i][j] = s * factor;
+            cov[j][i] = s * factor;
+          }
+        }
+      } else if (dimension === 1) {
+        cov = new Array(rows);
+
+        for (i = 0; i < rows; i++) {
+          cov[i] = new Array(rows);
+        }
+
+        for (i = 0; i < rows; i++) {
+          for (j = i; j < rows; j++) {
+            s = 0;
+
+            for (k = 0; k < cols; k++) {
+              s += weights[k] * (matrix[j][k] - means[j]) * (matrix[i][k] - means[i]);
+            }
+
+            cov[i][j] = s * factor;
+            cov[j][i] = s * factor;
+          }
+        }
+      } else {
+        throw new Error('Invalid dimension');
+      }
+
+      return cov;
+    };
+  });
+  var matrix_1 = matrix.max;
+  var matrix_2 = matrix.min;
+  var matrix_3 = matrix.minMax;
+  var matrix_4 = matrix.entropy;
+  var matrix_5 = matrix.mean;
+  var matrix_6 = matrix.sum;
+  var matrix_7 = matrix.product;
+  var matrix_8 = matrix.standardDeviation;
+  var matrix_9 = matrix.variance;
+  var matrix_10 = matrix.median;
+  var matrix_11 = matrix.mode;
+  var matrix_12 = matrix.skewness;
+  var matrix_13 = matrix.kurtosis;
+  var matrix_14 = matrix.standardError;
+  var matrix_15 = matrix.covariance;
+  var matrix_16 = matrix.scatter;
+  var matrix_17 = matrix.correlation;
+  var matrix_18 = matrix.zScores;
+  var matrix_19 = matrix.center;
+  var matrix_20 = matrix.standardize;
+  var matrix_21 = matrix.weightedVariance;
+  var matrix_22 = matrix.weightedMean;
+  var matrix_23 = matrix.weightedCovariance;
+  var matrix_24 = matrix.weightedScatter;
+
+  var fftlib$1 = createCommonjsModule(function (module, exports) {
+    /**
+     * Fast Fourier Transform module
+     * 1D-FFT/IFFT, 2D-FFT/IFFT (radix-2)
+     */
+    var FFT = function () {
+      var FFT;
+
+      {
+        FFT = exports; // for CommonJS
+      }
+
+      var version = {
+        release: '0.3.0',
+        date: '2013-03'
+      };
+
+      FFT.toString = function () {
+        return "version " + version.release + ", released " + version.date;
+      }; // core operations
+
+
+      var _n = 0,
+          // order
+      _bitrev = null,
+          // bit reversal table
+      _cstb = null; // sin/cos table
+
+      var core = {
+        init: function (n) {
+          if (n !== 0 && (n & n - 1) === 0) {
+            _n = n;
+
+            core._initArray();
+
+            core._makeBitReversalTable();
+
+            core._makeCosSinTable();
+          } else {
+            throw new Error("init: radix-2 required");
+          }
+        },
+        // 1D-FFT
+        fft1d: function (re, im) {
+          core.fft(re, im, 1);
+        },
+        // 1D-IFFT
+        ifft1d: function (re, im) {
+          var n = 1 / _n;
+          core.fft(re, im, -1);
+
+          for (var i = 0; i < _n; i++) {
+            re[i] *= n;
+            im[i] *= n;
+          }
+        },
+        // 1D-IFFT
+        bt1d: function (re, im) {
+          core.fft(re, im, -1);
+        },
+        // 2D-FFT Not very useful if the number of rows have to be equal to cols
+        fft2d: function (re, im) {
+          var tre = [],
+              tim = [],
+              i = 0; // x-axis
+
+          for (var y = 0; y < _n; y++) {
+            i = y * _n;
+
+            for (var x1 = 0; x1 < _n; x1++) {
+              tre[x1] = re[x1 + i];
+              tim[x1] = im[x1 + i];
+            }
+
+            core.fft1d(tre, tim);
+
+            for (var x2 = 0; x2 < _n; x2++) {
+              re[x2 + i] = tre[x2];
+              im[x2 + i] = tim[x2];
+            }
+          } // y-axis
+
+
+          for (var x = 0; x < _n; x++) {
+            for (var y1 = 0; y1 < _n; y1++) {
+              i = x + y1 * _n;
+              tre[y1] = re[i];
+              tim[y1] = im[i];
+            }
+
+            core.fft1d(tre, tim);
+
+            for (var y2 = 0; y2 < _n; y2++) {
+              i = x + y2 * _n;
+              re[i] = tre[y2];
+              im[i] = tim[y2];
+            }
+          }
+        },
+        // 2D-IFFT
+        ifft2d: function (re, im) {
+          var tre = [],
+              tim = [],
+              i = 0; // x-axis
+
+          for (var y = 0; y < _n; y++) {
+            i = y * _n;
+
+            for (var x1 = 0; x1 < _n; x1++) {
+              tre[x1] = re[x1 + i];
+              tim[x1] = im[x1 + i];
+            }
+
+            core.ifft1d(tre, tim);
+
+            for (var x2 = 0; x2 < _n; x2++) {
+              re[x2 + i] = tre[x2];
+              im[x2 + i] = tim[x2];
+            }
+          } // y-axis
+
+
+          for (var x = 0; x < _n; x++) {
+            for (var y1 = 0; y1 < _n; y1++) {
+              i = x + y1 * _n;
+              tre[y1] = re[i];
+              tim[y1] = im[i];
+            }
+
+            core.ifft1d(tre, tim);
+
+            for (var y2 = 0; y2 < _n; y2++) {
+              i = x + y2 * _n;
+              re[i] = tre[y2];
+              im[i] = tim[y2];
+            }
+          }
+        },
+        // core operation of FFT
+        fft: function (re, im, inv) {
+          var d,
+              h,
+              ik,
+              m,
+              tmp,
+              wr,
+              wi,
+              xr,
+              xi,
+              n4 = _n >> 2; // bit reversal
+
+          for (var l = 0; l < _n; l++) {
+            m = _bitrev[l];
+
+            if (l < m) {
+              tmp = re[l];
+              re[l] = re[m];
+              re[m] = tmp;
+              tmp = im[l];
+              im[l] = im[m];
+              im[m] = tmp;
+            }
+          } // butterfly operation
+
+
+          for (var k = 1; k < _n; k <<= 1) {
+            h = 0;
+            d = _n / (k << 1);
+
+            for (var j = 0; j < k; j++) {
+              wr = _cstb[h + n4];
+              wi = inv * _cstb[h];
+
+              for (var i = j; i < _n; i += k << 1) {
+                ik = i + k;
+                xr = wr * re[ik] + wi * im[ik];
+                xi = wr * im[ik] - wi * re[ik];
+                re[ik] = re[i] - xr;
+                re[i] += xr;
+                im[ik] = im[i] - xi;
+                im[i] += xi;
+              }
+
+              h += d;
+            }
+          }
+        },
+        // initialize the array (supports TypedArray)
+        _initArray: function () {
+          if (typeof Uint32Array !== 'undefined') {
+            _bitrev = new Uint32Array(_n);
+          } else {
+            _bitrev = [];
+          }
+
+          if (typeof Float64Array !== 'undefined') {
+            _cstb = new Float64Array(_n * 1.25);
+          } else {
+            _cstb = [];
+          }
+        },
+        // zero padding
+        _paddingZero: function () {// TODO
+        },
+        // makes bit reversal table
+        _makeBitReversalTable: function () {
+          var i = 0,
+              j = 0,
+              k = 0;
+          _bitrev[0] = 0;
+
+          while (++i < _n) {
+            k = _n >> 1;
+
+            while (k <= j) {
+              j -= k;
+              k >>= 1;
+            }
+
+            j += k;
+            _bitrev[i] = j;
+          }
+        },
+        // makes trigonometiric function table
+        _makeCosSinTable: function () {
+          var n2 = _n >> 1,
+              n4 = _n >> 2,
+              n8 = _n >> 3,
+              n2p4 = n2 + n4,
+              t = Math.sin(Math.PI / _n),
+              dc = 2 * t * t,
+              ds = Math.sqrt(dc * (2 - dc)),
+              c = _cstb[n4] = 1,
+              s = _cstb[0] = 0;
+          t = 2 * dc;
+
+          for (var i = 1; i < n8; i++) {
+            c -= dc;
+            dc += t * c;
+            s += ds;
+            ds -= t * s;
+            _cstb[i] = s;
+            _cstb[n4 - i] = c;
+          }
+
+          if (n8 !== 0) {
+            _cstb[n8] = Math.sqrt(0.5);
+          }
+
+          for (var j = 0; j < n4; j++) {
+            _cstb[n2 - j] = _cstb[j];
+          }
+
+          for (var k = 0; k < n2p4; k++) {
+            _cstb[k + n2] = -_cstb[k];
+          }
+        }
+      }; // aliases (public APIs)
+
+      var apis = ['init', 'fft1d', 'ifft1d', 'fft2d', 'ifft2d'];
+
+      for (var i = 0; i < apis.length; i++) {
+        FFT[apis[i]] = core[apis[i]];
+      }
+
+      FFT.bt = core.bt1d;
+      FFT.fft = core.fft1d;
+      FFT.ifft = core.ifft1d;
+      return FFT;
+    }.call(commonjsGlobal);
+  });
+
+  // source: https://en.wikipedia.org/wiki/Gyromagnetic_ratio
+  const gyromagneticRatio = {
+    '1H': 267.52218744e6,
+    '2H': 41.065e6,
+    '3H': 285.3508e6,
+    '3He': -203.789e6,
+    '7Li': 103.962e6,
+    '13C': 67.28284e6,
+    '14N': 19.331e6,
+    '15N': -27.116e6,
+    '17O': -36.264e6,
+    '19F': 251.662e6,
+    '23Na': 70.761e6,
+    '27Al': 69.763e6,
+    '29Si': -53.19e6,
+    '31P': 108.291e6,
+    '57Fe': 8.681e6,
+    '63Cu': 71.118e6,
+    '67Zn': 16.767e6,
+    '129Xe': -73.997e6
+  };
+
+  function postProcessingNMR(entriesFlat) {
+    // specific NMR functions
+    let observeFrequency = 0;
+    let shiftOffsetVal = 0;
+
+    for (let entry of entriesFlat) {
+      for (let spectrum of entry.spectra) {
+        if (entry.ntuples && entry.ntuples.symbol) {
+          if (!observeFrequency && spectrum.observeFrequency) {
+            observeFrequency = spectrum.observeFrequency;
+          }
+
+          if (!shiftOffsetVal && spectrum.shiftOffsetVal) {
+            shiftOffsetVal = spectrum.shiftOffsetVal;
+          }
+        } else {
+          observeFrequency = spectrum.observeFrequency;
+          shiftOffsetVal = spectrum.shiftOffsetVal;
+        }
+
+        if (observeFrequency) {
+          if (spectrum.xUnits && spectrum.xUnits.toUpperCase().includes('HZ')) {
+            spectrum.xUnits = 'PPM';
+            spectrum.xFactor = spectrum.xFactor / observeFrequency;
+            spectrum.firstX = spectrum.firstX / observeFrequency;
+            spectrum.lastX = spectrum.lastX / observeFrequency;
+            spectrum.deltaX = spectrum.deltaX / observeFrequency;
+
+            for (let i = 0; i < spectrum.data.x.length; i++) {
+              spectrum.data.x[i] /= observeFrequency;
+            }
+          }
+        }
+
+        if (shiftOffsetVal) {
+          let shift = spectrum.firstX - shiftOffsetVal;
+          spectrum.firstX = spectrum.firstX - shift;
+          spectrum.lastX = spectrum.lastX - shift;
+
+          for (let i = 0; i < spectrum.data.x.length; i++) {
+            spectrum.data.x[i] -= shift;
+          }
+        }
+
+        if (observeFrequency && entry.ntuples && entry.ntuples.symbol && entry.ntuples.nucleus) {
+          let unit = '';
+          let pageSymbolIndex = entry.ntuples.symbol.indexOf(spectrum.pageSymbol);
+
+          if (entry.ntuples.units && entry.ntuples.units[pageSymbolIndex]) {
+            unit = entry.ntuples.units[pageSymbolIndex];
+          }
+
+          if (unit !== 'PPM') {
+            if (pageSymbolIndex !== 0) {
+              throw Error('Not sure about this ntuples format');
+            }
+
+            let ratio0 = gyromagneticRatio[entry.ntuples.nucleus[0]];
+            let ratio1 = gyromagneticRatio[entry.ntuples.nucleus[1]];
+
+            if (!ratio0 || !ratio1) {
+              throw Error('Problem with determination of gyromagnetic ratio');
+            }
+
+            let ratio = ratio0 / ratio1 * observeFrequency;
+            spectrum.pageValue /= ratio;
+          }
+        }
+      }
+    }
+  }
+
   function profiling(result, action, options) {
     if (result.profiling) {
       result.profiling.push({
@@ -7394,6 +8816,9 @@
   }
 
   function postProcessing(entriesFlat, result, options) {
+    // converting Hz to ppm
+    postProcessingNMR(entriesFlat);
+
     for (let entry of entriesFlat) {
       if (Object.keys(entry.ntuples).length > 0) {
         let newNtuples = [];
@@ -7450,14 +8875,14 @@
       spectrum.variables = {};
 
       for (let symbol of kind) {
+        let lowerCaseSymbol = symbol.toLowerCase();
         let index = currentEntry.ntuples.symbol.indexOf(symbol);
         if (index === -1) throw Error("Symbol undefined: ".concat(symbol));
-        let lowercaseSymbol = symbol.toLowerCase();
-        spectrum.variables[lowercaseSymbol] = {};
+        spectrum.variables[lowerCaseSymbol] = {};
 
         for (let key in currentEntry.ntuples) {
           if (currentEntry.ntuples[key][index]) {
-            spectrum.variables[lowercaseSymbol][key] = currentEntry.ntuples[key][index];
+            spectrum.variables[lowerCaseSymbol][key.replace(/^var/, '')] = currentEntry.ntuples[key][index];
           }
         }
       }
@@ -7524,22 +8949,6 @@
   function prepareSpectrum(spectrum) {
     if (!spectrum.xFactor) spectrum.xFactor = 1;
     if (!spectrum.yFactor) spectrum.yFactor = 1;
-
-    if (spectrum.observeFrequency) {
-      if (spectrum.xUnits && spectrum.xUnits.toUpperCase() === 'HZ') {
-        spectrum.xUnits = 'PPM';
-        spectrum.xFactor = spectrum.xFactor / spectrum.observeFrequency;
-        spectrum.firstX = spectrum.firstX / spectrum.observeFrequency;
-        spectrum.lastX = spectrum.lastX / spectrum.observeFrequency;
-        spectrum.deltaX = spectrum.deltaX / spectrum.observeFrequency;
-      }
-    }
-
-    if (spectrum.shiftOffsetVal) {
-      let shift = spectrum.firstX - spectrum.shiftOffsetVal;
-      spectrum.firstX = spectrum.firstX - shift;
-      spectrum.lastX = spectrum.lastX - shift;
-    }
   }
 
   const ntuplesSeparator = /[ \t]*,[ \t]*/;
@@ -7739,10 +9148,6 @@
         if (!spectrum.xType) {
           currentEntry.xType = dataValue.replace(/[^a-zA-Z0-9]/g, '');
         }
-      } else if (canonicDataLabel === '$SFO2') {
-        if (!currentEntry.indirectFrequency) {
-          currentEntry.indirectFrequency = parseFloat(dataValue);
-        }
       } else if (canonicDataLabel === '$OFFSET') {
         // OFFSET for Bruker spectra
         currentEntry.shiftOffsetNum = 0;
@@ -7773,6 +9178,10 @@
       } else if (canonicDataLabel === 'MAX') {
         currentEntry.ntuples.max = convertToFloatArray(dataValue.split(ntuplesSeparator));
       } else if (canonicDataLabel === '.NUCLEUS') {
+        if (currentEntry.ntuples) {
+          currentEntry.ntuples.nucleus = dataValue.split(ntuplesSeparator);
+        }
+
         if (currentEntry.twoD) {
           currentEntry.yType = dataValue.split(ntuplesSeparator)[0];
         }
@@ -7780,16 +9189,6 @@
         spectrum.page = dataValue.trim();
         spectrum.pageValue = parseFloat(dataValue.replace(/^.*=/, ''));
         spectrum.pageSymbol = spectrum.page.replace(/[=].*/, '');
-        let pageSymbolIndex = currentEntry.ntuples.symbol.indexOf(spectrum.pageSymbol);
-        let unit = '';
-
-        if (currentEntry.ntuples.units && currentEntry.ntuples.units[pageSymbolIndex]) {
-          unit = currentEntry.ntuples.units[pageSymbolIndex];
-        }
-
-        if (currentEntry.indirectFrequency && unit !== 'PPM') {
-          spectrum.pageValue /= currentEntry.indirectFrequency;
-        }
       } else if (canonicDataLabel === 'RETENTIONTIME') {
         spectrum.pageValue = parseFloat(dataValue);
       } else if (isMSField(canonicDataLabel)) {
@@ -7864,12 +9263,34 @@
     });
 
     for (let entry of converted.flatten) {
-      let currentSpectrum = entry.spectra[0];
-      let xLabel = currentSpectrum.xUnits || 'x';
-      let yLabel = currentSpectrum.yUnits || 'y';
-      analysis.pushSpectrum(currentSpectrum.data, {
-        xLabel,
-        yLabel,
+      let currentSpectrum = entry.spectra[0]; // we ensure variables
+
+      if (!currentSpectrum.variables) {
+        const variables = {};
+        currentSpectrum.variables = variables;
+        variables.x = {
+          label: currentSpectrum.xUnits,
+          symbol: 'X',
+          data: currentSpectrum.data.x || currentSpectrum.data.X
+        };
+        variables.y = {
+          label: currentSpectrum.yUnits,
+          symbol: 'Y',
+          data: currentSpectrum.data.y || currentSpectrum.data.Y
+        };
+      } else {
+        for (let key in currentSpectrum.variables) {
+          const variable = currentSpectrum.variables[key];
+          if (variable.label) continue;
+          variable.label = variable.name || variable.symbol || key;
+
+          if (variable.units && !variable.label.includes(variable.units)) {
+            variable.label += " [".concat(variable.units, "]");
+          }
+        }
+      }
+
+      analysis.pushSpectrum(currentSpectrum.variables, {
         dataType: entry.dataType,
         title: entry.title,
         meta: entry.meta
@@ -8022,11 +9443,88 @@
 
   /**
    * Parse from a xyxy data array
-   * @param {Array<Array<number>>} data
+   * @param {Array<Array<number>>} variables
    * @param {object} [meta] - same metadata object format that the fromText
    * @return {string} JCAMP of the input
    */
-  function creator(data, options = {}) {
+
+  function creatorNtuples(variables, options) {
+    const {
+      meta = {},
+      info = {}
+    } = options;
+    const {
+      title = '',
+      owner = '',
+      origin = '',
+      dataType = ''
+    } = info;
+    const symbol = [];
+    const varName = [];
+    const varType = [];
+    const varDim = [];
+    const units = [];
+    const first = [];
+    const last = [];
+    const min$1 = [];
+    const max$1 = [];
+    const keys = Object.keys(variables);
+
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i];
+      let variable = variables[key];
+      let name = variable.label && variable.label.replace(/ *\[.*/, '');
+      let unit = variable.label && variable.label.replace(/.*\[(.*)\].*/, '$1');
+      symbol.push(variable.symbol || key);
+      varName.push(variable.name || name || key);
+      varDim.push(variables[key].data.length);
+      varType.push(i === 0 ? 'INDEPENDENT' : 'DEPENDENT');
+      units.push(variable.units || unit || '');
+      first.push(variables[key][0]);
+      last.push(variables[key][variables[key].length - 1]);
+      min$1.push(min(variables[key].data));
+      max$1.push(max(variables[key].data));
+    }
+
+    let header = "##TITLE=".concat(title, "\n##JCAMP-DX=6.00\n##DATA TYPE=").concat(dataType, "\n##ORIGIN=").concat(origin, "\n##OWNER=").concat(owner, "\n");
+
+    for (const key of Object.keys(meta)) {
+      header += "##$".concat(key, "=").concat(meta[key], "\n");
+    }
+
+    header += "##NTUPLES= ".concat(dataType, "\n##VAR_NAME=  ").concat(varName.join(), "\n##SYMBOL=    ").concat(symbol.join(), "\n##VAR_TYPE=  ").concat(varType.join(), "\n##VAR_DIM=   ").concat(varDim.join(), "\n##UNITS=     ").concat(units.join(), "\n##PAGE= N=1\n");
+    header += "##DATA TABLE= (".concat(symbol.join(''), "..").concat(symbol.join(''), "), PEAKS\n");
+
+    for (let i = 0; i < variables[keys[0]].data.length; i++) {
+      let point = [];
+
+      for (let key of keys) {
+        point.push(variables[key].data[i]);
+      }
+
+      header += "".concat(point.join('\t'), "\n");
+    }
+
+    header += '##END';
+    return header;
+  }
+
+  /**
+   * Create a jcamp
+   * @param {object} data - object of array
+   * @param {object} [options={}] - metadata object
+   * @param {string} [options.info={}] - metadata of the file
+   * @param {string} [options.info.title = ''] - title of the file
+   * @param {string} [options.info.owner = ''] - owner of the file
+   * @param {string} [options.info.origin = ''] - origin of the file
+   * @param {string} [options.info.dataType = ''] - type of data
+   * @param {string} [options.info.xUnits = ''] - units for the x axis for variables===undefined
+   * @param {string} [options.info.yUnits = ''] - units for the y axis for variables===undefined
+   * @param {object} [options.meta = {}] - comments to add to the file
+
+   * @return {string} JCAMP of the input
+   */
+  function fromJSON(data, options = {}) {
     const {
       meta = {},
       info = {}
@@ -8079,97 +9577,42 @@
   }
 
   /**
-   * Parse from a xyxy data array
-   * @param {Array<Array<number>>} data
-   * @param {object} [meta] - same metadata object format that the fromText
-   * @return {string} JCAMP of the input
-   */
-
-  function creatorNtuples(data, options) {
-    const {
-      variables,
-      meta = {},
-      info = {}
-    } = options;
-    const {
-      title = '',
-      owner = '',
-      origin = '',
-      dataType = ''
-    } = info;
-    const symbol = [];
-    const varName = [];
-    const varType = [];
-    const varDim = [];
-    const units = [];
-    const first = [];
-    const last = [];
-    const min$1 = [];
-    const max$1 = [];
-    const keys = Object.keys(variables);
-
-    for (let i = 0; i < keys.length; i++) {
-      const key = keys[i];
-      let variable = variables[key];
-      symbol.push(key.toUpperCase());
-      varName.push(variable.varName || key);
-      varDim.push(data[key].length);
-      varType.push(i === 0 ? 'INDEPENDENT' : 'DEPENDENT');
-      units.push(variable.units || '');
-      first.push(data[key][0]);
-      last.push(data[key][data[key].length - 1]);
-      min$1.push(min(data[key]));
-      max$1.push(max(data[key]));
-    }
-
-    let header = "##TITLE=".concat(title, "\n##JCAMP-DX=6.00\n##DATA TYPE=").concat(dataType, "\n##ORIGIN=").concat(origin, "\n##OWNER=").concat(owner, "\n##NTUPLES= ").concat(dataType, "\n##VAR_NAME=  Weight,        Temperature,     Time\n##SYMBOL=    ").concat(symbol.join(), "\n##VAR_TYPE=  ").concat(varType.join(), "\n##VAR_DIM=   ").concat(varDim.join(), "\n##UNITS=     ").concat(units.join(), "\n##PAGE= N=1\n");
-
-    for (const key of Object.keys(meta)) {
-      header += "##$".concat(key, "=").concat(meta[key], "\n");
-    }
-
-    header += "##DATA TABLE= (".concat(symbol.join(''), "..").concat(symbol.join(''), "), PEAKS\n");
-
-    for (let i = 0; i < data[keys[0]].length; i++) {
-      let point = [];
-
-      for (let key of keys) {
-        point.push(data[key][i]);
-      }
-
-      header += "".concat(point.join('\t'), "\n");
-    }
-
-    header += '##END';
-    return header;
-  }
-
-  /**
-   * Create a jcamp or if variables is specified a NTUPLES JCAMP
-   * @param {object} data - object of array
-   * @param {object} [options={}] - metadata object
-   * @param {object} [options.variables={}] - variables metadata like {x:{units:'°C'},y:{units:'s'}}
+   * Create a jcamp from variables
+   * @param {Array<Variable} [variables={}] - object of variables
    * @param {string} [options.info={}] - metadata of the file
    * @param {string} [options.info.title = ''] - title of the file
    * @param {string} [options.info.owner = ''] - owner of the file
    * @param {string} [options.info.origin = ''] - origin of the file
    * @param {string} [options.info.dataType = ''] - type of data
-   * @param {string} [options.info.xUnits = ''] - units for the x axis for variables===undefined
-   * @param {string} [options.info.yUnits = ''] - units for the y axis for variables===undefined
    * @param {object} [options.meta = {}] - comments to add to the file
-
-   * @return {string} JCAMP of the input
+   * @param {object} [options.forceNtuples = false] - force the ntuples format even if there is only x and y variables
    */
 
-  function fromJSON(data, options = {}) {
+  function fromVariables(variables = {}, options = {}) {
     const {
-      variables
+      info,
+      meta,
+      forceNtuples
     } = options;
+    let jcampOptions = {
+      info,
+      meta
+    };
+    let keys = Object.keys(variables).map(key => key.toLowerCase());
 
-    if (variables) {
-      return creatorNtuples(data, options);
+    if (keys.length === 2 && keys.includes('x') && keys.includes('y') && !forceNtuples) {
+      let x = variables.x;
+      let xLabel = x.label || x.name || 'x';
+      jcampOptions.info.xUnits = xLabel.includes(variables.x.units) ? xLabel : "".concat(xLabel, " [").concat(variables.x.units, "]");
+      let y = variables.y;
+      let yLabel = y.label || y.name || 'y';
+      jcampOptions.info.yUnits = yLabel.includes(variables.y.units) ? yLabel : "".concat(yLabel, " [").concat(variables.y.units, "]");
+      return fromJSON({
+        x: variables.x.data,
+        y: variables.y.data
+      }, jcampOptions);
     } else {
-      return creator(data, options);
+      return creatorNtuples(variables, options);
     }
   }
 
@@ -8189,9 +9632,8 @@
       meta = {}
     } = options;
     let jcampOptions = {
+      options: {},
       info: {
-        xUnits: spectrum.xLabel.includes(spectrum.xUnits) ? spectrum.xLabel : "".concat(spectrum.xLabel, " [").concat(spectrum.xUnits, "]"),
-        yUnits: spectrum.yLabel.includes(spectrum.yUnits) ? spectrum.yLabel : "".concat(spectrum.yLabel, " [").concat(spectrum.yUnits, "]"),
         title: spectrum.title,
         dataType: spectrum.dataType,
         ...info
@@ -8200,10 +9642,7 @@
         ...meta
       }
     };
-    return fromJSON({
-      x: spectrum.x,
-      y: spectrum.y
-    }, jcampOptions);
+    return fromVariables(spectrum.variables, jcampOptions);
   }
 
   function parsePerkinElmer(text) {
@@ -8236,7 +9675,7 @@
         result.meta[(section ? "".concat(section, "_") : '') + description] = value;
       } else if (line.match(/^[0-9\t .]+$/)) {
         let fields = line.replace(/^\t/, '').split('\t');
-        result.data.time.push(Number(fields[0]));
+        result.data.time.push(Number(fields[0] * 60));
         result.data.weight.push(Number(fields[1]));
         result.data.temperature.push(Number(fields[4]));
       }
@@ -8263,25 +9702,32 @@
     let analysis = new Analysis();
     let spectrum = parsePerkinElmer(text);
     analysis.pushSpectrum({
-      x: spectrum.data.temperature,
-      y: spectrum.data.weight
+      x: {
+        data: spectrum.data.temperature,
+        label: 'Temperature [°C]'
+      },
+      y: {
+        data: spectrum.data.weight,
+        label: 'Weight [mg]'
+      }
     }, {
-      xLabel: 'Temperature [°C]',
-      yLabel: 'Weight [mg]',
       dataType: 'TGA',
       title: spectrum.meta['Sample ID'],
       meta: spectrum.meta
     });
     analysis.pushSpectrum({
-      x: spectrum.data.time,
-      y: spectrum.data.weight
+      x: {
+        data: spectrum.data.time,
+        label: 'Time [s]'
+      },
+      y: {
+        data: spectrum.data.weight,
+        label: 'Weight [mg]'
+      }
     }, {
-      xLabel: 'Time [s]',
-      yLabel: 'Weight [mg]',
       dataType: 'TGA',
       title: spectrum.meta['Sample ID'],
-      meta: spectrum.meta,
-      flavor: 'weightVersusTime'
+      meta: spectrum.meta
     });
     return analysis;
   }
@@ -9077,18 +10523,32 @@
     }).data;
     let analysis = new Analysis();
     analysis.pushSpectrum({
-      x: parsed.map(d => d['Sample Temperature']),
-      y: parsed.map(d => d['Unsubtracted Weight'])
+      x: {
+        data: parsed.map(d => d['Program Temperature']),
+        label: 'Program temperature [°C]'
+      },
+      y: {
+        data: parsed.map(d => d['Unsubtracted Weight']),
+        label: 'Weight [mg]'
+      },
+      t: {
+        data: parsed.map(d => d['Sample Temperature']),
+        label: 'Sample temperature [°C]'
+      }
     }, {
-      xLabel: 'Temperature [°C]',
-      yLabel: 'Weight [mg]'
+      dataType: 'TGA'
     });
     analysis.pushSpectrum({
-      x: parsed.map(d => d.Time),
-      y: parsed.map(d => d['Unsubtracted Weight'])
+      x: {
+        data: parsed.map(d => d.Time),
+        label: 'Time [s]'
+      },
+      y: {
+        data: parsed.map(d => d['Unsubtracted Weight']),
+        label: 'Weight [mg]'
+      }
     }, {
-      xLabel: 'Time [s]',
-      yLabel: 'Weight [mg]'
+      dataType: 'TGA'
     });
     return analysis;
   }
