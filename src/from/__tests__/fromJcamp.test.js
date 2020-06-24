@@ -12,15 +12,15 @@ test('fromJcamp', () => {
 
   let spectrum1 = analysis.getSpectrum({ index: 0 });
 
-  expect(spectrum1.x).toHaveLength(2251);
-  expect(spectrum1.y).toHaveLength(2251);
-  expect(spectrum1.xLabel).toStrictEqual('Ts [°C]');
-  expect(spectrum1.yLabel).toStrictEqual('Value [mg]');
+  expect(spectrum1.variables.x.data).toHaveLength(2251);
+  expect(spectrum1.variables.y.data).toHaveLength(2251);
+  expect(spectrum1.variables.x.label).toStrictEqual('Ts [°C]');
+  expect(spectrum1.variables.y.label).toStrictEqual('Value [mg]');
 
   let spectrum2 = analysis.getSpectrum({ index: 1 });
 
-  expect(spectrum2.x).toHaveLength(2251);
-  expect(spectrum2.y).toHaveLength(2251);
-  expect(spectrum2.xLabel).toStrictEqual('t [s]');
-  expect(spectrum2.yLabel).toStrictEqual('Value [mg]');
+  expect(spectrum2.variables.x.data).toHaveLength(2251);
+  expect(spectrum2.variables.y.data).toHaveLength(2251);
+  expect(spectrum2.variables.x.label).toStrictEqual('t [s]');
+  expect(spectrum2.variables.y.label).toStrictEqual('Value [mg]');
 });

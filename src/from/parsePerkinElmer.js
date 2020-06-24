@@ -20,7 +20,7 @@ export function parsePerkinElmer(text) {
       result.meta[(section ? `${section}_` : '') + description] = value;
     } else if (line.match(/^[0-9\t .]+$/)) {
       let fields = line.replace(/^\t/, '').split('\t');
-      result.data.time.push(Number(fields[0]));
+      result.data.time.push(Number(fields[0] * 60));
       result.data.weight.push(Number(fields[1]));
       result.data.temperature.push(Number(fields[4]));
     } else {

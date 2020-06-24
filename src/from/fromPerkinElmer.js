@@ -10,25 +10,39 @@ import { parsePerkinElmer } from './parsePerkinElmer';
 export function fromPerkinElmer(text) {
   let analysis = new Analysis();
   let spectrum = parsePerkinElmer(text);
+
   analysis.pushSpectrum(
-    { x: spectrum.data.temperature, y: spectrum.data.weight },
     {
-      xLabel: 'Temperature [°C]',
-      yLabel: 'Weight [mg]',
+      x: {
+        data: spectrum.data.temperature,
+        label: 'Temperature [°C]',
+      },
+      y: {
+        data: spectrum.data.weight,
+        label: 'Weight [mg]',
+      },
+    },
+    {
       dataType: 'TGA',
       title: spectrum.meta['Sample ID'],
       meta: spectrum.meta,
     },
   );
   analysis.pushSpectrum(
-    { x: spectrum.data.time, y: spectrum.data.weight },
     {
-      xLabel: 'Time [s]',
-      yLabel: 'Weight [mg]',
+      x: {
+        data: spectrum.data.time,
+        label: 'Time [s]',
+      },
+      y: {
+        data: spectrum.data.weight,
+        label: 'Weight [mg]',
+      },
+    },
+    {
       dataType: 'TGA',
       title: spectrum.meta['Sample ID'],
       meta: spectrum.meta,
-      flavor: 'weightVersusTime',
     },
   );
   return analysis;

@@ -13,26 +13,35 @@ export function fromPerkinElmerCSV(text) {
     header: true,
     dynamicTyping: true,
   }).data;
+
   let analysis = new Analysis();
   analysis.pushSpectrum(
     {
-      x: parsed.map((d) => d['Sample Temperature']),
-      y: parsed.map((d) => d['Unsubtracted Weight']),
+      x: {
+        data: parsed.map((d) => d['Program Temperature']),
+        label: 'Program temperature [°C]',
+      },
+      y: {
+        data: parsed.map((d) => d['Unsubtracted Weight']),
+        label: 'Weight [mg]',
+      },
+      t: {
+        data: parsed.map((d) => d['Sample Temperature']),
+        label: 'Sample temperature [°C]',
+      },
     },
-    {
-      xLabel: 'Temperature [°C]',
-      yLabel: 'Weight [mg]',
-    },
+    { dataType: 'TGA' },
   );
+
   analysis.pushSpectrum(
     {
-      x: parsed.map((d) => d.Time),
-      y: parsed.map((d) => d['Unsubtracted Weight']),
+      x: { data: parsed.map((d) => d.Time), label: 'Time [s]' },
+      y: {
+        data: parsed.map((d) => d['Unsubtracted Weight']),
+        label: 'Weight [mg]',
+      },
     },
-    {
-      xLabel: 'Time [s]',
-      yLabel: 'Weight [mg]',
-    },
+    { dataType: 'TGA' },
   );
   return analysis;
 }

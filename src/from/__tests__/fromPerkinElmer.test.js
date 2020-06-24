@@ -12,19 +12,19 @@ test('fromPerkinElmer', () => {
 
   let spectrum1 = analysis.getSpectrum();
 
-  expect(spectrum1.x).toHaveLength(1155);
-  expect(spectrum1.y).toHaveLength(1155);
-  expect(spectrum1.xLabel).toStrictEqual('Temperature [°C]');
-  expect(spectrum1.yLabel).toStrictEqual('Weight [mg]');
-  expect(spectrum1.xUnits).toStrictEqual('°C');
-  expect(spectrum1.yUnits).toStrictEqual('mg');
+  expect(spectrum1.variables.x.data).toHaveLength(1155);
+  expect(spectrum1.variables.y.data).toHaveLength(1155);
+  expect(spectrum1.variables.x.label).toStrictEqual('Temperature [°C]');
+  expect(spectrum1.variables.y.label).toStrictEqual('Weight [mg]');
+  expect(spectrum1.variables.x.units).toStrictEqual('°C');
+  expect(spectrum1.variables.y.units).toStrictEqual('mg');
 
   let spectrum2 = analysis.getSpectrum({ flavor: 'mg vs s' });
 
-  expect(spectrum2.x).toHaveLength(1155);
-  expect(spectrum2.y).toHaveLength(1155);
-  expect(spectrum2.xLabel).toStrictEqual('Time [s]');
-  expect(spectrum2.yLabel).toStrictEqual('Weight [mg]');
-  expect(spectrum2.xUnits).toStrictEqual('s');
-  expect(spectrum2.yUnits).toStrictEqual('mg');
+  expect(spectrum2.variables.x.data).toHaveLength(1155);
+  expect(spectrum2.variables.y.data).toHaveLength(1155);
+  expect(spectrum2.variables.x.label).toStrictEqual('Time [s]');
+  expect(spectrum2.variables.y.label).toStrictEqual('Weight [mg]');
+  expect(spectrum2.variables.x.units).toStrictEqual('s');
+  expect(spectrum2.variables.y.units).toStrictEqual('mg');
 });
