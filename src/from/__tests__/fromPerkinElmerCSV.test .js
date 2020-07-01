@@ -1,8 +1,8 @@
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
+import { toJcamp, fromJcamp } from '../..';
 import { fromPerkinElmerCSV } from '../fromPerkinElmerCSV';
-import { toJcamp, fromJcamp } from '../../';
 
 test('fromPerkinElmer', () => {
   let csv = readFileSync(
