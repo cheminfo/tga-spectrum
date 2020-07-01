@@ -1,6 +1,6 @@
 /**
  * tga-spectrum
- * @version v0.7.2
+ * @version v0.8.0
  * @link https://github.com/cheminfo/tga-spectrum#readme
  * @license MIT
  */
@@ -5253,6 +5253,78 @@
   /**
 
   /**
+   * This function xAdd the first array by the second array or a constant value to each element of the first array
+   * @param {Array<Number>} array1 - the array that will be rotated
+   * @param {Array|Number} array2
+   * @return {Array}
+   */
+  function xAdd(array1, array2) {
+    let isConstant = false;
+    let constant;
+
+    if (Array.isArray(array2)) {
+      if (array1.length !== array2.length) {
+        throw new Error('sub: size of array1 and array2 must be identical');
+      }
+    } else {
+      isConstant = true;
+      constant = Number(array2);
+    }
+
+    let array3 = new Array(array1.length);
+
+    if (isConstant) {
+      for (let i = 0; i < array1.length; i++) {
+        array3[i] = array1[i] + constant;
+      }
+    } else {
+      for (let i = 0; i < array1.length; i++) {
+        array3[i] = array1[i] + array2[i];
+      }
+    }
+
+    return array3;
+  }
+
+  /**
+
+  /**
+   * This function xMultiply the first array by the second array or a constant value to each element of the first array
+   * @param {Array} array1 - the array that will be rotated
+   * @param {Array|Number} array2
+   * @return {Float64Array}
+   */
+  function xMultiply(array1, array2) {
+    let isConstant = false;
+    let constant;
+
+    if (Array.isArray(array2)) {
+      if (array1.length !== array2.length) {
+        throw new Error('sub: size of array1 and array2 must be identical');
+      }
+    } else {
+      isConstant = true;
+      constant = Number(array2);
+    }
+
+    let array3 = new Float64Array(array1.length);
+
+    if (isConstant) {
+      for (let i = 0; i < array1.length; i++) {
+        array3[i] = array1[i] * constant;
+      }
+    } else {
+      for (let i = 0; i < array1.length; i++) {
+        array3[i] = array1[i] * array2[i];
+      }
+    }
+
+    return array3;
+  }
+
+  /**
+
+  /**
    * This function divide the first array by the second array or a constant value to each element of the first array
    * @param {Array<Number>} array1 - the array that will be rotated
    * @param {Array<Number>|Number} array2
@@ -6678,9 +6750,28 @@
         case 'rescale':
           {
             y = rescale(y, {
-              min: filterOptions.min ? Number(filter.options.min) : 0,
-              max: filterOptions.max ? Number(filter.options.max) : 1
+              min: filterOptions.min ? Number(filterOptions.min) : 0,
+              max: filterOptions.max ? Number(filterOptions.max) : 1
             });
+            break;
+          }
+
+        case 'dividebymax':
+          {
+            let max = max(y);
+            y = xDivide(y, max);
+            break;
+          }
+
+        case 'multiply':
+          {
+            y = xMultiply(y, filterOptions.value ? Number(filterOptions.value) : 1);
+            break;
+          }
+
+        case 'add':
+          {
+            y = xAdd(y, filterOptions.value ? Number(filterOptions.value) : 0);
             break;
           }
 
