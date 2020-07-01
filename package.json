@@ -48,7 +48,7 @@
   },
   "dependencies": {
     "@babel/plugin-transform-modules-commonjs": "^7.10.4",
-    "common-spectrum": "0.4.0",
+    "common-spectrum": "0.4.1",
     "convert-to-jcamp": "^4.1.1",
     "jcampconverter": "^7.3.1",
     "ml-array-max": "^1.1.2",
