@@ -1,6 +1,6 @@
 /**
  * tga-spectrum
- * @version v0.8.0
+ * @version v0.8.1
  * @link https://github.com/cheminfo/tga-spectrum#readme
  * @license MIT
  */
@@ -85,17 +85,12 @@
   }
 
   const toString$1 = Object.prototype.toString;
+
   function isAnyArray$1(object) {
     return toString$1.call(object).endsWith('Array]');
   }
 
-  const toString$2 = Object.prototype.toString;
-
-  function isAnyArray$2(object) {
-    return toString$2.call(object).endsWith('Array]');
-  }
-
-  var src = isAnyArray$2;
+  var src = isAnyArray$1;
 
   /**
    * Computes the maximum of the given values
@@ -119,6 +114,11 @@
     }
 
     return maxValue;
+  }
+
+  const toString$2 = Object.prototype.toString;
+  function isAnyArray$2(object) {
+    return toString$2.call(object).endsWith('Array]');
   }
 
   /**
@@ -165,14 +165,14 @@
         _options$maxValue = options.maxValue,
         maxValue = _options$maxValue === void 0 ? 1 : _options$maxValue;
 
-    if (!isAnyArray$1(input)) {
+    if (!isAnyArray$2(input)) {
       throw new Error('input must be an array');
     }
 
     var output;
 
     if (options.output !== undefined) {
-      if (!isAnyArray$1(options.output)) {
+      if (!isAnyArray$2(options.output)) {
         throw new TypeError('output option must be an array if specified');
       }
 
@@ -6739,7 +6739,6 @@
 
         case 'normalize':
           {
-            // should be an integration in fact
             y = norm(y, {
               sumValue: filterOptions.value ? Number(filterOptions.value) : 1,
               algorithm: 'absolute'
@@ -6758,8 +6757,8 @@
 
         case 'dividebymax':
           {
-            let max = max(y);
-            y = xDivide(y, max);
+            let maxValue = max(y);
+            y = xDivide(y, maxValue);
             break;
           }
 
