@@ -32,7 +32,7 @@ export function parsePerkinElmer(text) {
   }
   return result;
 }
-
 function trim(string) {
+  // eslint-disable-next-line prefer-named-capture-group
   return string.replace(/^[ \t]*(.*?)[ \t]*$/, '$1');
 }
