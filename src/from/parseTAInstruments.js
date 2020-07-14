@@ -82,6 +82,5 @@ export function parseTAInstruments(text) {
 }
 
 function splitTrim(string, item = 1) {
-  // eslint-disable-next-line prefer-named-capture-group
   return string.split(/\t/)[item].replace(/^[ \t]*(.*?)[ \t]*$/, '$1');
 }
