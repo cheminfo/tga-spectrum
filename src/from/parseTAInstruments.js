@@ -1,4 +1,35 @@
-import Papa from 'papaparse';
+export function parseTAInstruments(text) {
+  let lines = text.split(/\r?\n/).filter((line) => !line.match(/^\s*$/));
+
+  let meta = parseMeta(lines);
+  let parsed = lines
+    .slice(meta.dataStart, lines.length)
+    .filter((line) => !line.startsWith('-'))
+    .map((line) => line.split(/\s+/).map(Number));
+
+  meta.balancePurgeFlow = [];
+  meta.samplePurgeFlow = [];
+  // We now assume that we always have 5 columns in the same order ...
+  let result = {
+    meta: meta,
+    data: {
+      time: [],
+      weight: [],
+      temperature: [],
+    },
+  };
+  result.data.time = parsed.map((fields) => fields[0]);
+  result.data.temperature = parsed.map((fields) => fields[1]);
+  result.data.weight = parsed.map((fields) => fields[2]);
+  result.meta.balancePurgeFlow = parsed.map((fields) => fields[3]);
+  result.meta.samplePurgeFlow = parsed.map((fields) => fields[4]);
+
+  return result;
+}
+
+function splitTrim(string, item = 1) {
+  return string.split(/\t/)[item].replace(/^[ \t]*(.*?)[ \t]*$/, '$1');
+}
 
 function parseMeta(lines) {
   let meta = { comments: [], methodSteps: [] };
@@ -43,44 +74,4 @@ function parseMeta(lines) {
   }
 
   return meta;
-}
-
-export function parseTAInstruments(text) {
-  let lines = text.split(/\r?\n/).filter((line) => !line.match(/^\s*$/));
-
-  let meta = parseMeta(lines);
-  let parsed = Papa.parse(
-    lines.slice(meta.dataStart, lines.length).join('\n'),
-    {
-      skipEmptyLines: true,
-      dynamicTyping: false,
-    },
-  ).data;
-
-  // Need the map to number because papa failed with some scientific notation cases.
-  // I do not know the overhead of 'dynamicTyping' but I turned it now off for just that reason
-  const arrayColumn = (arr, n) => arr.map((x) => x[n]).map(Number);
-
-  meta.balancePurgeFlow = [];
-  meta.samplePurgeFlow = [];
-  // We now assume that we always have 5 columns in the same order ...
-  let result = {
-    meta: meta,
-    data: {
-      time: [],
-      weight: [],
-      temperature: [],
-    },
-  };
-  result.data.time = arrayColumn(parsed, 0);
-  result.data.temperature = arrayColumn(parsed, 1);
-  result.data.weight = arrayColumn(parsed, 2);
-  result.meta.balancePurgeFlow = arrayColumn(parsed, 3);
-  result.meta.samplePurgeFlow = arrayColumn(parsed, 4);
-
-  return result;
-}
-
-function splitTrim(string, item = 1) {
-  return string.split(/\t/)[item].replace(/^[ \t]*(.*?)[ \t]*$/, '$1');
 }
