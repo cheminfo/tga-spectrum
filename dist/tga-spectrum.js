@@ -1,6 +1,6 @@
 /**
  * tga-spectrum
- * @version v0.9.1
+ * @version v0.10.0
  * @link https://github.com/cheminfo/tga-spectrum#readme
  * @license MIT
  */
@@ -93,6 +93,30 @@
   var src = isAnyArray$1;
 
   /**
+   * Computes the minimum of the given values
+   * @param {Array<number>} input
+   * @return {number}
+   */
+
+  function min(input) {
+    if (!src(input)) {
+      throw new TypeError('input must be an array');
+    }
+
+    if (input.length === 0) {
+      throw new TypeError('input must not be empty');
+    }
+
+    var minValue = input[0];
+
+    for (var i = 1; i < input.length; i++) {
+      if (input[i] < minValue) minValue = input[i];
+    }
+
+    return minValue;
+  }
+
+  /**
    * Computes the maximum of the given values
    * @param {Array<number>} input
    * @return {number}
@@ -114,6 +138,921 @@
     }
 
     return maxValue;
+  }
+
+  var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
+
+  function createCommonjsModule(fn, module) {
+  	return module = { exports: {} }, fn(module, module.exports), module.exports;
+  }
+
+  var medianQuickselect_min = createCommonjsModule(function (module) {
+    (function () {
+      function a(d) {
+        for (var e = 0, f = d.length - 1, g = void 0, h = void 0, i = void 0, j = c(e, f); !0;) {
+          if (f <= e) return d[j];
+          if (f == e + 1) return d[e] > d[f] && b(d, e, f), d[j];
+
+          for (g = c(e, f), d[g] > d[f] && b(d, g, f), d[e] > d[f] && b(d, e, f), d[g] > d[e] && b(d, g, e), b(d, g, e + 1), h = e + 1, i = f; !0;) {
+            do h++; while (d[e] > d[h]);
+
+            do i--; while (d[i] > d[e]);
+
+            if (i < h) break;
+            b(d, h, i);
+          }
+
+          b(d, e, i), i <= j && (e = h), i >= j && (f = i - 1);
+        }
+      }
+
+      var b = function b(d, e, f) {
+        var _ref;
+
+        return _ref = [d[f], d[e]], d[e] = _ref[0], d[f] = _ref[1], _ref;
+      },
+          c = function c(d, e) {
+        return ~~((d + e) / 2);
+      };
+
+       module.exports ? module.exports = a : window.median = a;
+    })();
+  });
+
+  /**
+   * Computes the median of the given values
+   * @param {Array<number>} input
+   * @return {number}
+   */
+
+  function median(input) {
+    if (!src(input)) {
+      throw new TypeError('input must be an array');
+    }
+
+    if (input.length === 0) {
+      throw new TypeError('input must not be empty');
+    }
+
+    return medianQuickselect_min(input.slice());
+  }
+
+  /**
+
+  /**
+   * This function xAdd the first array by the second array or a constant value to each element of the first array
+   * @param {Array<Number>} array1 - the array that will be rotated
+   * @param {Array|Number} array2
+   * @return {Array}
+   */
+  function xAdd(array1, array2) {
+    let isConstant = false;
+    let constant;
+
+    if (Array.isArray(array2)) {
+      if (array1.length !== array2.length) {
+        throw new Error('sub: size of array1 and array2 must be identical');
+      }
+    } else {
+      isConstant = true;
+      constant = Number(array2);
+    }
+
+    let array3 = new Array(array1.length);
+
+    if (isConstant) {
+      for (let i = 0; i < array1.length; i++) {
+        array3[i] = array1[i] + constant;
+      }
+    } else {
+      for (let i = 0; i < array1.length; i++) {
+        array3[i] = array1[i] + array2[i];
+      }
+    }
+
+    return array3;
+  }
+
+  /**
+
+  /**
+   * This function xMultiply the first array by the second array or a constant value to each element of the first array
+   * @param {Array} array1 - the array that will be rotated
+   * @param {Array|Number} array2
+   * @return {Float64Array}
+   */
+  function xMultiply(array1, array2) {
+    let isConstant = false;
+    let constant;
+
+    if (Array.isArray(array2)) {
+      if (array1.length !== array2.length) {
+        throw new Error('sub: size of array1 and array2 must be identical');
+      }
+    } else {
+      isConstant = true;
+      constant = Number(array2);
+    }
+
+    let array3 = new Float64Array(array1.length);
+
+    if (isConstant) {
+      for (let i = 0; i < array1.length; i++) {
+        array3[i] = array1[i] * constant;
+      }
+    } else {
+      for (let i = 0; i < array1.length; i++) {
+        array3[i] = array1[i] * array2[i];
+      }
+    }
+
+    return array3;
+  }
+
+  /**
+
+  /**
+   * This function divide the first array by the second array or a constant value to each element of the first array
+   * @param {Array<Number>} array1 - the array that will be rotated
+   * @param {Array<Number>|Number} array2
+   * @return {Array}
+   */
+  function xDivide(array1, array2) {
+    let isConstant = false;
+    let constant;
+
+    if (Array.isArray(array2)) {
+      if (array1.length !== array2.length) {
+        throw new Error('sub: size of array1 and array2 must be identical');
+      }
+    } else {
+      isConstant = true;
+      constant = Number(array2);
+    }
+
+    let array3 = new Array(array1.length);
+
+    if (isConstant) {
+      for (let i = 0; i < array1.length; i++) {
+        array3[i] = array1[i] / constant;
+      }
+    } else {
+      for (let i = 0; i < array1.length; i++) {
+        array3[i] = array1[i] / array2[i];
+      }
+    }
+
+    return array3;
+  }
+
+  /**
+   * Returns true if x is monotone
+   * @param {Array} array
+   * @return {boolean}
+   */
+  function xIsMonotone(array) {
+    if (array.length < 3) return true;
+
+    if (array[0] < array[1]) {
+      for (let i = 0; i < array.length - 1; i++) {
+        if (array[i] >= array[i + 1]) return false;
+      }
+    } else {
+      for (let i = 0; i < array.length - 1; i++) {
+        if (array[i] <= array[i + 1]) return false;
+      }
+    }
+
+    return true;
+  }
+
+  var toStr = Object.prototype.toString;
+
+  var isArguments = function isArguments(value) {
+    var str = toStr.call(value);
+    var isArgs = str === '[object Arguments]';
+
+    if (!isArgs) {
+      isArgs = str !== '[object Array]' && value !== null && typeof value === 'object' && typeof value.length === 'number' && value.length >= 0 && toStr.call(value.callee) === '[object Function]';
+    }
+
+    return isArgs;
+  };
+
+  var keysShim;
+
+  if (!Object.keys) {
+    // modified from https://github.com/es-shims/es5-shim
+    var has = Object.prototype.hasOwnProperty;
+    var toStr$1 = Object.prototype.toString;
+    var isArgs = isArguments; // eslint-disable-line global-require
+
+    var isEnumerable = Object.prototype.propertyIsEnumerable;
+    var hasDontEnumBug = !isEnumerable.call({
+      toString: null
+    }, 'toString');
+    var hasProtoEnumBug = isEnumerable.call(function () {}, 'prototype');
+    var dontEnums = ['toString', 'toLocaleString', 'valueOf', 'hasOwnProperty', 'isPrototypeOf', 'propertyIsEnumerable', 'constructor'];
+
+    var equalsConstructorPrototype = function (o) {
+      var ctor = o.constructor;
+      return ctor && ctor.prototype === o;
+    };
+
+    var excludedKeys = {
+      $applicationCache: true,
+      $console: true,
+      $external: true,
+      $frame: true,
+      $frameElement: true,
+      $frames: true,
+      $innerHeight: true,
+      $innerWidth: true,
+      $onmozfullscreenchange: true,
+      $onmozfullscreenerror: true,
+      $outerHeight: true,
+      $outerWidth: true,
+      $pageXOffset: true,
+      $pageYOffset: true,
+      $parent: true,
+      $scrollLeft: true,
+      $scrollTop: true,
+      $scrollX: true,
+      $scrollY: true,
+      $self: true,
+      $webkitIndexedDB: true,
+      $webkitStorageInfo: true,
+      $window: true
+    };
+
+    var hasAutomationEqualityBug = function () {
+      /* global window */
+      if (typeof window === 'undefined') {
+        return false;
+      }
+
+      for (var k in window) {
+        try {
+          if (!excludedKeys['$' + k] && has.call(window, k) && window[k] !== null && typeof window[k] === 'object') {
+            try {
+              equalsConstructorPrototype(window[k]);
+            } catch (e) {
+              return true;
+            }
+          }
+        } catch (e) {
+          return true;
+        }
+      }
+
+      return false;
+    }();
+
+    var equalsConstructorPrototypeIfNotBuggy = function (o) {
+      /* global window */
+      if (typeof window === 'undefined' || !hasAutomationEqualityBug) {
+        return equalsConstructorPrototype(o);
+      }
+
+      try {
+        return equalsConstructorPrototype(o);
+      } catch (e) {
+        return false;
+      }
+    };
+
+    keysShim = function keys(object) {
+      var isObject = object !== null && typeof object === 'object';
+      var isFunction = toStr$1.call(object) === '[object Function]';
+      var isArguments = isArgs(object);
+      var isString = isObject && toStr$1.call(object) === '[object String]';
+      var theKeys = [];
+
+      if (!isObject && !isFunction && !isArguments) {
+        throw new TypeError('Object.keys called on a non-object');
+      }
+
+      var skipProto = hasProtoEnumBug && isFunction;
+
+      if (isString && object.length > 0 && !has.call(object, 0)) {
+        for (var i = 0; i < object.length; ++i) {
+          theKeys.push(String(i));
+        }
+      }
+
+      if (isArguments && object.length > 0) {
+        for (var j = 0; j < object.length; ++j) {
+          theKeys.push(String(j));
+        }
+      } else {
+        for (var name in object) {
+          if (!(skipProto && name === 'prototype') && has.call(object, name)) {
+            theKeys.push(String(name));
+          }
+        }
+      }
+
+      if (hasDontEnumBug) {
+        var skipConstructor = equalsConstructorPrototypeIfNotBuggy(object);
+
+        for (var k = 0; k < dontEnums.length; ++k) {
+          if (!(skipConstructor && dontEnums[k] === 'constructor') && has.call(object, dontEnums[k])) {
+            theKeys.push(dontEnums[k]);
+          }
+        }
+      }
+
+      return theKeys;
+    };
+  }
+
+  var implementation = keysShim;
+
+  var slice = Array.prototype.slice;
+  var origKeys = Object.keys;
+  var keysShim$1 = origKeys ? function keys(o) {
+    return origKeys(o);
+  } : implementation;
+  var originalKeys = Object.keys;
+
+  keysShim$1.shim = function shimObjectKeys() {
+    if (Object.keys) {
+      var keysWorksWithArguments = function () {
+        // Safari 5.0 bug
+        var args = Object.keys(arguments);
+        return args && args.length === arguments.length;
+      }(1, 2);
+
+      if (!keysWorksWithArguments) {
+        Object.keys = function keys(object) {
+          // eslint-disable-line func-name-matching
+          if (isArguments(object)) {
+            return originalKeys(slice.call(object));
+          }
+
+          return originalKeys(object);
+        };
+      }
+    } else {
+      Object.keys = keysShim$1;
+    }
+
+    return Object.keys || keysShim$1;
+  };
+
+  var objectKeys = keysShim$1;
+
+  var getKeys = objectKeys.shim(); // COPY ERROR //
+
+  // TYPED ARRAY FUNCTIONS //
+
+  /**
+  * Create functions for copying typed arrays.
+  */
+
+
+  var typedArrays = {
+    'Int8Array': null,
+    'Uint8Array': null,
+    'Uint8ClampedArray': null,
+    'Int16Array': null,
+    'Uint16Array': null,
+    'Int32Array': null,
+    'Uint32Array': null,
+    'Float32Array': null,
+    'Float64Array': null
+  };
+
+  (function createTypedArrayFcns() {
+    /* jshint evil:true */
+    var keys = objectKeys(typedArrays);
+    var len = keys.length;
+    var key;
+    var i;
+
+    for (i = 0; i < len; i++) {
+      key = keys[i];
+      typedArrays[key] = new Function('arr', 'return new ' + key + '( arr );');
+    }
+  })(); // EXPORTS //
+
+  var d3Array = createCommonjsModule(function (module, exports) {
+    (function (global, factory) {
+       factory(exports) ;
+    })(commonjsGlobal, function (exports) {
+
+      function ascending(a, b) {
+        return a < b ? -1 : a > b ? 1 : a >= b ? 0 : NaN;
+      }
+
+      function bisector(compare) {
+        if (compare.length === 1) compare = ascendingComparator(compare);
+        return {
+          left: function (a, x, lo, hi) {
+            if (lo == null) lo = 0;
+            if (hi == null) hi = a.length;
+
+            while (lo < hi) {
+              var mid = lo + hi >>> 1;
+              if (compare(a[mid], x) < 0) lo = mid + 1;else hi = mid;
+            }
+
+            return lo;
+          },
+          right: function (a, x, lo, hi) {
+            if (lo == null) lo = 0;
+            if (hi == null) hi = a.length;
+
+            while (lo < hi) {
+              var mid = lo + hi >>> 1;
+              if (compare(a[mid], x) > 0) hi = mid;else lo = mid + 1;
+            }
+
+            return lo;
+          }
+        };
+      }
+
+      function ascendingComparator(f) {
+        return function (d, x) {
+          return ascending(f(d), x);
+        };
+      }
+
+      var ascendingBisect = bisector(ascending);
+      var bisectRight = ascendingBisect.right;
+      var bisectLeft = ascendingBisect.left;
+
+      function descending(a, b) {
+        return b < a ? -1 : b > a ? 1 : b >= a ? 0 : NaN;
+      }
+
+      function number$1(x) {
+        return x === null ? NaN : +x;
+      }
+
+      function variance(array, f) {
+        var n = array.length,
+            m = 0,
+            a,
+            d,
+            s = 0,
+            i = -1,
+            j = 0;
+
+        if (f == null) {
+          while (++i < n) {
+            if (!isNaN(a = number$1(array[i]))) {
+              d = a - m;
+              m += d / ++j;
+              s += d * (a - m);
+            }
+          }
+        } else {
+          while (++i < n) {
+            if (!isNaN(a = number$1(f(array[i], i, array)))) {
+              d = a - m;
+              m += d / ++j;
+              s += d * (a - m);
+            }
+          }
+        }
+
+        if (j > 1) return s / (j - 1);
+      }
+
+      function deviation(array, f) {
+        var v = variance(array, f);
+        return v ? Math.sqrt(v) : v;
+      }
+
+      function extent(array, f) {
+        var i = -1,
+            n = array.length,
+            a,
+            b,
+            c;
+
+        if (f == null) {
+          while (++i < n) if ((b = array[i]) != null && b >= b) {
+            a = c = b;
+            break;
+          }
+
+          while (++i < n) if ((b = array[i]) != null) {
+            if (a > b) a = b;
+            if (c < b) c = b;
+          }
+        } else {
+          while (++i < n) if ((b = f(array[i], i, array)) != null && b >= b) {
+            a = c = b;
+            break;
+          }
+
+          while (++i < n) if ((b = f(array[i], i, array)) != null) {
+            if (a > b) a = b;
+            if (c < b) c = b;
+          }
+        }
+
+        return [a, c];
+      }
+
+      function constant(x) {
+        return function () {
+          return x;
+        };
+      }
+
+      function identity(x) {
+        return x;
+      }
+
+      function range(start, stop, step) {
+        start = +start, stop = +stop, step = (n = arguments.length) < 2 ? (stop = start, start = 0, 1) : n < 3 ? 1 : +step;
+        var i = -1,
+            n = Math.max(0, Math.ceil((stop - start) / step)) | 0,
+            range = new Array(n);
+
+        while (++i < n) {
+          range[i] = start + i * step;
+        }
+
+        return range;
+      }
+
+      var e10 = Math.sqrt(50);
+      var e5 = Math.sqrt(10);
+      var e2 = Math.sqrt(2);
+
+      function ticks(start, stop, count) {
+        var step = tickStep(start, stop, count);
+        return range(Math.ceil(start / step) * step, Math.floor(stop / step) * step + step / 2, // inclusive
+        step);
+      }
+
+      function tickStep(start, stop, count) {
+        var step0 = Math.abs(stop - start) / Math.max(0, count),
+            step1 = Math.pow(10, Math.floor(Math.log(step0) / Math.LN10)),
+            error = step0 / step1;
+        if (error >= e10) step1 *= 10;else if (error >= e5) step1 *= 5;else if (error >= e2) step1 *= 2;
+        return stop < start ? -step1 : step1;
+      }
+
+      function sturges(values) {
+        return Math.ceil(Math.log(values.length) / Math.LN2) + 1;
+      }
+
+      function number(x) {
+        return +x;
+      }
+
+      function histogram() {
+        var value = identity,
+            domain = extent,
+            threshold = sturges;
+
+        function histogram(data) {
+          var i,
+              n = data.length,
+              x,
+              values = new Array(n); // Coerce values to numbers.
+
+          for (i = 0; i < n; ++i) {
+            values[i] = +value(data[i], i, data);
+          }
+
+          var xz = domain(values),
+              x0 = +xz[0],
+              x1 = +xz[1],
+              tz = threshold(values, x0, x1); // Convert number of thresholds into uniform thresholds.
+
+          if (!Array.isArray(tz)) tz = ticks(x0, x1, +tz); // Coerce thresholds to numbers, ignoring any outside the domain.
+
+          var m = tz.length;
+
+          for (i = 0; i < m; ++i) tz[i] = +tz[i];
+
+          while (tz[0] <= x0) tz.shift(), --m;
+
+          while (tz[m - 1] >= x1) tz.pop(), --m;
+
+          var bins = new Array(m + 1),
+              bin; // Initialize bins.
+
+          for (i = 0; i <= m; ++i) {
+            bin = bins[i] = [];
+            bin.x0 = i > 0 ? tz[i - 1] : x0;
+            bin.x1 = i < m ? tz[i] : x1;
+          } // Assign data to bins by value, ignoring any outside the domain.
+
+
+          for (i = 0; i < n; ++i) {
+            x = values[i];
+
+            if (x0 <= x && x <= x1) {
+              bins[bisectRight(tz, x, 0, m)].push(data[i]);
+            }
+          }
+
+          return bins;
+        }
+
+        histogram.value = function (_) {
+          return arguments.length ? (value = typeof _ === "function" ? _ : constant(+_), histogram) : value;
+        };
+
+        histogram.domain = function (_) {
+          return arguments.length ? (domain = typeof _ === "function" ? _ : constant([+_[0], +_[1]]), histogram) : domain;
+        };
+
+        histogram.thresholds = function (_) {
+          if (!arguments.length) return threshold;
+          threshold = typeof _ === "function" ? _ : Array.isArray(_) ? constant(Array.prototype.map.call(_, number)) : constant(+_);
+          return histogram;
+        };
+
+        return histogram;
+      }
+
+      function quantile(array, p, f) {
+        if (f == null) f = number$1;
+        if (!(n = array.length)) return;
+        if ((p = +p) <= 0 || n < 2) return +f(array[0], 0, array);
+        if (p >= 1) return +f(array[n - 1], n - 1, array);
+        var n,
+            h = (n - 1) * p,
+            i = Math.floor(h),
+            a = +f(array[i], i, array),
+            b = +f(array[i + 1], i + 1, array);
+        return a + (b - a) * (h - i);
+      }
+
+      function freedmanDiaconis(values, min, max) {
+        values.sort(ascending);
+        return Math.ceil((max - min) / (2 * (quantile(values, 0.75) - quantile(values, 0.25)) * Math.pow(values.length, -1 / 3)));
+      }
+
+      function scott(values, min, max) {
+        return Math.ceil((max - min) / (3.5 * deviation(values) * Math.pow(values.length, -1 / 3)));
+      }
+
+      function max(array, f) {
+        var i = -1,
+            n = array.length,
+            a,
+            b;
+
+        if (f == null) {
+          while (++i < n) if ((b = array[i]) != null && b >= b) {
+            a = b;
+            break;
+          }
+
+          while (++i < n) if ((b = array[i]) != null && b > a) a = b;
+        } else {
+          while (++i < n) if ((b = f(array[i], i, array)) != null && b >= b) {
+            a = b;
+            break;
+          }
+
+          while (++i < n) if ((b = f(array[i], i, array)) != null && b > a) a = b;
+        }
+
+        return a;
+      }
+
+      function mean(array, f) {
+        var s = 0,
+            n = array.length,
+            a,
+            i = -1,
+            j = n;
+
+        if (f == null) {
+          while (++i < n) if (!isNaN(a = number$1(array[i]))) s += a;else --j;
+        } else {
+          while (++i < n) if (!isNaN(a = number$1(f(array[i], i, array)))) s += a;else --j;
+        }
+
+        if (j) return s / j;
+      }
+
+      function median(array, f) {
+        var numbers = [],
+            n = array.length,
+            a,
+            i = -1;
+
+        if (f == null) {
+          while (++i < n) if (!isNaN(a = number$1(array[i]))) numbers.push(a);
+        } else {
+          while (++i < n) if (!isNaN(a = number$1(f(array[i], i, array)))) numbers.push(a);
+        }
+
+        return quantile(numbers.sort(ascending), 0.5);
+      }
+
+      function merge(arrays) {
+        var n = arrays.length,
+            m,
+            i = -1,
+            j = 0,
+            merged,
+            array;
+
+        while (++i < n) j += arrays[i].length;
+
+        merged = new Array(j);
+
+        while (--n >= 0) {
+          array = arrays[n];
+          m = array.length;
+
+          while (--m >= 0) {
+            merged[--j] = array[m];
+          }
+        }
+
+        return merged;
+      }
+
+      function min(array, f) {
+        var i = -1,
+            n = array.length,
+            a,
+            b;
+
+        if (f == null) {
+          while (++i < n) if ((b = array[i]) != null && b >= b) {
+            a = b;
+            break;
+          }
+
+          while (++i < n) if ((b = array[i]) != null && a > b) a = b;
+        } else {
+          while (++i < n) if ((b = f(array[i], i, array)) != null && b >= b) {
+            a = b;
+            break;
+          }
+
+          while (++i < n) if ((b = f(array[i], i, array)) != null && a > b) a = b;
+        }
+
+        return a;
+      }
+
+      function pairs(array) {
+        var i = 0,
+            n = array.length - 1,
+            p = array[0],
+            pairs = new Array(n < 0 ? 0 : n);
+
+        while (i < n) pairs[i] = [p, p = array[++i]];
+
+        return pairs;
+      }
+
+      function permute(array, indexes) {
+        var i = indexes.length,
+            permutes = new Array(i);
+
+        while (i--) permutes[i] = array[indexes[i]];
+
+        return permutes;
+      }
+
+      function scan(array, compare) {
+        if (!(n = array.length)) return;
+        var i = 0,
+            n,
+            j = 0,
+            xi,
+            xj = array[j];
+        if (!compare) compare = ascending;
+
+        while (++i < n) if (compare(xi = array[i], xj) < 0 || compare(xj, xj) !== 0) xj = xi, j = i;
+
+        if (compare(xj, xj) === 0) return j;
+      }
+
+      function shuffle(array, i0, i1) {
+        var m = (i1 == null ? array.length : i1) - (i0 = i0 == null ? 0 : +i0),
+            t,
+            i;
+
+        while (m) {
+          i = Math.random() * m-- | 0;
+          t = array[m + i0];
+          array[m + i0] = array[i + i0];
+          array[i + i0] = t;
+        }
+
+        return array;
+      }
+
+      function sum(array, f) {
+        var s = 0,
+            n = array.length,
+            a,
+            i = -1;
+
+        if (f == null) {
+          while (++i < n) if (a = +array[i]) s += a; // Note: zero and null are equivalent.
+
+        } else {
+          while (++i < n) if (a = +f(array[i], i, array)) s += a;
+        }
+
+        return s;
+      }
+
+      function transpose(matrix) {
+        if (!(n = matrix.length)) return [];
+
+        for (var i = -1, m = min(matrix, length), transpose = new Array(m); ++i < m;) {
+          for (var j = -1, n, row = transpose[i] = new Array(n); ++j < n;) {
+            row[j] = matrix[j][i];
+          }
+        }
+
+        return transpose;
+      }
+
+      function length(d) {
+        return d.length;
+      }
+
+      function zip() {
+        return transpose(arguments);
+      }
+
+      var version = "0.7.1";
+      exports.version = version;
+      exports.bisect = bisectRight;
+      exports.bisectRight = bisectRight;
+      exports.bisectLeft = bisectLeft;
+      exports.ascending = ascending;
+      exports.bisector = bisector;
+      exports.descending = descending;
+      exports.deviation = deviation;
+      exports.extent = extent;
+      exports.histogram = histogram;
+      exports.thresholdFreedmanDiaconis = freedmanDiaconis;
+      exports.thresholdScott = scott;
+      exports.thresholdSturges = sturges;
+      exports.max = max;
+      exports.mean = mean;
+      exports.median = median;
+      exports.merge = merge;
+      exports.min = min;
+      exports.pairs = pairs;
+      exports.permute = permute;
+      exports.quantile = quantile;
+      exports.range = range;
+      exports.scan = scan;
+      exports.shuffle = shuffle;
+      exports.sum = sum;
+      exports.ticks = ticks;
+      exports.tickStep = tickStep;
+      exports.transpose = transpose;
+      exports.variance = variance;
+      exports.zip = zip;
+    });
+  });
+
+  /**
+   * This function xSubtract the first array by the second array or a constant value from each element of the first array
+   * @param {Array} array1 - the array that will be rotated
+   * @param {Array|Number} array2
+   * @return {Array}
+   */
+  function xSubtract(array1, array2) {
+    let isConstant = false;
+    let constant;
+
+    if (Array.isArray(array2)) {
+      if (array1.length !== array2.length) {
+        throw new Error('sub: size of array1 and array2 must be identical');
+      }
+    } else {
+      isConstant = true;
+      constant = Number(array2);
+    }
+
+    let array3 = new Array(array1.length);
+
+    if (isConstant) {
+      for (let i = 0; i < array1.length; i++) {
+        array3[i] = array1[i] - constant;
+      }
+    } else {
+      for (let i = 0; i < array1.length; i++) {
+        array3[i] = array1[i] - array2[i];
+      }
+    }
+
+    return array3;
   }
 
   const toString$2 = Object.prototype.toString;
@@ -236,30 +1175,6 @@
     }
 
     return sumValue;
-  }
-
-  /**
-   * Computes the minimum of the given values
-   * @param {Array<number>} input
-   * @return {number}
-   */
-
-  function min(input) {
-    if (!src(input)) {
-      throw new TypeError('input must be an array');
-    }
-
-    if (input.length === 0) {
-      throw new TypeError('input must not be empty');
-    }
-
-    var minValue = input[0];
-
-    for (var i = 1; i < input.length; i++) {
-      if (input[i] < minValue) minValue = input[i];
-    }
-
-    return minValue;
   }
 
   /**
@@ -5193,900 +6108,6 @@
     return ans;
   }
 
-  var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
-
-  function createCommonjsModule(fn, module) {
-  	return module = { exports: {} }, fn(module, module.exports), module.exports;
-  }
-
-  var medianQuickselect_min = createCommonjsModule(function (module) {
-    (function () {
-      function a(d) {
-        for (var e = 0, f = d.length - 1, g = void 0, h = void 0, i = void 0, j = c(e, f); !0;) {
-          if (f <= e) return d[j];
-          if (f == e + 1) return d[e] > d[f] && b(d, e, f), d[j];
-
-          for (g = c(e, f), d[g] > d[f] && b(d, g, f), d[e] > d[f] && b(d, e, f), d[g] > d[e] && b(d, g, e), b(d, g, e + 1), h = e + 1, i = f; !0;) {
-            do h++; while (d[e] > d[h]);
-
-            do i--; while (d[i] > d[e]);
-
-            if (i < h) break;
-            b(d, h, i);
-          }
-
-          b(d, e, i), i <= j && (e = h), i >= j && (f = i - 1);
-        }
-      }
-
-      var b = function b(d, e, f) {
-        var _ref;
-
-        return _ref = [d[f], d[e]], d[e] = _ref[0], d[f] = _ref[1], _ref;
-      },
-          c = function c(d, e) {
-        return ~~((d + e) / 2);
-      };
-
-       module.exports ? module.exports = a : window.median = a;
-    })();
-  });
-
-  /**
-   * Computes the median of the given values
-   * @param {Array<number>} input
-   * @return {number}
-   */
-
-  function median(input) {
-    if (!src(input)) {
-      throw new TypeError('input must be an array');
-    }
-
-    if (input.length === 0) {
-      throw new TypeError('input must not be empty');
-    }
-
-    return medianQuickselect_min(input.slice());
-  }
-
-  /**
-
-  /**
-   * This function xAdd the first array by the second array or a constant value to each element of the first array
-   * @param {Array<Number>} array1 - the array that will be rotated
-   * @param {Array|Number} array2
-   * @return {Array}
-   */
-  function xAdd(array1, array2) {
-    let isConstant = false;
-    let constant;
-
-    if (Array.isArray(array2)) {
-      if (array1.length !== array2.length) {
-        throw new Error('sub: size of array1 and array2 must be identical');
-      }
-    } else {
-      isConstant = true;
-      constant = Number(array2);
-    }
-
-    let array3 = new Array(array1.length);
-
-    if (isConstant) {
-      for (let i = 0; i < array1.length; i++) {
-        array3[i] = array1[i] + constant;
-      }
-    } else {
-      for (let i = 0; i < array1.length; i++) {
-        array3[i] = array1[i] + array2[i];
-      }
-    }
-
-    return array3;
-  }
-
-  /**
-
-  /**
-   * This function xMultiply the first array by the second array or a constant value to each element of the first array
-   * @param {Array} array1 - the array that will be rotated
-   * @param {Array|Number} array2
-   * @return {Float64Array}
-   */
-  function xMultiply(array1, array2) {
-    let isConstant = false;
-    let constant;
-
-    if (Array.isArray(array2)) {
-      if (array1.length !== array2.length) {
-        throw new Error('sub: size of array1 and array2 must be identical');
-      }
-    } else {
-      isConstant = true;
-      constant = Number(array2);
-    }
-
-    let array3 = new Float64Array(array1.length);
-
-    if (isConstant) {
-      for (let i = 0; i < array1.length; i++) {
-        array3[i] = array1[i] * constant;
-      }
-    } else {
-      for (let i = 0; i < array1.length; i++) {
-        array3[i] = array1[i] * array2[i];
-      }
-    }
-
-    return array3;
-  }
-
-  /**
-
-  /**
-   * This function divide the first array by the second array or a constant value to each element of the first array
-   * @param {Array<Number>} array1 - the array that will be rotated
-   * @param {Array<Number>|Number} array2
-   * @return {Array}
-   */
-  function xDivide(array1, array2) {
-    let isConstant = false;
-    let constant;
-
-    if (Array.isArray(array2)) {
-      if (array1.length !== array2.length) {
-        throw new Error('sub: size of array1 and array2 must be identical');
-      }
-    } else {
-      isConstant = true;
-      constant = Number(array2);
-    }
-
-    let array3 = new Array(array1.length);
-
-    if (isConstant) {
-      for (let i = 0; i < array1.length; i++) {
-        array3[i] = array1[i] / constant;
-      }
-    } else {
-      for (let i = 0; i < array1.length; i++) {
-        array3[i] = array1[i] / array2[i];
-      }
-    }
-
-    return array3;
-  }
-
-  var toStr = Object.prototype.toString;
-
-  var isArguments = function isArguments(value) {
-    var str = toStr.call(value);
-    var isArgs = str === '[object Arguments]';
-
-    if (!isArgs) {
-      isArgs = str !== '[object Array]' && value !== null && typeof value === 'object' && typeof value.length === 'number' && value.length >= 0 && toStr.call(value.callee) === '[object Function]';
-    }
-
-    return isArgs;
-  };
-
-  var keysShim;
-
-  if (!Object.keys) {
-    // modified from https://github.com/es-shims/es5-shim
-    var has = Object.prototype.hasOwnProperty;
-    var toStr$1 = Object.prototype.toString;
-    var isArgs = isArguments; // eslint-disable-line global-require
-
-    var isEnumerable = Object.prototype.propertyIsEnumerable;
-    var hasDontEnumBug = !isEnumerable.call({
-      toString: null
-    }, 'toString');
-    var hasProtoEnumBug = isEnumerable.call(function () {}, 'prototype');
-    var dontEnums = ['toString', 'toLocaleString', 'valueOf', 'hasOwnProperty', 'isPrototypeOf', 'propertyIsEnumerable', 'constructor'];
-
-    var equalsConstructorPrototype = function (o) {
-      var ctor = o.constructor;
-      return ctor && ctor.prototype === o;
-    };
-
-    var excludedKeys = {
-      $applicationCache: true,
-      $console: true,
-      $external: true,
-      $frame: true,
-      $frameElement: true,
-      $frames: true,
-      $innerHeight: true,
-      $innerWidth: true,
-      $onmozfullscreenchange: true,
-      $onmozfullscreenerror: true,
-      $outerHeight: true,
-      $outerWidth: true,
-      $pageXOffset: true,
-      $pageYOffset: true,
-      $parent: true,
-      $scrollLeft: true,
-      $scrollTop: true,
-      $scrollX: true,
-      $scrollY: true,
-      $self: true,
-      $webkitIndexedDB: true,
-      $webkitStorageInfo: true,
-      $window: true
-    };
-
-    var hasAutomationEqualityBug = function () {
-      /* global window */
-      if (typeof window === 'undefined') {
-        return false;
-      }
-
-      for (var k in window) {
-        try {
-          if (!excludedKeys['$' + k] && has.call(window, k) && window[k] !== null && typeof window[k] === 'object') {
-            try {
-              equalsConstructorPrototype(window[k]);
-            } catch (e) {
-              return true;
-            }
-          }
-        } catch (e) {
-          return true;
-        }
-      }
-
-      return false;
-    }();
-
-    var equalsConstructorPrototypeIfNotBuggy = function (o) {
-      /* global window */
-      if (typeof window === 'undefined' || !hasAutomationEqualityBug) {
-        return equalsConstructorPrototype(o);
-      }
-
-      try {
-        return equalsConstructorPrototype(o);
-      } catch (e) {
-        return false;
-      }
-    };
-
-    keysShim = function keys(object) {
-      var isObject = object !== null && typeof object === 'object';
-      var isFunction = toStr$1.call(object) === '[object Function]';
-      var isArguments = isArgs(object);
-      var isString = isObject && toStr$1.call(object) === '[object String]';
-      var theKeys = [];
-
-      if (!isObject && !isFunction && !isArguments) {
-        throw new TypeError('Object.keys called on a non-object');
-      }
-
-      var skipProto = hasProtoEnumBug && isFunction;
-
-      if (isString && object.length > 0 && !has.call(object, 0)) {
-        for (var i = 0; i < object.length; ++i) {
-          theKeys.push(String(i));
-        }
-      }
-
-      if (isArguments && object.length > 0) {
-        for (var j = 0; j < object.length; ++j) {
-          theKeys.push(String(j));
-        }
-      } else {
-        for (var name in object) {
-          if (!(skipProto && name === 'prototype') && has.call(object, name)) {
-            theKeys.push(String(name));
-          }
-        }
-      }
-
-      if (hasDontEnumBug) {
-        var skipConstructor = equalsConstructorPrototypeIfNotBuggy(object);
-
-        for (var k = 0; k < dontEnums.length; ++k) {
-          if (!(skipConstructor && dontEnums[k] === 'constructor') && has.call(object, dontEnums[k])) {
-            theKeys.push(dontEnums[k]);
-          }
-        }
-      }
-
-      return theKeys;
-    };
-  }
-
-  var implementation = keysShim;
-
-  var slice = Array.prototype.slice;
-  var origKeys = Object.keys;
-  var keysShim$1 = origKeys ? function keys(o) {
-    return origKeys(o);
-  } : implementation;
-  var originalKeys = Object.keys;
-
-  keysShim$1.shim = function shimObjectKeys() {
-    if (Object.keys) {
-      var keysWorksWithArguments = function () {
-        // Safari 5.0 bug
-        var args = Object.keys(arguments);
-        return args && args.length === arguments.length;
-      }(1, 2);
-
-      if (!keysWorksWithArguments) {
-        Object.keys = function keys(object) {
-          // eslint-disable-line func-name-matching
-          if (isArguments(object)) {
-            return originalKeys(slice.call(object));
-          }
-
-          return originalKeys(object);
-        };
-      }
-    } else {
-      Object.keys = keysShim$1;
-    }
-
-    return Object.keys || keysShim$1;
-  };
-
-  var objectKeys = keysShim$1;
-
-  var getKeys = objectKeys.shim(); // COPY ERROR //
-
-  // TYPED ARRAY FUNCTIONS //
-
-  /**
-  * Create functions for copying typed arrays.
-  */
-
-
-  var typedArrays = {
-    'Int8Array': null,
-    'Uint8Array': null,
-    'Uint8ClampedArray': null,
-    'Int16Array': null,
-    'Uint16Array': null,
-    'Int32Array': null,
-    'Uint32Array': null,
-    'Float32Array': null,
-    'Float64Array': null
-  };
-
-  (function createTypedArrayFcns() {
-    /* jshint evil:true */
-    var keys = objectKeys(typedArrays);
-    var len = keys.length;
-    var key;
-    var i;
-
-    for (i = 0; i < len; i++) {
-      key = keys[i];
-      typedArrays[key] = new Function('arr', 'return new ' + key + '( arr );');
-    }
-  })(); // EXPORTS //
-
-  var d3Array = createCommonjsModule(function (module, exports) {
-    (function (global, factory) {
-       factory(exports) ;
-    })(commonjsGlobal, function (exports) {
-
-      function ascending(a, b) {
-        return a < b ? -1 : a > b ? 1 : a >= b ? 0 : NaN;
-      }
-
-      function bisector(compare) {
-        if (compare.length === 1) compare = ascendingComparator(compare);
-        return {
-          left: function (a, x, lo, hi) {
-            if (lo == null) lo = 0;
-            if (hi == null) hi = a.length;
-
-            while (lo < hi) {
-              var mid = lo + hi >>> 1;
-              if (compare(a[mid], x) < 0) lo = mid + 1;else hi = mid;
-            }
-
-            return lo;
-          },
-          right: function (a, x, lo, hi) {
-            if (lo == null) lo = 0;
-            if (hi == null) hi = a.length;
-
-            while (lo < hi) {
-              var mid = lo + hi >>> 1;
-              if (compare(a[mid], x) > 0) hi = mid;else lo = mid + 1;
-            }
-
-            return lo;
-          }
-        };
-      }
-
-      function ascendingComparator(f) {
-        return function (d, x) {
-          return ascending(f(d), x);
-        };
-      }
-
-      var ascendingBisect = bisector(ascending);
-      var bisectRight = ascendingBisect.right;
-      var bisectLeft = ascendingBisect.left;
-
-      function descending(a, b) {
-        return b < a ? -1 : b > a ? 1 : b >= a ? 0 : NaN;
-      }
-
-      function number$1(x) {
-        return x === null ? NaN : +x;
-      }
-
-      function variance(array, f) {
-        var n = array.length,
-            m = 0,
-            a,
-            d,
-            s = 0,
-            i = -1,
-            j = 0;
-
-        if (f == null) {
-          while (++i < n) {
-            if (!isNaN(a = number$1(array[i]))) {
-              d = a - m;
-              m += d / ++j;
-              s += d * (a - m);
-            }
-          }
-        } else {
-          while (++i < n) {
-            if (!isNaN(a = number$1(f(array[i], i, array)))) {
-              d = a - m;
-              m += d / ++j;
-              s += d * (a - m);
-            }
-          }
-        }
-
-        if (j > 1) return s / (j - 1);
-      }
-
-      function deviation(array, f) {
-        var v = variance(array, f);
-        return v ? Math.sqrt(v) : v;
-      }
-
-      function extent(array, f) {
-        var i = -1,
-            n = array.length,
-            a,
-            b,
-            c;
-
-        if (f == null) {
-          while (++i < n) if ((b = array[i]) != null && b >= b) {
-            a = c = b;
-            break;
-          }
-
-          while (++i < n) if ((b = array[i]) != null) {
-            if (a > b) a = b;
-            if (c < b) c = b;
-          }
-        } else {
-          while (++i < n) if ((b = f(array[i], i, array)) != null && b >= b) {
-            a = c = b;
-            break;
-          }
-
-          while (++i < n) if ((b = f(array[i], i, array)) != null) {
-            if (a > b) a = b;
-            if (c < b) c = b;
-          }
-        }
-
-        return [a, c];
-      }
-
-      function constant(x) {
-        return function () {
-          return x;
-        };
-      }
-
-      function identity(x) {
-        return x;
-      }
-
-      function range(start, stop, step) {
-        start = +start, stop = +stop, step = (n = arguments.length) < 2 ? (stop = start, start = 0, 1) : n < 3 ? 1 : +step;
-        var i = -1,
-            n = Math.max(0, Math.ceil((stop - start) / step)) | 0,
-            range = new Array(n);
-
-        while (++i < n) {
-          range[i] = start + i * step;
-        }
-
-        return range;
-      }
-
-      var e10 = Math.sqrt(50);
-      var e5 = Math.sqrt(10);
-      var e2 = Math.sqrt(2);
-
-      function ticks(start, stop, count) {
-        var step = tickStep(start, stop, count);
-        return range(Math.ceil(start / step) * step, Math.floor(stop / step) * step + step / 2, // inclusive
-        step);
-      }
-
-      function tickStep(start, stop, count) {
-        var step0 = Math.abs(stop - start) / Math.max(0, count),
-            step1 = Math.pow(10, Math.floor(Math.log(step0) / Math.LN10)),
-            error = step0 / step1;
-        if (error >= e10) step1 *= 10;else if (error >= e5) step1 *= 5;else if (error >= e2) step1 *= 2;
-        return stop < start ? -step1 : step1;
-      }
-
-      function sturges(values) {
-        return Math.ceil(Math.log(values.length) / Math.LN2) + 1;
-      }
-
-      function number(x) {
-        return +x;
-      }
-
-      function histogram() {
-        var value = identity,
-            domain = extent,
-            threshold = sturges;
-
-        function histogram(data) {
-          var i,
-              n = data.length,
-              x,
-              values = new Array(n); // Coerce values to numbers.
-
-          for (i = 0; i < n; ++i) {
-            values[i] = +value(data[i], i, data);
-          }
-
-          var xz = domain(values),
-              x0 = +xz[0],
-              x1 = +xz[1],
-              tz = threshold(values, x0, x1); // Convert number of thresholds into uniform thresholds.
-
-          if (!Array.isArray(tz)) tz = ticks(x0, x1, +tz); // Coerce thresholds to numbers, ignoring any outside the domain.
-
-          var m = tz.length;
-
-          for (i = 0; i < m; ++i) tz[i] = +tz[i];
-
-          while (tz[0] <= x0) tz.shift(), --m;
-
-          while (tz[m - 1] >= x1) tz.pop(), --m;
-
-          var bins = new Array(m + 1),
-              bin; // Initialize bins.
-
-          for (i = 0; i <= m; ++i) {
-            bin = bins[i] = [];
-            bin.x0 = i > 0 ? tz[i - 1] : x0;
-            bin.x1 = i < m ? tz[i] : x1;
-          } // Assign data to bins by value, ignoring any outside the domain.
-
-
-          for (i = 0; i < n; ++i) {
-            x = values[i];
-
-            if (x0 <= x && x <= x1) {
-              bins[bisectRight(tz, x, 0, m)].push(data[i]);
-            }
-          }
-
-          return bins;
-        }
-
-        histogram.value = function (_) {
-          return arguments.length ? (value = typeof _ === "function" ? _ : constant(+_), histogram) : value;
-        };
-
-        histogram.domain = function (_) {
-          return arguments.length ? (domain = typeof _ === "function" ? _ : constant([+_[0], +_[1]]), histogram) : domain;
-        };
-
-        histogram.thresholds = function (_) {
-          if (!arguments.length) return threshold;
-          threshold = typeof _ === "function" ? _ : Array.isArray(_) ? constant(Array.prototype.map.call(_, number)) : constant(+_);
-          return histogram;
-        };
-
-        return histogram;
-      }
-
-      function quantile(array, p, f) {
-        if (f == null) f = number$1;
-        if (!(n = array.length)) return;
-        if ((p = +p) <= 0 || n < 2) return +f(array[0], 0, array);
-        if (p >= 1) return +f(array[n - 1], n - 1, array);
-        var n,
-            h = (n - 1) * p,
-            i = Math.floor(h),
-            a = +f(array[i], i, array),
-            b = +f(array[i + 1], i + 1, array);
-        return a + (b - a) * (h - i);
-      }
-
-      function freedmanDiaconis(values, min, max) {
-        values.sort(ascending);
-        return Math.ceil((max - min) / (2 * (quantile(values, 0.75) - quantile(values, 0.25)) * Math.pow(values.length, -1 / 3)));
-      }
-
-      function scott(values, min, max) {
-        return Math.ceil((max - min) / (3.5 * deviation(values) * Math.pow(values.length, -1 / 3)));
-      }
-
-      function max(array, f) {
-        var i = -1,
-            n = array.length,
-            a,
-            b;
-
-        if (f == null) {
-          while (++i < n) if ((b = array[i]) != null && b >= b) {
-            a = b;
-            break;
-          }
-
-          while (++i < n) if ((b = array[i]) != null && b > a) a = b;
-        } else {
-          while (++i < n) if ((b = f(array[i], i, array)) != null && b >= b) {
-            a = b;
-            break;
-          }
-
-          while (++i < n) if ((b = f(array[i], i, array)) != null && b > a) a = b;
-        }
-
-        return a;
-      }
-
-      function mean(array, f) {
-        var s = 0,
-            n = array.length,
-            a,
-            i = -1,
-            j = n;
-
-        if (f == null) {
-          while (++i < n) if (!isNaN(a = number$1(array[i]))) s += a;else --j;
-        } else {
-          while (++i < n) if (!isNaN(a = number$1(f(array[i], i, array)))) s += a;else --j;
-        }
-
-        if (j) return s / j;
-      }
-
-      function median(array, f) {
-        var numbers = [],
-            n = array.length,
-            a,
-            i = -1;
-
-        if (f == null) {
-          while (++i < n) if (!isNaN(a = number$1(array[i]))) numbers.push(a);
-        } else {
-          while (++i < n) if (!isNaN(a = number$1(f(array[i], i, array)))) numbers.push(a);
-        }
-
-        return quantile(numbers.sort(ascending), 0.5);
-      }
-
-      function merge(arrays) {
-        var n = arrays.length,
-            m,
-            i = -1,
-            j = 0,
-            merged,
-            array;
-
-        while (++i < n) j += arrays[i].length;
-
-        merged = new Array(j);
-
-        while (--n >= 0) {
-          array = arrays[n];
-          m = array.length;
-
-          while (--m >= 0) {
-            merged[--j] = array[m];
-          }
-        }
-
-        return merged;
-      }
-
-      function min(array, f) {
-        var i = -1,
-            n = array.length,
-            a,
-            b;
-
-        if (f == null) {
-          while (++i < n) if ((b = array[i]) != null && b >= b) {
-            a = b;
-            break;
-          }
-
-          while (++i < n) if ((b = array[i]) != null && a > b) a = b;
-        } else {
-          while (++i < n) if ((b = f(array[i], i, array)) != null && b >= b) {
-            a = b;
-            break;
-          }
-
-          while (++i < n) if ((b = f(array[i], i, array)) != null && a > b) a = b;
-        }
-
-        return a;
-      }
-
-      function pairs(array) {
-        var i = 0,
-            n = array.length - 1,
-            p = array[0],
-            pairs = new Array(n < 0 ? 0 : n);
-
-        while (i < n) pairs[i] = [p, p = array[++i]];
-
-        return pairs;
-      }
-
-      function permute(array, indexes) {
-        var i = indexes.length,
-            permutes = new Array(i);
-
-        while (i--) permutes[i] = array[indexes[i]];
-
-        return permutes;
-      }
-
-      function scan(array, compare) {
-        if (!(n = array.length)) return;
-        var i = 0,
-            n,
-            j = 0,
-            xi,
-            xj = array[j];
-        if (!compare) compare = ascending;
-
-        while (++i < n) if (compare(xi = array[i], xj) < 0 || compare(xj, xj) !== 0) xj = xi, j = i;
-
-        if (compare(xj, xj) === 0) return j;
-      }
-
-      function shuffle(array, i0, i1) {
-        var m = (i1 == null ? array.length : i1) - (i0 = i0 == null ? 0 : +i0),
-            t,
-            i;
-
-        while (m) {
-          i = Math.random() * m-- | 0;
-          t = array[m + i0];
-          array[m + i0] = array[i + i0];
-          array[i + i0] = t;
-        }
-
-        return array;
-      }
-
-      function sum(array, f) {
-        var s = 0,
-            n = array.length,
-            a,
-            i = -1;
-
-        if (f == null) {
-          while (++i < n) if (a = +array[i]) s += a; // Note: zero and null are equivalent.
-
-        } else {
-          while (++i < n) if (a = +f(array[i], i, array)) s += a;
-        }
-
-        return s;
-      }
-
-      function transpose(matrix) {
-        if (!(n = matrix.length)) return [];
-
-        for (var i = -1, m = min(matrix, length), transpose = new Array(m); ++i < m;) {
-          for (var j = -1, n, row = transpose[i] = new Array(n); ++j < n;) {
-            row[j] = matrix[j][i];
-          }
-        }
-
-        return transpose;
-      }
-
-      function length(d) {
-        return d.length;
-      }
-
-      function zip() {
-        return transpose(arguments);
-      }
-
-      var version = "0.7.1";
-      exports.version = version;
-      exports.bisect = bisectRight;
-      exports.bisectRight = bisectRight;
-      exports.bisectLeft = bisectLeft;
-      exports.ascending = ascending;
-      exports.bisector = bisector;
-      exports.descending = descending;
-      exports.deviation = deviation;
-      exports.extent = extent;
-      exports.histogram = histogram;
-      exports.thresholdFreedmanDiaconis = freedmanDiaconis;
-      exports.thresholdScott = scott;
-      exports.thresholdSturges = sturges;
-      exports.max = max;
-      exports.mean = mean;
-      exports.median = median;
-      exports.merge = merge;
-      exports.min = min;
-      exports.pairs = pairs;
-      exports.permute = permute;
-      exports.quantile = quantile;
-      exports.range = range;
-      exports.scan = scan;
-      exports.shuffle = shuffle;
-      exports.sum = sum;
-      exports.ticks = ticks;
-      exports.tickStep = tickStep;
-      exports.transpose = transpose;
-      exports.variance = variance;
-      exports.zip = zip;
-    });
-  });
-
-  /**
-   * This function xSubtract the first array by the second array or a constant value from each element of the first array
-   * @param {Array} array1 - the array that will be rotated
-   * @param {Array|Number} array2
-   * @return {Array}
-   */
-  function xSubtract(array1, array2) {
-    let isConstant = false;
-    let constant;
-
-    if (Array.isArray(array2)) {
-      if (array1.length !== array2.length) {
-        throw new Error('sub: size of array1 and array2 must be identical');
-      }
-    } else {
-      isConstant = true;
-      constant = Number(array2);
-    }
-
-    let array3 = new Array(array1.length);
-
-    if (isConstant) {
-      for (let i = 0; i < array1.length; i++) {
-        array3[i] = array1[i] - constant;
-      }
-    } else {
-      for (let i = 0; i < array1.length; i++) {
-        array3[i] = array1[i] - array2[i];
-      }
-    }
-
-    return array3;
-  }
-
   var array = createCommonjsModule(function (module, exports) {
 
     function compareNumbers(a, b) {
@@ -6678,8 +6699,8 @@
       y: spectrum.variables.y.data
     };
     let {
-      from = data.x[0],
-      to = data.x[data.x.length - 1],
+      from = spectrum.variables.x.min,
+      to = spectrum.variables.x.max,
       numberOfPoints,
       filters = [],
       exclusions = [],
@@ -6941,6 +6962,12 @@
       if (reverse) variable.data = variable.data.reverse();
       variable.label = variable.label || key;
       variable.units = variable.units || variable.label.replace(/^.*[([](.*)[)\]].*$/, '$1');
+      variable.min = min(variable.data);
+      variable.max = max(variable.data);
+
+      if (key === 'x') {
+        variable.isMonotone = xIsMonotone(variable.data);
+      }
     }
 
     return {
