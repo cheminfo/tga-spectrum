@@ -33,23 +33,23 @@
     "testEnvironment": "node"
   },
   "devDependencies": {
-    "@types/jest": "^26.0.4",
-    "cheminfo-build": "^1.1.1",
-    "codecov": "^3.7.0",
-    "eslint": "^7.4.0",
-    "eslint-config-cheminfo": "^4.0.0",
+    "@types/jest": "^26.0.7",
+    "cheminfo-build": "^1.1.2",
+    "codecov": "^3.7.2",
+    "eslint": "^7.5.0",
+    "eslint-config-cheminfo": "^5.0.0",
     "eslint-plugin-import": "^2.22.0",
-    "eslint-plugin-jest": "^23.18.0",
+    "eslint-plugin-jest": "^23.19.0",
     "eslint-plugin-prettier": "^3.1.4",
     "esm": "^3.2.25",
     "jest": "^26.1.0",
     "prettier": "^2.0.5",
-    "rollup": "^2.21.0"
+    "rollup": "^2.23.0"
   },
   "dependencies": {
     "@babel/plugin-transform-modules-commonjs": "^7.10.4",
-    "common-spectrum": "0.5.0",
-    "convert-to-jcamp": "^4.1.1",
+    "common-spectrum": "0.6.0",
+    "convert-to-jcamp": "^4.2.0",
     "jcampconverter": "^7.3.1",
     "ml-array-max": "^1.1.2",
     "ml-array-min": "^1.1.2",
