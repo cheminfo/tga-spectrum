@@ -10,32 +10,21 @@ export function fromTAInstruments(text) {
     {
       x: {
         data: parsed.data.temperature,
+        type: 'dependent',
         label: 'Program temperature [°C]',
       },
       y: {
         data: parsed.data.weight,
+        type: 'dependent',
         label: 'Weight [mg]',
+      },
+      t: {
+        data: parsed.data.time,
+        type: 'independent',
+        label: 'Time [s]',
       },
     },
     { dataType: 'TGA', title: parsed.meta.sampleName, meta: parsed.meta },
-  );
-
-  analysis.pushSpectrum(
-    {
-      x: {
-        data: parsed.data.time,
-        label: 'Time [s]',
-      },
-      y: {
-        data: parsed.data.weight,
-        label: 'Weight [mg]',
-      },
-    },
-    {
-      dataType: 'TGA',
-      title: parsed.meta.sampleName,
-      meta: parsed.meta,
-    },
   );
 
   return analysis;
