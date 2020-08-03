@@ -18,30 +18,28 @@ export function fromPerkinElmerCSV(text) {
   analysis.pushSpectrum(
     {
       x: {
-        data: parsed.map((d) => d['Program Temperature']),
-        label: 'Program temperature [°C]',
+        data: parsed.map((d) => d['Sample Temperature']),
+        label: 'Sample temperature [°C]',
+        type: 'dependent',
       },
       y: {
         data: parsed.map((d) => d['Unsubtracted Weight']),
         label: 'Weight [mg]',
+        type: 'dependent',
+      },
+      p: {
+        data: parsed.map((d) => d['Program Temperature']),
+        label: 'Program temperature [°C]',
+        type: 'dependent',
       },
       t: {
-        data: parsed.map((d) => d['Sample Temperature']),
-        label: 'Sample temperature [°C]',
+        data: parsed.map((d) => d.Time),
+        label: 'Time [s]',
+        type: 'independent',
       },
     },
     { dataType: 'TGA' },
   );
 
-  analysis.pushSpectrum(
-    {
-      x: { data: parsed.map((d) => d.Time), label: 'Time [s]' },
-      y: {
-        data: parsed.map((d) => d['Unsubtracted Weight']),
-        label: 'Weight [mg]',
-      },
-    },
-    { dataType: 'TGA' },
-  );
   return analysis;
 }
