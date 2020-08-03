@@ -1,6 +1,8 @@
 import { readFileSync } from 'fs';
 import { join } from 'path';
+
 import { toJcamp } from 'common-spectrum';
+
 import { fromTAInstruments } from '../fromTAInstruments';
 
 test('fromTAInstruments', () => {
