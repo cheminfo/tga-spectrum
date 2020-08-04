@@ -1,6 +1,6 @@
 /**
  * tga-spectrum
- * @version v0.11.1
+ * @version v0.11.2
  * @link https://github.com/cheminfo/tga-spectrum#readme
  * @license MIT
  */
@@ -6673,16 +6673,34 @@ ${indent}columns: ${this.columns}
    * @param {number} [options.from=x.min]
    * @param {number} [options.to=x.max]
    * @param {number} [options.numberOfPoints]
+   * @param {String} [options.processing] Allows to calculate derivatives
    * @param {Array} [options.filters=[]] Array of object containing 'name' (centerMean, divideSD, normalize, rescale) and 'options'
    * @param {Array} [options.exclusions=[]]
    * @returns {DataXY}
    */
 
-  function getNormalizedData(spectrum, options = {}) {
+  function getNormalizedSpectrum(spectrum, options = {}) {
     let data = {
       x: spectrum.variables.x.data,
       y: spectrum.variables.y.data
     };
+    let newSpectrum = {
+      variables: {
+        x: {
+          data: spectrum.variables.x.data,
+          units: spectrum.variables.x.units,
+          label: spectrum.variables.x.label
+        },
+        y: {
+          data: spectrum.variables.y.data,
+          units: spectrum.variables.y.units,
+          label: spectrum.variables.y.label
+        }
+      }
+    };
+    if (spectrum.title) newSpectrum.title = spectrum.title;
+    if (spectrum.dataType) newSpectrum.dataType = spectrum.dataType;
+    if (spectrum.meta) newSpectrum.meta = spectrum.meta;
     let {
       from = spectrum.variables.x.min,
       to = spectrum.variables.x.max,
@@ -6702,6 +6720,8 @@ ${indent}columns: ${this.columns}
     switch (processing) {
       case 'firstDerivative':
         if (options.processing) {
+          newSpectrum.variables.y.units = '';
+          newSpectrum.variables.y.label = newSpectrum.variables.y.label && `1° derivative of${newSpectrum.variables.y.label.replace(/\s*\[.*\]/, '')}`;
           y = savitzkyGolay(y, 1, {
             derivative: 1,
             polynomial: 2,
@@ -6714,6 +6734,8 @@ ${indent}columns: ${this.columns}
 
       case 'secondDerivative':
         if (options.processing) {
+          newSpectrum.variables.y.units = '';
+          newSpectrum.variables.y.label = newSpectrum.variables.y.label && `2° derivative of${newSpectrum.variables.y.label.replace(/\s*\[.*\]/, '')}`;
           y = savitzkyGolay(y, 1, {
             derivative: 2,
             polynomial: 2,
@@ -6723,6 +6745,12 @@ ${indent}columns: ${this.columns}
         }
 
         break;
+    }
+
+    if (filters.length) {
+      // filters change the y axis, we get rid of the units
+      newSpectrum.variables.y.units = '';
+      newSpectrum.variables.y.label = newSpectrum.variables.y.label && newSpectrum.variables.y.label.replace(/\s*\[.*\]/, '');
     }
 
     for (let filter of filters) {
@@ -6790,7 +6818,7 @@ ${indent}columns: ${this.columns}
     }
 
     if (!numberOfPoints) {
-      return filterX({
+      data = filterX({
         x,
         y
       }, {
@@ -6798,17 +6826,27 @@ ${indent}columns: ${this.columns}
         to,
         exclusions
       });
+    } else {
+      data = equallySpaced({
+        x,
+        y
+      }, {
+        from,
+        to,
+        numberOfPoints,
+        exclusions
+      });
     }
 
-    return equallySpaced({
-      x,
-      y
-    }, {
-      from,
-      to,
-      numberOfPoints,
-      exclusions
-    });
+    newSpectrum.variables.x.data = x;
+    newSpectrum.variables.x.min = min(x);
+    newSpectrum.variables.x.max = max(x);
+    newSpectrum.variables.x.isMonotone = xIsMonotone(x);
+    newSpectrum.variables.y.data = y;
+    newSpectrum.variables.y.min = min(y);
+    newSpectrum.variables.y.max = max(y);
+    newSpectrum.variables.y.isMonotone = xIsMonotone(y);
+    return newSpectrum;
   }
 
   var quantities = createCommonjsModule(function (module, exports) {
@@ -9036,14 +9074,14 @@ ${indent}columns: ${this.columns}
      */
 
 
-    getNormalizedData(options = {}) {
+    getNormalizedSpectrum(options = {}) {
       const {
         normalization,
         selector
       } = options;
       const spectrum = this.getXYSpectrum(selector);
       if (!spectrum) return undefined;
-      return getNormalizedData(spectrum, normalization);
+      return getNormalizedSpectrum(spectrum, normalization);
     }
     /**
      * Returns the xLabel
@@ -11579,17 +11617,20 @@ ${indent}columns: ${this.columns}
     for (let i = 0; i < analyses.length; i++) {
       const analysis = analyses[i];
       let serie = {};
-      let currentData = analysis.getNormalizedData({
+      let currentData = analysis.getNormalizedSpectrum({
         selector,
         normalization
       });
       if (!currentData) continue;
-      if (!xLabel) xLabel = analysis.getXLabel(selector);
-      if (!yLabel) yLabel = analysis.getYLabel(selector);
+      if (!xLabel) xLabel = currentData.variables.x.label;
+      if (!yLabel) yLabel = currentData.variables.y.label;
       addStyle(serie, analysis, {
         color: colors[i]
       });
-      serie.data = currentData;
+      serie.data = {
+        x: currentData.variables.x.data,
+        y: currentData.variables.y.data
+      };
       series.push(serie);
     }
 
