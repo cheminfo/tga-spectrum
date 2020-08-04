@@ -10,7 +10,7 @@ test('fromPerkinElmer', () => {
   );
   let analysis = fromPerkinElmer(jcamp);
 
-  let spectrum1 = analysis.getSpectrum();
+  let spectrum1 = analysis.getXYSpectrum();
 
   expect(spectrum1.variables.x.data).toHaveLength(1155);
   expect(spectrum1.variables.y.data).toHaveLength(1155);
@@ -19,7 +19,7 @@ test('fromPerkinElmer', () => {
   expect(spectrum1.variables.x.units).toStrictEqual('°C');
   expect(spectrum1.variables.y.units).toStrictEqual('mg');
 
-  let spectrum2 = analysis.getSpectrum({ flavor: 'mg vs s' });
+  let spectrum2 = analysis.getXYSpectrum({ units: 'mg vs s' });
 
   expect(spectrum2.variables.x.data).toHaveLength(1155);
   expect(spectrum2.variables.y.data).toHaveLength(1155);

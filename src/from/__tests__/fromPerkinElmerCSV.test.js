@@ -11,7 +11,7 @@ test('fromPerkinElmer', () => {
   );
   let analysis = fromPerkinElmerCSV(csv);
 
-  let spectrum1 = analysis.getSpectrum({ index: 0 });
+  let spectrum1 = analysis.getXYSpectrum({ index: 0 });
 
   expect(spectrum1.variables.x.data).toHaveLength(8637);
   expect(spectrum1.variables.y.data).toHaveLength(8637);

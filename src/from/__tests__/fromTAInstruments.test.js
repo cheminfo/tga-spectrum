@@ -12,7 +12,6 @@ test('fromTAInstruments', () => {
   );
 
   const analysis = fromTAInstruments(file);
-  const spectra = analysis.getSpectra();
 
   const jcamp = toJcamp(analysis)
     .split(/\r?\n/)
@@ -25,13 +24,15 @@ test('fromTAInstruments', () => {
     '##UNITS=     °C,mg,s',
   ]);
 
-  expect(Object.keys(spectra[0].variables)).toStrictEqual(['x', 'y', 't']);
+  const spectrum = analysis.getXYSpectrum();
 
-  expect(spectra[0].meta.sampleName).toBe('Cryo1-1_N1-2@25C');
-  expect(spectra[0].title).toBe('Cryo1-1_N1-2@25C');
-  expect(spectra[0].variables.x.data[0]).toStrictEqual(22.70189);
-  expect(spectra[0].variables.x.data).toHaveLength(15577);
-  expect(spectra[0].variables.x.data[15576]).toStrictEqual(25.00298);
-  expect(spectra[0].variables.y.data).toHaveLength(15577);
-  expect(spectra[0].meta.methodSteps).toHaveLength(10);
+  expect(Object.keys(spectrum.variables)).toStrictEqual(['x', 'y']);
+
+  expect(spectrum.meta.sampleName).toBe('Cryo1-1_N1-2@25C');
+  expect(spectrum.title).toBe('Cryo1-1_N1-2@25C');
+  expect(spectrum.variables.x.data[0]).toStrictEqual(22.70189);
+  expect(spectrum.variables.x.data).toHaveLength(15577);
+  expect(spectrum.variables.x.data[15576]).toStrictEqual(25.00298);
+  expect(spectrum.variables.y.data).toHaveLength(15577);
+  expect(spectrum.meta.methodSteps).toHaveLength(10);
 });

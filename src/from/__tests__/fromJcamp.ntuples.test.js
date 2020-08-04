@@ -10,12 +10,10 @@ test('fromJcamp', () => {
   );
   let analysis = fromJcamp(jcamp);
 
-  let spectrum1 = analysis.getSpectrum({ index: 0 });
+  let spectrum = analysis.getXYSpectrum();
 
-  expect(spectrum1.variables.x.data).toHaveLength(408);
-  expect(spectrum1.variables.y.data).toHaveLength(408);
-  expect(spectrum1.variables.t.data).toHaveLength(408);
-  expect(spectrum1.variables.x.label).toStrictEqual('Temperature [°C]');
-  expect(spectrum1.variables.y.label).toStrictEqual('Weight [mg]');
-  expect(spectrum1.variables.t.label).toStrictEqual('Time [s]');
+  expect(spectrum.variables.x.data).toHaveLength(408);
+  expect(spectrum.variables.y.data).toHaveLength(408);
+  expect(spectrum.variables.x.label).toStrictEqual('Temperature [°C]');
+  expect(spectrum.variables.y.label).toStrictEqual('Weight [mg]');
 });
