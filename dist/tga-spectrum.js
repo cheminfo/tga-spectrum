@@ -1,6 +1,6 @@
 /**
  * tga-spectrum
- * @version v0.11.2
+ * @version v0.12.0
  * @link https://github.com/cheminfo/tga-spectrum#readme
  * @license MIT
  */
