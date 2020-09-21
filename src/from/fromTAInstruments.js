@@ -21,7 +21,7 @@ export function fromTAInstruments(text) {
       t: {
         data: parsed.data.time,
         type: 'independent',
-        label: 'Time [s]',
+        label: 'Time [min]',
       },
     },
     { dataType: 'TGA', title: parsed.meta.sampleName, meta: parsed.meta },

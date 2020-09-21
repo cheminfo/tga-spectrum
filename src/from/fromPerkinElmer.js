@@ -32,7 +32,7 @@ export function fromPerkinElmer(text) {
     {
       x: {
         data: spectrum.data.time,
-        label: 'Time [s]',
+        label: 'Time [min]',
       },
       y: {
         data: spectrum.data.weight,

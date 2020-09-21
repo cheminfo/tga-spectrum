@@ -34,7 +34,7 @@ export function fromPerkinElmerCSV(text) {
       },
       t: {
         data: parsed.map((d) => d.Time),
-        label: 'Time [s]',
+        label: 'Time [min]',
         type: 'independent',
       },
     },
