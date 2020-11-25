@@ -1,7 +1,6 @@
 # tga-spectrum
 
 [![NPM version][npm-image]][npm-url]
-[![build status][travis-image]][travis-url]
 [![Test coverage][codecov-image]][codecov-url]
 [![npm download][download-image]][download-url]
 
@@ -32,8 +31,6 @@ let data = spectrum.get('weightVersusTime');
 
 [npm-image]: https://img.shields.io/npm/v/tga-spectrum.svg?style=flat-square
 [npm-url]: https://www.npmjs.com/package/tga-spectrum
-[travis-image]: https://img.shields.io/travis/cheminfo/tga-spectrum/master.svg?style=flat-square
-[travis-url]: https://travis-ci.org/cheminfo/tga-spectrum
 [codecov-image]: https://img.shields.io/codecov/c/github/cheminfo/tga-spectrum.svg?style=flat-square
 [codecov-url]: https://codecov.io/gh/cheminfo/tga-spectrum
 [download-image]: https://img.shields.io/npm/dm/tga-spectrum.svg?style=flat-square
