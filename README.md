@@ -15,11 +15,8 @@
 ```js
 import TGASpectrum from 'tga-spectrum';
 
-let spectrum = TGASpectrum.fromJcamp(jcamp);
+let analysis = TGASpectrum.fromJcamp(jcamp);
 
-let data = spectrum.get(); // default to 'weightversustemperature'
-
-let data = spectrum.get('weightVersusTime');
 
 ```
 
