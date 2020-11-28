@@ -21,7 +21,7 @@ test('fromTAInstruments', () => {
     '##VAR_NAME=  Program temperature,Weight,Time',
     '##SYMBOL=    x,y,t',
     '##VAR_TYPE=  DEPENDENT,DEPENDENT,INDEPENDENT',
-    '##UNITS=     °C,mg,s',
+    '##UNITS=     °C,mg,min',
   ]);
 
   const spectrum = analysis.getXYSpectrum();

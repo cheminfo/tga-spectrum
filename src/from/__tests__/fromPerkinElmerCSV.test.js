@@ -31,8 +31,8 @@ test('fromPerkinElmer', () => {
   expect(spectrumCopy.variables.y.label).toStrictEqual('Weight [mg]');
 
   expect(spectrumCopy.variables.t.name).toStrictEqual('Time');
-  expect(spectrumCopy.variables.t.units).toStrictEqual('s');
-  expect(spectrumCopy.variables.t.label).toStrictEqual('Time [s]');
+  expect(spectrumCopy.variables.t.units).toStrictEqual('min');
+  expect(spectrumCopy.variables.t.label).toStrictEqual('Time [min]');
 
   expect(spectrumCopy.variables.p.name).toStrictEqual('Program temperature');
   expect(spectrumCopy.variables.p.units).toStrictEqual('°C');
