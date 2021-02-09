@@ -13,9 +13,18 @@ function peak(temp, tempPeak, massPeak, derivativePeak) {
   return -Math.exp((temp - tempPeak) / peakW);
 }
 
+function getBeta(){//in first approximation we can take it constant, but we can also make a linearity approx within a range}
 
-function totalMassLoss(){}
+function totalMassLoss(){//mi = total mass loss / number peaks}
 
 function initialMassLossGuess(){}
 
 function initialWidthEstimates(){}
+
+function firstDerivative(massLoss, peakWidth) {
+    return - massLoss / (Math.E * peakWidth);
+}
+
+function thirdDerivative(massLoss, peakWidth) {
+    return  massLoss / (Math.E * peakWidth**3);
+}
