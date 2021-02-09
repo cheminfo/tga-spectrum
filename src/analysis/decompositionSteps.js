@@ -1,6 +1,9 @@
+/*Implements automatic TGA analysis following 10.1002/fam.2849*/
 import mean from 'ml-array-mean';
 import savitzkyGolay from 'ml-savitzky-golay';
 
+import xFindClosestIndex from 'ml-spectra-processing';
+const R = 8.313;
 function findPeaks(temperatures, masses, options = {}) {
   // find the points where second derivative m''=0 and third derivative m'''>0
   // return a list of the indices
@@ -34,13 +37,19 @@ function peakWidth(massPeak, derivativePeak) {
   return -massPeak / derivativePeak;
 }
 
-function peak(temp, tempPeak, massPeak, derivativePeak) {
-  let peakW = peakWidth(massPeak, derivativePeak);
-  return -Math.exp((temp - tempPeak) / peakW);
+function peak(temp, tempPeak, peakWidth) {
+  return Math.exp(-Math.exp((temp - tempPeak) / peakWidth));
 }
 
-function getBeta() {
+function getBeta(times, temperatures, startTemperature, endTemperature) {
   //in first approximation we can take it constant, but we can also make a linearity approx within a range
+  let startIndex = xFindClosestIndex(temperatures, startTemperature);
+  let endIndex = xFindClosestIndex(temperatures, endTemperature);
+
+  return (
+    (temperatures[endIndex] - temperatures[startIndex]) /
+    (times[endIndex] - times[startIndex])
+  );
 }
 
 function getTotalMassLoss(masses, options = {}) {
@@ -84,6 +93,20 @@ function getNewMassLoss(firstDerivative, peakWidth) {
   return -Math.E * firstDerivative * peakWidth;
 }
 
+function getNewWidths(firstDerivatives, thirdDerivatives) {
+  let widths = [];
+  for (let i = 0; i < firstDerivatives.length; i++) {
+    widths.push(getNewWidth(firstDerivatives[i], thirdDerivatives[iƒ]));
+  }
+}
+
+function getNewMassLosses(firstDerivatives, peakWidths) {
+  let massLosses = [];
+  for (let i = 0; i < firstDerivatives.length; i++) {
+    massLosses.push(getNewWidth(firstDerivatives[i], peakWidths[iƒ]));
+  }
+}
+
 function getFirstDerivatives(massLosses, peakWidths) {
   let firstDerivatives = [];
   for (let i = 0; i < massLosses.length; i++) {
@@ -114,7 +137,86 @@ function initialize(temperatures, masses) {
   let thirdDerivatives = getThirdDerivatives(massLosses, peakWidths);
 }
 
-function selfConsistentLoop(firstDerivatives, thirdDerivatives, options={}) {
-    let {tolerance = 0.1} = options;
-    
+function selfConsistentLoop(
+  firstDerivatives,
+  thirdDerivatives,
+  peakWidths,
+  massLosses,
+  options = {},
+) {
+  let {
+    tolerance = 0.1,
+    maxIterations = 1000,
+    recordHistory = false,
+  } = options;
+
+  let widthError = Math.infinite;
+  let massLossError = Math.infinite;
+  let iteration = 0;
+
+  let history = [];
+  while (
+    (widthError > tolerance) | (massLossError > tolerance) &&
+    iteration < maxIterations
+  ) {
+    let newWidths = getNewWidths(firstDerivatives, thirdDerivatives);
+    let newMassLosses = getNewMassLosses(firstDerivatives, newWidths);
+
+    widthError = xMeanAbsoluteError(newWidths, peakWidths);
+    massLossError = xMeanAbsoluteError(newMassLosses, massLosses);
+
+    firstDerivatives = getFirstDerivatives(newMassLosses, newWidths);
+    thirdDerivatives = getThirdDerivatives(newMassLosses, newWidths);
+
+    massLosses = newMassLosses;
+    peakWidths = newWidths;
+    iteration++;
+
+    if (recordHistory) {
+      history.push({
+        firstDerivatives: firstDerivatives,
+        thirdDerivatives: thirdDerivatives,
+        massLosses: massLosses,
+        peakWidths: peakWidths,
+        iteration: iteration,
+        widthError: widthError,
+        massLossError: massLossError,
+      });
+    }
+  }
+
+  let output = {
+    firstDerivatives: firstDerivatives,
+    thirdDerivatives: thirdDerivatives,
+    massLosses: massLosses,
+    peakWidths: peakWidths,
+    iteration: iteration,
+  };
+
+  if (recordHistory) {
+    output.history = history;
+  }
+  return output;
 }
+
+function getArrheniusEnergy(peakTemperature, peakWidth) {
+  return (R * peakTemperature ** 2) / peakWidth;
+}
+
+function getArrheniusPreactivation(beta, peakTemperature, peakWidth) {
+  return (beta / peakWidth) * Math.exp(peakTemperature / peakWidth);
+}
+
+function reconstructedDecomposition(
+  initialMass,
+  peakTemperature,
+  peakWidth,
+  temperatures,
+) {
+  let massTrace = [];
+  temperatures.forEach((temp) => {
+    massTrace.push(initialMass * peak(temp, peakTemperature, peakWidth));
+  });
+}
+
+export function analyzeTGA(options = {}) {}
