@@ -3,8 +3,7 @@ export {
   AnalysesManager,
   fromJcamp,
   toJcamp,
-  getJSGraph,
-  getNormalizationAnnotations,
+  JSGraph,
 } from 'common-spectrum';
 
 export { fromPerkinElmer } from './from/fromPerkinElmer';
