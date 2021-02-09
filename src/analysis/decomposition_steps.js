@@ -1,7 +1,26 @@
-function findPeaks(spectrum) {
+import savitzkyGolay from 'ml-savitzky-golay';
+
+function findPeaks(mass, options={}) {
   // find the points where second derivative m''=0 and third derivative m'''>0
   // return a list of the indices
   // threshold on the peak height rel. to max peak height
+  let {_=1, polynomial=2, windowSize=5, tolerance=0.01} = options
+  let firstDerivative = savitzkyGolay(mass, 1, {
+    derivative: 1,
+    polynomial: polynomial,
+    windowSize: windowSize,
+  });
+
+  let thirdDerivative = savitzkyGolay(mass, 1, {
+    derivative: 3,
+    polynomial: polynomial,
+    windowSize: windowSize,
+  });
+
+  let peakIndices = []
+  for (let i=0; i<mass.length; i++) {
+    if ((Math.abs(firstDerivative[i])<tolerance) & (thirdDerivative[i] > -tolerance)) {peakIndices.push(i);}
+  }
 }
 
 function peakWidth(massPeak, derivativePeak) {
