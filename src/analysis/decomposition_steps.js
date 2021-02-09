@@ -28,3 +28,11 @@ function firstDerivative(massLoss, peakWidth) {
 function thirdDerivative(massLoss, peakWidth) {
     return  massLoss / (Math.E * peakWidth**3);
 }
+
+function getNewWidth(firstDerivative, thirdDerivative) {
+    return Math.sqrt(-firstDerivative/thirdDerivative);
+}
+
+function getNewMassLoss(firstDerivative, peakWidth) {
+    return - Math.E * firstDerivative * peakWidth;
+}
