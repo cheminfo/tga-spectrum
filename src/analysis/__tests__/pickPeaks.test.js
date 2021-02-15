@@ -42,7 +42,6 @@ test('simulated double step', () => {
     x,
   );
   let peaks = findPeaks(x, mass.sum);
-  console.log(peaks);
   expect(peaks).toHaveLength(2);
   expect(Math.abs(peaks[0].x - 377)).toBeLessThan(5);
   expect(Math.abs(peaks[0].width - 10)).toBeLessThan(10);

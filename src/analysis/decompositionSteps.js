@@ -1,10 +1,12 @@
-/*Implements automatic TGA analysis following 10.1002/fam.2849*/
+/*Implements automatic TGA analysis following 10.1002/fam.2849
+In contrast to the algorithm described in this paper we use initial peaks widths
+from global spectra deconvolution.
+*/
 import mean from 'ml-array-mean';
 import {
   xFindClosestIndex,
   xMeanAbsoluteError,
   xDotProduct,
-  xSubtract,
   xMultiply,
   xAdd,
 } from 'ml-spectra-processing';
@@ -32,7 +34,15 @@ function peakWidth(massPeak, derivativePeak) {
 function peak(temp, tempPeak, peakWidth) {
   return Math.exp(-Math.exp((temp - tempPeak) / peakWidth));
 }
-
+/**
+ * Get the heating rate (beta in 10.1002/fam.2849)
+ *
+ * @param {Array<number>} times time axis
+ * @param {Array<number>} temperatures temperature axis
+ * @param {Number} startTemperature
+ * @param {Number} endTemperature
+ * @returns {Number}
+ */
 function getBeta(times, temperatures, startTemperature, endTemperature) {
   //in first approximation we can take it constant, but we can also make a linearity approx within a range
   let startIndex = xFindClosestIndex(temperatures, startTemperature);
@@ -154,12 +164,12 @@ function massConservingTemperatureWidths(
   let a = [];
 
   for (let i = 0; i < peaks.length; i++) {
-    a.push((-Math.E * firstDerivatives[i]) / peaks[i].x);
+    a.push(-Math.E * firstDerivatives[i]);
   }
 
-  let denominator = xDotProduct(a, a);
+  let normalization = xDotProduct(a, a);
   let numerator = xDotProduct(peakWidths, a) - totalMassLoss;
-  let fraction = numerator / denominator;
+  let fraction = numerator / normalization;
   let rhs = xMultiply(a, fraction);
   let res = [];
   // ToDo: replace with xSubtract as soon as merged in spectra-processingƒ
@@ -239,11 +249,14 @@ function getThirdDerivatives(massLosses, peakWidths) {
 function initialize(peaks, masses) {
   const totalMassLoss = getTotalMassLoss(masses);
   const derivatives = [];
+  let peakWidths = [];
+
+  // using the width from the fit seems to be more stable than using  getInitialWidthEstimates(massLosses, derivatives);
   peaks.forEach((element) => {
     derivatives.push(element.y);
+    peakWidths.push(element.width);
   });
   let massLosses = getInitialMassLossGuess(totalMassLoss, peaks.length);
-  let peakWidths = getInitialWidthEstimates(massLosses, derivatives);
 
   let firstDerivatives = getFirstDerivatives(massLosses, peakWidths);
   let thirdDerivatives = getThirdDerivatives(massLosses, peakWidths);
@@ -258,6 +271,19 @@ function initialize(peaks, masses) {
   };
 }
 
+/**
+ * Runs the self-consistent loop
+ *
+ * @param {Array<number>} firstDerivatives initial values for the first derivatives
+ * @param {Array<number>} thirdDerivatives initial values for the third derivatives
+ * @param {Array<number>} peakWidths initial values for the peaks widths
+ * @param {Array<number>} massLosses initial values for the mass losses
+ * @param {Array<number>} totalMassLoss total mass loss, that is the sum(massLosses)
+ * @param {Array<object>} peaks must contain x property (temperature)
+ * @param {Array<number>} betas heating rates, used for the calculation of the preactivations
+ * @param {Object} [options={}]
+ * @returns {Object}
+ */
 function selfConsistentLoop(
   firstDerivatives,
   thirdDerivatives,
@@ -265,10 +291,12 @@ function selfConsistentLoop(
   massLosses,
   totalMassLoss,
   peaks,
+  betas,
   options = {},
 ) {
   let {
-    tolerance = 0.01,
+    massTolerance = 0.01,
+    widthTolerance = 0.01,
     maxIterations = 1000,
     recordHistory = true,
   } = options;
@@ -278,7 +306,8 @@ function selfConsistentLoop(
   let iteration = 0;
 
   let history = [];
-  let highError = (widthError > tolerance) | (massLossError > tolerance);
+  let highError =
+    (widthError > widthTolerance) | (massLossError > massTolerance);
 
   history.push({
     firstDerivatives: firstDerivatives,
@@ -290,11 +319,9 @@ function selfConsistentLoop(
     massLossError: massLossError,
   });
 
-  console.log(history);
-
   while (highError && iteration < maxIterations) {
     let lastStep = history[history.length - 1];
-    let newWidths = getNewWidths(
+    let starWidths = getNewWidths(
       lastStep.firstDerivatives,
       lastStep.thirdDerivatives,
     );
@@ -308,39 +335,50 @@ function selfConsistentLoop(
       lastStep.peakWidths,
     );
 
-    // newWidths = massConservingTemperatureWidths(
-    //   newWidths,
-    //   totalMassLoss,
-    //   firstDerivatives,
-    //   peaks,
-    // );
+    let newWidths = massConservingTemperatureWidths(
+      starWidths,
+      totalMassLoss,
+      firstDerivatives,
+      peaks,
+    );
 
     let newMassLosses = getNewMassLosses(lastStep.firstDerivatives, newWidths);
 
     widthError = xMeanAbsoluteError(newWidths, lastStep.peakWidths);
     massLossError = xMeanAbsoluteError(newMassLosses, lastStep.massLosses);
-
     history.push({
       firstDerivatives: firstDerivatives,
       thirdDerivatives: thirdDerivatives,
       massLosses: massLosses,
-      peakWidths: peakWidths,
+      peakWidths: newWidths,
       iteration: iteration,
       widthError: widthError,
       massLossError: massLossError,
     });
 
     iteration++;
-    highError = widthError > tolerance || massLossError > tolerance;
+    highError = widthError > widthTolerance || massLossError > massTolerance;
   }
 
-  let output = {
-    firstDerivatives: firstDerivatives,
-    thirdDerivatives: thirdDerivatives,
-    massLosses: massLosses,
-    peakWidths: peakWidths,
-    iteration: iteration,
-  };
+  let output = {};
+  output.steps = [];
+  let lastStep = history[history.length - 1];
+  for (let i = 0; i < lastStep.firstDerivatives.length; i++) {
+    output.steps.push({
+      step: i,
+      firstDerivative: lastStep.firstDerivatives[i],
+      thirdDerivative: lastStep.thirdDerivatives[i],
+      massLoss: lastStep.massLosses[i],
+      temperature: peaks[i].x,
+      peakWidth: lastStep.peakWidths[i],
+      activationEnergy: getArrheniusEnergy(peaks[i].x, lastStep.peakWidths[i]),
+      preactivationFactor: getArrheniusPreactivation(
+        betas[i],
+        peaks[i].x,
+        lastStep.peakWidths[i],
+      ),
+    });
+  }
 
   if (recordHistory) {
     output.history = history;
@@ -435,7 +473,6 @@ export function reconstructedDecomposition(
     } else {
       lowerLimit = 0;
     }
-    console.log(upperLimit, lowerLimit);
     res = xAdd(filledSlice(massTraces[i], lowerLimit, upperLimit), res);
   }
   return { allTraces: massTraces, sum: res };
@@ -463,4 +500,5 @@ export const testables = {
   getInitialWidthEstimates: getInitialWidthEstimates,
   massConservingTemperatureWidths: massConservingTemperatureWidths,
   selfConsistentLoop: selfConsistentLoop,
+  getBeta: getBeta,
 };

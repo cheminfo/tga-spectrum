@@ -17,6 +17,7 @@ const {
   getInitialWidthEstimates,
   massConservingTemperatureWidths,
   selfConsistentLoop,
+  getBeta,
 } = testables;
 
 let jcamp = readFileSync(
@@ -65,8 +66,8 @@ test('mass conserving widths', () => {
 
 test('initialization', () => {
   const peaks = [
-    { x: 120, y: -0.0034 },
-    { x: 420, y: -0.0319 },
+    { x: 120, y: -0.0034, width: 10 },
+    { x: 420, y: -0.0319, width: 10 },
   ];
   let res = initialize(peaks, masses);
   expect(res).toHaveProperty('firstDerivatives');
@@ -78,6 +79,7 @@ test('initialization', () => {
   expect(res.firstDerivatives).toHaveLength(2);
   expect(res.thirdDerivatives).toHaveLength(2);
   expect(res.peakWidths).toHaveLength(2);
+  expect(res.peakWidths[0]).toStrictEqual(10);
   expect(res.peaks).toHaveLength(2);
   expect(res.massLosses).toHaveLength(2);
 });
@@ -85,33 +87,41 @@ test('initialization', () => {
 test('selfConsistentLoop basic sanity check tolerance', () => {
   // tighter tolerance should mean that we need more iterations ...s
   let res0 = selfConsistentLoop(
-    [-0.0033999999999999994, -0.0319],
-    [1.4707389254528528e-10, 1.2147051839499665e-7],
-    [4808.07977807509, 512.4599136506365],
+    [-1.6, -1.6],
+    [0.01, 0.01],
+    [10, 10],
     [44.437034027777905, 44.437034027777905],
     88.87406805555581,
     [
       { x: 120, y: -0.0034 },
       { x: 420, y: -0.0319 },
     ],
-
-    { tolerance: 0.5 },
+    [10, 10],
+    { massTolerance: 1, widthTolerance: 1 },
   );
 
+  expect(res0.steps).toHaveLength(2);
+  expect(res0.steps[0].activationEnergy).toBeGreaterThan(0);
+  expect(res0.steps[1].activationEnergy).toBeGreaterThan(0);
+
+  expect(res0.steps[0].preactivationFactor).toBeGreaterThan(0);
+  expect(res0.steps[1].preactivationFactor).toBeGreaterThan(0);
+
   let res1 = selfConsistentLoop(
-    [-0.004, -0.04],
-    [1.4707389254528528e-10, 1.2147051839499665e-7],
-    [100, 150],
-    [44, 44],
+    [-1.6, -1.6],
+    [0.01, 0.01],
+    [10, 10],
+    [44.437034027777905, 44.437034027777905],
     88.87406805555581,
     [
       { x: 120, y: -0.0034 },
       { x: 420, y: -0.0319 },
     ],
-
-    { tolerance: 0.000001 },
+    [10, 10],
+    { massTolerance: 0.00000001, widthTolerance: 0.0000001 },
   );
-  expect(res1.iteration).toBeGreaterThan(res0.iteration);
+  expect(res1.history.length).toBeGreaterThan(res0.history.length);
+  expect(res1.steps).toHaveLength(2);
 });
 
 test('reconstruct decomposition', () => {
@@ -133,4 +143,19 @@ test('reconstruct decomposition two step', () => {
   expect(res.sum).toHaveLength(1000);
   expect(res.sum[res.sum.length - 1]).toBeCloseTo(0.25);
   expect(res.allTraces[0][999]).toBeCloseTo(0.5);
+});
+
+test('heating rate calculation', () => {
+  let temperatures = createSequentialArray({
+    from: 200,
+    to: 500,
+    length: 1000,
+  });
+  let times = createSequentialArray({
+    from: 200,
+    to: 500,
+    length: 1000,
+  });
+  let res = getBeta(times, temperatures, 300, 400);
+  expect(res).toStrictEqual(1);
 });
