@@ -11,6 +11,7 @@ const {
   peakWidth,
   getInitialWidthEstimates,
   massConservingTemperatureWidths,
+  selfConsistentLoop,
 } = testables;
 
 let jcamp = readFileSync(
@@ -53,7 +54,8 @@ test('mass conserving widths', () => {
     [0.003, 0.03],
     [{ x: 120 }, { x: 420 }],
   );
-  console.log(res);
+  expect(res).toHaveLength(2);
+  expect(res[0]).toBeGreaterThan(res[1]);
 });
 
 test('initialization', () => {

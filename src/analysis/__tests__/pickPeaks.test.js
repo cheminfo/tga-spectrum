@@ -19,5 +19,4 @@ test('findPeaks', () => {
   expect(res).toHaveLength(2);
   expect(Math.abs(res[0].x - 120)).toBeLessThan(5);
   expect(Math.abs(res[1].x - 420)).toBeLessThan(5);
-  console.log(res);
 });

@@ -5,7 +5,8 @@ import {
   xMeanAbsoluteError,
   xDotProduct,
   xSubtract,
-  xDivide,
+  xMultiply,
+  xAdd,
 } from 'ml-spectra-processing';
 
 const R = 8.313;
@@ -155,18 +156,25 @@ function massConservingTemperatureWidths(
   for (let i = 0; i < peaks.length; i++) {
     a.push((-Math.E * firstDerivatives[i]) / peaks[i].x);
   }
-  console.log('a', a);
-  let denominator = xDotProduct(a, a);
-  console.log('denominator', denominator);
-  let numerator = xSubtract(xDotProduct(peakWidths, a), totalMassLoss);
-  console.log('numerator', numerator);
-  let fraction = xDivide(numerator, denominator);
-  console.log('fraction', fraction);
-  let leftHandSide = xDotProduct(fraction, a);
-  console.log('leftHandSide', leftHandSide);
-  return xSubtract(peakWidths, leftHandSide);
-}
 
+  let denominator = xDotProduct(a, a);
+  let numerator = xDotProduct(peakWidths, a) - totalMassLoss;
+  let fraction = numerator / denominator;
+  let rhs = xMultiply(a, fraction);
+  let res = [];
+  // ToDo: replace with xSubtract as soon as merged in spectra-processingƒ
+  for (let i = 0; i < peakWidths.length; i++) {
+    res[i] = peakWidths[i] - rhs[i];
+  }
+  return res;
+}
+/**
+ * Apply Eq. 24 in 10.1002/fam.2849 for all peaks
+ *
+ * @param {Array<Number>} firstDerivatives
+ * @param {Array<Number>} thirdDerivatives
+ * @return {Array<Number>}
+ */
 function getNewWidths(firstDerivatives, thirdDerivatives) {
   let widths = [];
   for (let i = 0; i < firstDerivatives.length; i++) {
@@ -174,6 +182,13 @@ function getNewWidths(firstDerivatives, thirdDerivatives) {
   }
 }
 
+/**
+ * Apply Eq. 25 in 10.1002/fam.2849 for all peaks
+ *
+ * @param {Array<Number>} firstDerivatives
+ * @param {Array<Number>} peakWidths
+ * @return {Array<Number>}
+ */
 function getNewMassLosses(firstDerivatives, peakWidths) {
   let massLosses = [];
   for (let i = 0; i < firstDerivatives.length; i++) {
@@ -181,6 +196,13 @@ function getNewMassLosses(firstDerivatives, peakWidths) {
   }
 }
 
+/**
+ * Apply Eq. 21 in 10.1002/fam.2849 for all peaks
+ *
+ * @param {Array<Number>} massLosses
+ * @param {Array<Number>} peakWidths
+ * @returns {Array<Number>}
+ */
 function getFirstDerivatives(massLosses, peakWidths) {
   let firstDerivatives = [];
   for (let i = 0; i < massLosses.length; i++) {
@@ -189,6 +211,13 @@ function getFirstDerivatives(massLosses, peakWidths) {
   return firstDerivatives;
 }
 
+/**
+ * Apply Eq. 23 in 10.1002/fam.2849 for all peaks
+ *
+ * @param {Array<Number>} massLosses
+ * @param {Array<Number>} peakWidths
+ * @returns {Array<Number>}
+ */
 function getThirdDerivatives(massLosses, peakWidths) {
   let thirdDerivatives = [];
   for (let i = 0; i < massLosses.length; i++) {
@@ -197,6 +226,14 @@ function getThirdDerivatives(massLosses, peakWidths) {
   return thirdDerivatives;
 }
 
+/**
+ * Initialize the algorithm.
+ * Calculate initial first and third derivatives
+ *
+ * @param {Array<object>} peaks
+ * @param {Array<number>} masses
+ * @returns {Object} contains properties firstDerivatives, thirdDerivatives, totalMassLoss, peaks, peakWidths
+ */
 function initialize(peaks, masses) {
   const totalMassLoss = getTotalMassLoss(masses);
   const derivatives = [];
@@ -212,6 +249,9 @@ function initialize(peaks, masses) {
   return {
     firstDerivatives: firstDerivatives,
     thirdDerivatives: thirdDerivatives,
+    totalMassLoss: totalMassLoss,
+    peakWidths: peakWidths,
+    peaks: peaks,
   };
 }
 
@@ -220,13 +260,11 @@ function selfConsistentLoop(
   thirdDerivatives,
   peakWidths,
   massLosses,
+  totalMassLoss,
+  peaks,
   options = {},
 ) {
-  let {
-    tolerance = 0.1,
-    maxIterations = 1000,
-    recordHistory = false,
-  } = options;
+  let { tolerance = 0.1, maxIterations = 1000, recordHistory = true } = options;
 
   let widthError = Math.infinite;
   let massLossError = Math.infinite;
@@ -240,11 +278,17 @@ function selfConsistentLoop(
     let newWidths = getNewWidths(firstDerivatives, thirdDerivatives);
     let newMassLosses = getNewMassLosses(firstDerivatives, newWidths);
 
-    widthError = xMeanAbsoluteError(newWidths, peakWidths);
-    massLossError = xMeanAbsoluteError(newMassLosses, massLosses);
-
     firstDerivatives = getFirstDerivatives(newMassLosses, newWidths);
     thirdDerivatives = getThirdDerivatives(newMassLosses, newWidths);
+
+    newWidths = massConservingTemperatureWidths(
+      newWidths,
+      totalMassLoss,
+      firstDerivatives,
+      peaks,
+    );
+    widthError = xMeanAbsoluteError(newWidths, peakWidths);
+    massLossError = xMeanAbsoluteError(newMassLosses, massLosses);
 
     massLosses = newMassLosses;
     peakWidths = newWidths;
@@ -276,28 +320,74 @@ function selfConsistentLoop(
   }
   return output;
 }
-
+/**
+ * Implements Eq. 6 in 10.1002/fam.2849
+ *
+ * @param {Number} peakTemperature Tp
+ * @param {Number} peakWidth ∆Ti
+ * @returns {Number} activation energy
+ */
 function getArrheniusEnergy(peakTemperature, peakWidth) {
-  return (R * peakTemperature ** 2) / peakWidth;
+  return (R * Math.pow(peakTemperature, 2)) / peakWidth;
 }
 
+/**
+ * Implements Eq. 7 in 10.1002/fam.2849
+ *
+ * @param {Number} beta heating rate
+ * @param {Number} peakTemperature
+ * @param {Number} peakWidth ∆Tis
+ * @returns {Number} pre-exponential factor
+ */
 function getArrheniusPreactivation(beta, peakTemperature, peakWidth) {
   return (beta / peakWidth) * Math.exp(peakTemperature / peakWidth);
 }
 
+/**
+ * Sums up eq. 12 (10.1002/fam.2849) contributions to reconstruct the full TGA curve
+ *
+ * @param {Number} initialMass m0
+ * @param {Array<Number>} peakTemperatures
+ * @param {Array<Number>} peakWidths
+ * @param {Array} temperatures
+ * @returns {Object}
+ */
 function reconstructedDecomposition(
   initialMass,
-  peakTemperature,
-  peakWidth,
+  peakTemperatures,
+  peakWidths,
   temperatures,
 ) {
-  let massTrace = [];
-  temperatures.forEach((temp) => {
-    massTrace.push(initialMass * peak(temp, peakTemperature, peakWidth));
-  });
+  let massTraces = [];
+  //Implementme: the initial mass of i is the final mass of i-1
+  let m0 = initialMass;
+  for (let i = 0; i < peakWidth.length; i++) {
+    let res = m0 * peak(temperatures[i], peakTemperatures[i], peakWidths[i]);
+    m0 = res[-1];
+    massTraces.push(res);
+  }
+
+  let res = new Float64Array(massTraces.length);
+
+  for (let i = 0; i < massTraces.length; i++) {
+    res = xAdd(massTraces[i], res);
+  }
+  return { allTraces: massTraces, sum: res };
 }
 
-export function analyzeTGA() {}
+export function analyzeTGA(peaks, masses) {
+  let initialization = initialize(peaks, masses);
+  let res = selfConsistentLoop(
+    initialization.firstDerivatives,
+    initialization.thirdDerivatives,
+    initialization.peakWidths,
+    initialization.massLosses,
+    initialization.totalMassLoss,
+    peaks,
+  );
+  // ToDo: get the Arrhenius parameters and reconstructed curve
+  return res;
+}
 
 export const testables = {
   initialize: initialize,
@@ -306,4 +396,5 @@ export const testables = {
   peakWidth: peakWidth,
   getInitialWidthEstimates: getInitialWidthEstimates,
   massConservingTemperatureWidths: massConservingTemperatureWidths,
+  selfConsistentLoop: selfConsistentLoop,
 };

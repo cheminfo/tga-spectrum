@@ -24,7 +24,6 @@ import savitzkyGolay from 'ml-savitzky-golay';
  * @param {number} [options.derivativeThreshold = -1] - Filters based on the amplitude of the first derivative
  * @returns {Array<object>}
  */
-
 function peakPicking(data, options = {}) {
   let peaks = gsd(data, options);
   return peaks;
@@ -128,7 +127,7 @@ export function findPeaks(temperatures, masses, options = {}) {
   let peaks;
 
   if (thirdDerivFilter) {
-    // ToDo: implement directly third derivative
+    // ToDo: implement directly third derivative, the SG code does not work for this case
     peaks = thirdDerivativeFilter(
       firstDerivative,
       joinedPeaks,
