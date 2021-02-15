@@ -1,12 +1,13 @@
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
-import { createSequentialArray } from 'ml-spectra-processing';
+import { createSequentialArray, xIsMonotone } from 'ml-spectra-processing';
 
 import { fromJcamp } from '../../index.js';
 import {
   testables,
   reconstructedDecomposition,
+  analyzeTGA,
 } from '../decompositionSteps.js';
 
 const {
@@ -18,6 +19,7 @@ const {
   massConservingTemperatureWidths,
   selfConsistentLoop,
   getBeta,
+  findBetas,
 } = testables;
 
 let jcamp = readFileSync(
@@ -28,7 +30,7 @@ let analysis = fromJcamp(jcamp);
 
 let spectrum1 = analysis.getXYSpectrum();
 
-//const temperatures = spectrum1.variables.x.data.slice(0, 1600);
+const temperatures = spectrum1.variables.x.data.slice(0, 1600);
 const masses = spectrum1.variables.y.data.slice(0, 1600);
 
 test('getTotalMassLoss', () => {
@@ -69,7 +71,7 @@ test('initialization', () => {
     { x: 120, y: -0.0034, width: 10 },
     { x: 420, y: -0.0319, width: 10 },
   ];
-  let res = initialize(peaks, masses);
+  let res = initialize(peaks, masses, temperatures);
   expect(res).toHaveProperty('firstDerivatives');
   expect(res).toHaveProperty('thirdDerivatives');
   expect(res).toHaveProperty('totalMassLoss');
@@ -120,7 +122,7 @@ test('selfConsistentLoop basic sanity check tolerance', () => {
     [10, 10],
     { massTolerance: 0.00000001, widthTolerance: 0.0000001 },
   );
-  expect(res1.history.length).toBeGreaterThan(res0.history.length);
+
   expect(res1.steps).toHaveLength(2);
 });
 
@@ -132,6 +134,8 @@ test('reconstruct decomposition', () => {
   expect(res.allTraces).toHaveLength(1);
   expect(res.sum).toHaveLength(1000);
   expect(res.sum[res.sum.length - 1]).toBeCloseTo(0);
+  //ToDo: as soon as merged in spectra-processing
+  //expect(xIsMonotone(res.sum)).toBe(true);
 });
 
 test('reconstruct decomposition two step', () => {
@@ -143,6 +147,8 @@ test('reconstruct decomposition two step', () => {
   expect(res.sum).toHaveLength(1000);
   expect(res.sum[res.sum.length - 1]).toBeCloseTo(0.25);
   expect(res.allTraces[0][999]).toBeCloseTo(0.5);
+  //ToDo: as soon as merged in spectra-processing
+  //expect(xIsMonotone(res.sum)).toBe(true);
 });
 
 test('heating rate calculation', () => {
@@ -158,4 +164,76 @@ test('heating rate calculation', () => {
   });
   let res = getBeta(times, temperatures, 300, 400);
   expect(res).toStrictEqual(1);
+});
+
+test('single step simulated spectrum', () => {
+  let x = createSequentialArray({ from: 473.15, to: 773.15, length: 1000 });
+  let simulated = reconstructedDecomposition(1, [1], [650], [10], x);
+  let betas = [10];
+  let peaks = [{ x: 650, width: 10 }];
+  let initializationResults = initialize(peaks, simulated.sum, x);
+
+  let scfResults = selfConsistentLoop(
+    initializationResults.firstDerivatives,
+    initializationResults.thirdDerivatives,
+    initializationResults.peakWidths,
+    initializationResults.massLosses,
+    initializationResults.totalMassLoss,
+    peaks,
+    betas,
+  );
+
+  expect(
+    scfResults.steps[0].activationEnergy - 351.1 * Math.pow(10, 3),
+  ).toBeLessThan(200);
+  expect(scfResults.steps).toHaveLength(1);
+  expect(scfResults.steps[0].peakWidth).toBeCloseTo(16.085);
+});
+
+test('find betas', () => {
+  let temperatures = createSequentialArray({
+    from: 200,
+    to: 500,
+    length: 1000,
+  });
+  let times = createSequentialArray({
+    from: 200,
+    to: 500,
+    length: 1000,
+  });
+
+  let peaks = [
+    { x: 250, width: 10 },
+    { x: 300, width: 10 },
+  ];
+
+  let betas = findBetas(times, temperatures, peaks);
+  expect(betas).toHaveLength(2);
+  expect(betas[0]).toStrictEqual(1);
+});
+
+test('double step simulated spectrum', () => {
+  let temperatures = createSequentialArray({
+    from: 473.15,
+    to: 773.15,
+    length: 1000,
+  });
+  let times = createSequentialArray({ from: 0, to: 1000, length: 10000 });
+  let simulated = reconstructedDecomposition(
+    1,
+    [0.5, 0.25],
+    [500, 650],
+    [10, 10],
+    temperatures,
+  );
+  let peaks = [
+    { x: 500, width: 12 },
+    { x: 650, width: 12 },
+  ];
+  let results = analyzeTGA(peaks, simulated.sum, temperatures, times);
+  expect(results.steps).toHaveLength(2);
+  expect(results.steps[0].peakWidth).toBeCloseTo(17.08, 1);
+  expect(results.steps[1].peakWidth).toBeCloseTo(14.53, 1);
+  expect(results.steps[0].massLoss).toBeCloseTo(0.5, 1);
+  expect(results.steps[1].massLoss).toBeCloseTo(0.25, 1);
 });

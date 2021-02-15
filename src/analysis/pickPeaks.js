@@ -1,7 +1,8 @@
 /* Implements automatic peak picking (in the derivatives), optimization and joining of the peaks */
 import { rollingBallBaseline } from 'baselines';
-import { gsd, joinBroadPeaks, optimizePeaks } from 'ml-gsd';
+import { gsd, joinBroadPeaks } from 'ml-gsd';
 import savitzkyGolay from 'ml-savitzky-golay';
+import { xRollingAverage } from 'ml-spectra-processing';
 /**
  * Calls global spectrum deconvolution to pick peaks
  * @param {object} [data] Object {x:[], y:[]}
@@ -29,10 +30,10 @@ function peakPicking(data, options = {}) {
   return peaks;
 }
 
-function negativeFilter(peaks, tolerance) {
+function negativeFilter(peaks) {
   let filteredPeaks = [];
   peaks.forEach((elm) => {
-    if (elm.y <= tolerance) {
+    if (elm.y <= 0) {
       filteredPeaks.push(elm);
     }
   });
@@ -76,7 +77,6 @@ export function findPeaks(temperatures, masses, options = {}) {
     width = 30,
     minMaxRatio = 0.05,
     minWidth = 2,
-    broadRatio = 0.8,
     thirdDerivFilter = true,
     baselineCorrection = {
       apply: true,
@@ -84,7 +84,10 @@ export function findPeaks(temperatures, masses, options = {}) {
       windowM: 0.02,
     },
   } = options;
-
+  masses = xRollingAverage(masses, {
+    window: windowSize / 2,
+    padding: { algorithm: 'duplicate', size: Math.floor(windowSize / 4) },
+  });
   let firstDerivative = savitzkyGolay(masses, 1, {
     derivative: 1,
     polynomial: polynomial,
@@ -110,7 +113,6 @@ export function findPeaks(temperatures, masses, options = {}) {
     {
       minMaxRatio: minMaxRatio,
       maxCriteria: false,
-      broadRatio: broadRatio,
       sgOptions: {
         windowSize: windowSize,
         polynomial: polynomial,
@@ -118,13 +120,15 @@ export function findPeaks(temperatures, masses, options = {}) {
     },
   );
 
-  let optimizedPeaks = optimizePeaks({ x: temperatures, y: s }, pp);
+  pp.forEach((peak) => {
+    peak.soft = true;
+  });
 
-  let joinedPeaks = joinBroadPeaks(optimizedPeaks, { width: width });
+  let joinedPeaks = joinBroadPeaks(pp, { width: width });
   joinedPeaks = joinedPeaks.filter((elem) => {
     return elem.width > minWidth;
   });
-  joinedPeaks = negativeFilter(joinedPeaks, tolerance);
+  joinedPeaks = negativeFilter(joinedPeaks);
   let peaks;
 
   if (thirdDerivFilter) {

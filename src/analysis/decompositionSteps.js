@@ -9,6 +9,7 @@ import {
   xDotProduct,
   xMultiply,
   xAdd,
+  xRollingAverage,
 } from 'ml-spectra-processing';
 
 const R = 8.313;
@@ -238,25 +239,38 @@ function getThirdDerivatives(massLosses, peakWidths) {
   return thirdDerivatives;
 }
 
+function peakMassLoss(peak, temperatures, masses) {
+  let tStart = peak.x - peak.width;
+  let tEnd = peak.x + peak.width;
+
+  let startMass = masses[xFindClosestIndex(temperatures, tStart)];
+  let endMass = masses[xFindClosestIndex(temperatures, tEnd)];
+  return startMass - endMass;
+}
+
 /**
  * Initialize the algorithm.
  * Calculate initial first and third derivatives
  *
  * @param {Array<object>} peaks
  * @param {Array<number>} masses
+ * @param {Array<number>} temperatures
  * @returns {Object} contains properties firstDerivatives, thirdDerivatives, totalMassLoss, peaks, peakWidths
  */
-function initialize(peaks, masses) {
+function initialize(peaks, masses, temperatures) {
   const totalMassLoss = getTotalMassLoss(masses);
   const derivatives = [];
   let peakWidths = [];
-
+  let massLosses = [];
   // using the width from the fit seems to be more stable than using  getInitialWidthEstimates(massLosses, derivatives);
   peaks.forEach((element) => {
     derivatives.push(element.y);
     peakWidths.push(element.width);
   });
-  let massLosses = getInitialMassLossGuess(totalMassLoss, peaks.length);
+
+  peaks.forEach((peak) => {
+    massLosses.push(peakMassLoss(peak, temperatures, masses));
+  });
 
   let firstDerivatives = getFirstDerivatives(massLosses, peakWidths);
   let thirdDerivatives = getThirdDerivatives(massLosses, peakWidths);
@@ -295,8 +309,8 @@ function selfConsistentLoop(
   options = {},
 ) {
   let {
-    massTolerance = 0.01,
-    widthTolerance = 0.01,
+    massTolerance = 0.001,
+    widthTolerance = 0.001,
     maxIterations = 1000,
     recordHistory = true,
   } = options;
@@ -318,7 +332,7 @@ function selfConsistentLoop(
     widthError: widthError,
     massLossError: massLossError,
   });
-
+  console.log(firstDerivatives);
   while (highError && iteration < maxIterations) {
     let lastStep = history[history.length - 1];
     let starWidths = getNewWidths(
@@ -342,14 +356,13 @@ function selfConsistentLoop(
       peaks,
     );
 
-    let newMassLosses = getNewMassLosses(lastStep.firstDerivatives, newWidths);
-
+    let newMassLosses = getNewMassLosses(firstDerivatives, newWidths);
     widthError = xMeanAbsoluteError(newWidths, lastStep.peakWidths);
     massLossError = xMeanAbsoluteError(newMassLosses, lastStep.massLosses);
     history.push({
       firstDerivatives: firstDerivatives,
       thirdDerivatives: thirdDerivatives,
-      massLosses: massLosses,
+      massLosses: newMassLosses,
       peakWidths: newWidths,
       iteration: iteration,
       widthError: widthError,
@@ -411,7 +424,7 @@ function getArrheniusPreactivation(beta, peakTemperature, peakWidth) {
 function filledSlice(values, lowerLimit, upperLimit) {
   let array = new Array(values.length);
   array = array.fill(0);
-  for (let i = lowerLimit; i < upperLimit + 1; i++) {
+  for (let i = lowerLimit; i < upperLimit; i++) {
     array[i] = values[i];
   }
   return array;
@@ -420,11 +433,12 @@ function filledSlice(values, lowerLimit, upperLimit) {
 /**
  * Sums up eq. 12 (10.1002/fam.2849) contributions to reconstruct the full TGA curve
  *
+ * @export
  * @param {Number} initialMass m0
  * @param {Array<Number>} massLosses
- * @param {Array<Number>} peakTemperatures
+ * @param {Array<Number>} peakTemperatures - should be in Kelvin
  * @param {Array<Number>} peakWidths
- * @param {Array} temperatures
+ * @param {Array} temperatures - should be in Kelvin
  * @returns {Object}
  */
 export function reconstructedDecomposition(
@@ -441,7 +455,8 @@ export function reconstructedDecomposition(
     let massTrace = [];
     for (let j = 0; j < temperatures.length; j++) {
       massTrace.push(
-        m0 * peak(temperatures[j], peakTemperatures[i], peakWidths[i]) +
+        massLosses[i] *
+          peak(temperatures[j], peakTemperatures[i], peakWidths[i]) +
           m0 -
           massLosses[i],
       );
@@ -453,33 +468,59 @@ export function reconstructedDecomposition(
   //ToDo: replace with FloaArray as soon as merged
   let res = new Array(temperatures.length);
   res = res.fill(0);
-  let upperLimit;
-  let lowerLimit;
-  for (let i = 0; i < massTraces.length; i++) {
-    if (i < massTraces.length - 1) {
-      upperLimit = xFindClosestIndex(
-        temperatures,
-        peakTemperatures[i + 1] - peakWidths[i + 1],
+  let upperLimits = [0];
+  if (peakTemperatures.length > 1) {
+    for (let i = 0; i < peakTemperatures.length - 1; i++) {
+      upperLimits.push(
+        xFindClosestIndex(
+          temperatures,
+          (peakTemperatures[i] + peakTemperatures[i + 1]) / 2,
+        ),
       );
-    } else {
-      upperLimit = temperatures.length - 1;
     }
-
-    if (i >= 1) {
-      lowerLimit = xFindClosestIndex(
-        temperatures,
-        peakTemperatures[i] - peakWidths[i],
-      );
-    } else {
-      lowerLimit = 0;
-    }
-    res = xAdd(filledSlice(massTraces[i], lowerLimit, upperLimit), res);
   }
+
+  upperLimits.push(temperatures.length);
+  for (let i = 0; i < massTraces.length; i++) {
+    res = xAdd(
+      filledSlice(massTraces[i], upperLimits[i], upperLimits[i + 1]),
+      res,
+    );
+  }
+  res = xRollingAverage(res, { padding: { algorithm: 'duplicate', size: 2 } });
   return { allTraces: massTraces, sum: res };
 }
 
-export function analyzeTGA(peaks, masses) {
-  let initialization = initialize(peaks, masses);
+/**
+ * Calculates the local heating rates
+ *
+ * @param {Array<Number>} times
+ * @param {Array<Number>} temperatures
+ * @param {Array<Number>} peaks
+ * @returns {Array<Number>}
+ */
+function findBetas(times, temperatures, peaks) {
+  let betas = [];
+  for (let i = 0; i < peaks.length; i++) {
+    let startTemp = peaks[i].x - peaks[i].width;
+    let endTemp = peaks[i].x + peaks[i].width;
+    betas.push(getBeta(times, temperatures, startTemp, endTemp));
+  }
+  return betas;
+}
+
+/**
+ *
+ * @export
+ * @param {Array<Object>} peaks
+ * @param {Array<Number>} masses
+ * @param {Array<Number>} temperatures - for the Arrhenius parameters this should be in Kelvin
+ * @param {Array<Number>} times - for the calculation of the preactivation factor. The preactivation factor will have the 1/unit of this unit. Usually this is in seconds.
+ * @returns {Object}
+ */
+export function analyzeTGA(peaks, masses, temperatures, times) {
+  let initialization = initialize(peaks, masses, temperatures);
+  let betas = findBetas(times, temperatures, peaks);
   let res = selfConsistentLoop(
     initialization.firstDerivatives,
     initialization.thirdDerivatives,
@@ -487,8 +528,8 @@ export function analyzeTGA(peaks, masses) {
     initialization.massLosses,
     initialization.totalMassLoss,
     peaks,
+    betas,
   );
-  // ToDo: get the Arrhenius parameters and reconstructed curve
   return res;
 }
 
@@ -501,4 +542,5 @@ export const testables = {
   massConservingTemperatureWidths: massConservingTemperatureWidths,
   selfConsistentLoop: selfConsistentLoop,
   getBeta: getBeta,
+  findBetas: findBetas,
 };

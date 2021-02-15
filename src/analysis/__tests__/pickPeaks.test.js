@@ -20,14 +20,15 @@ const masses = spectrum1.variables.y.data.slice(0, 1600);
 test('findPeaks', () => {
   let res = findPeaks(temperatures, masses);
   expect(res).toHaveLength(2);
-  expect(Math.abs(res[1].x - 113)).toBeLessThan(5);
-  expect(Math.abs(res[0].x - 415)).toBeLessThan(5);
+  expect(Math.abs(res[0].x - 113)).toBeLessThan(8);
+  expect(Math.abs(res[1].x - 415)).toBeLessThan(8);
 });
 
 test('simulated single step', () => {
   let x = createSequentialArray({ from: 200, to: 500, length: 1000 });
   let mass = reconstructedDecomposition(1, [1], [377], [10], x);
   let peaks = findPeaks(x, mass.sum);
+
   expect(Math.abs(peaks[0].x - 377)).toBeLessThan(5);
   expect(Math.abs(peaks[0].width - 10)).toBeLessThan(10);
 });
