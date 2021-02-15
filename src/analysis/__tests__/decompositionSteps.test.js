@@ -66,6 +66,28 @@ test('initialization', () => {
   let res = initialize(peaks, masses);
   expect(res).toHaveProperty('firstDerivatives');
   expect(res).toHaveProperty('thirdDerivatives');
+  expect(res).toHaveProperty('totalMassLoss');
+  expect(res).toHaveProperty('peakWidths');
+  expect(res).toHaveProperty('peaks');
+  expect(res).toHaveProperty('massLosses');
   expect(res.firstDerivatives).toHaveLength(2);
   expect(res.thirdDerivatives).toHaveLength(2);
+  expect(res.peakWidths).toHaveLength(2);
+  expect(res.peaks).toHaveLength(2);
+  expect(res.massLosses).toHaveLength(2);
+});
+
+test('selfConsistentLoop', () => {
+  let res = selfConsistentLoop(
+    [-0.0033999999999999994, -0.0319],
+    [1.4707389254528528e-10, 1.2147051839499665e-7],
+    [4808.07977807509, 512.4599136506365],
+    [44.437034027777905, 44.437034027777905],
+    88.87406805555581,
+    [
+      { x: 120, y: -0.0034 },
+      { x: 420, y: -0.0319 },
+    ],
+  );
+  console.log(res);
 });

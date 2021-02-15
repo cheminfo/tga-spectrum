@@ -180,6 +180,7 @@ function getNewWidths(firstDerivatives, thirdDerivatives) {
   for (let i = 0; i < firstDerivatives.length; i++) {
     widths.push(getNewWidth(firstDerivatives[i], thirdDerivatives[i]));
   }
+  return widths;
 }
 
 /**
@@ -194,6 +195,7 @@ function getNewMassLosses(firstDerivatives, peakWidths) {
   for (let i = 0; i < firstDerivatives.length; i++) {
     massLosses.push(getNewMassLoss(firstDerivatives[i], peakWidths[i]));
   }
+  return massLosses;
 }
 
 /**
@@ -251,6 +253,7 @@ function initialize(peaks, masses) {
     thirdDerivatives: thirdDerivatives,
     totalMassLoss: totalMassLoss,
     peakWidths: peakWidths,
+    massLosses: massLosses,
     peaks: peaks,
   };
 }
@@ -264,10 +267,14 @@ function selfConsistentLoop(
   peaks,
   options = {},
 ) {
-  let { tolerance = 0.1, maxIterations = 1000, recordHistory = true } = options;
+  let {
+    tolerance = 0.01,
+    maxIterations = 1000,
+    recordHistory = true,
+  } = options;
 
-  let widthError = Math.infinite;
-  let massLossError = Math.infinite;
+  let widthError = Infinity;
+  let massLossError = Infinity;
   let iteration = 0;
 
   let history = [];
@@ -292,7 +299,6 @@ function selfConsistentLoop(
 
     massLosses = newMassLosses;
     peakWidths = newWidths;
-    iteration++;
 
     if (recordHistory) {
       history.push({
@@ -305,6 +311,7 @@ function selfConsistentLoop(
         massLossError: massLossError,
       });
     }
+    iteration++;
   }
 
   let output = {
