@@ -77,8 +77,9 @@ test('initialization', () => {
   expect(res.massLosses).toHaveLength(2);
 });
 
-test('selfConsistentLoop', () => {
-  let res = selfConsistentLoop(
+test('selfConsistentLoop basic sanity check tolerance', () => {
+  // tighter tolerance should mean that we need more iterations ...s
+  let res0 = selfConsistentLoop(
     [-0.0033999999999999994, -0.0319],
     [1.4707389254528528e-10, 1.2147051839499665e-7],
     [4808.07977807509, 512.4599136506365],
@@ -88,6 +89,24 @@ test('selfConsistentLoop', () => {
       { x: 120, y: -0.0034 },
       { x: 420, y: -0.0319 },
     ],
+
+    { tolerance: 0.5 },
   );
-  console.log(res);
+
+  let res1 = selfConsistentLoop(
+    [-0.004, -0.04],
+    [0.1, 1],
+    [100, 150],
+    [44, 44],
+    88.87406805555581,
+    [
+      { x: 120, y: -0.0034 },
+      { x: 420, y: -0.0319 },
+    ],
+
+    { tolerance: 0.000001 },
+  );
+  console.log(res1);
+  console.log(res0);
+  expect(res1.iteration).toBeGreaterThan(res0.iteration);
 });

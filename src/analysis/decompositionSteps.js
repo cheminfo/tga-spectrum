@@ -278,40 +278,55 @@ function selfConsistentLoop(
   let iteration = 0;
 
   let history = [];
-  while (
-    (widthError > tolerance) | (massLossError > tolerance) &&
-    iteration < maxIterations
-  ) {
-    let newWidths = getNewWidths(firstDerivatives, thirdDerivatives);
-    let newMassLosses = getNewMassLosses(firstDerivatives, newWidths);
+  let highError = (widthError > tolerance) | (massLossError > tolerance);
+
+  history.push({
+    firstDerivatives: firstDerivatives,
+    thirdDerivatives: thirdDerivatives,
+    massLosses: massLosses,
+    peakWidths: peakWidths,
+    iteration: iteration,
+    widthError: widthError,
+    massLossError: massLossError,
+  });
+
+  console.log(history);
+
+  while (highError && iteration < maxIterations) {
+    let lastStep = history[history.length - 1];
+    let newWidths = getNewWidths(
+      lastStep.firstDerivatives,
+      lastStep.thirdDerivatives,
+    );
+
+    let newMassLosses = getNewMassLosses(lastStep.firstDerivatives, newWidths);
 
     firstDerivatives = getFirstDerivatives(newMassLosses, newWidths);
     thirdDerivatives = getThirdDerivatives(newMassLosses, newWidths);
 
-    newWidths = massConservingTemperatureWidths(
-      newWidths,
-      totalMassLoss,
-      firstDerivatives,
-      peaks,
-    );
-    widthError = xMeanAbsoluteError(newWidths, peakWidths);
-    massLossError = xMeanAbsoluteError(newMassLosses, massLosses);
+    // newWidths = massConservingTemperatureWidths(
+    //   newWidths,
+    //   totalMassLoss,
+    //   firstDerivatives,
+    //   peaks,
+    // );
+   
 
-    massLosses = newMassLosses;
-    peakWidths = newWidths;
+    widthError = xMeanAbsoluteError(newWidths, lastStep.peakWidths);
+    massLossError = xMeanAbsoluteError(newMassLosses, lastStep.massLosses);
 
-    if (recordHistory) {
-      history.push({
-        firstDerivatives: firstDerivatives,
-        thirdDerivatives: thirdDerivatives,
-        massLosses: massLosses,
-        peakWidths: peakWidths,
-        iteration: iteration,
-        widthError: widthError,
-        massLossError: massLossError,
-      });
-    }
+    history.push({
+      firstDerivatives: firstDerivatives,
+      thirdDerivatives: thirdDerivatives,
+      massLosses: massLosses,
+      peakWidths: peakWidths,
+      iteration: iteration,
+      widthError: widthError,
+      massLossError: massLossError,
+    });
+
     iteration++;
+    highError = widthError > tolerance || massLossError > tolerance;
   }
 
   let output = {
