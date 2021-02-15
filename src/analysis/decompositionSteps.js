@@ -299,10 +299,14 @@ function selfConsistentLoop(
       lastStep.thirdDerivatives,
     );
 
-    let newMassLosses = getNewMassLosses(lastStep.firstDerivatives, newWidths);
-
-    firstDerivatives = getFirstDerivatives(newMassLosses, newWidths);
-    thirdDerivatives = getThirdDerivatives(newMassLosses, newWidths);
+    firstDerivatives = getFirstDerivatives(
+      lastStep.massLosses,
+      lastStep.peakWidths,
+    );
+    thirdDerivatives = getThirdDerivatives(
+      lastStep.massLosses,
+      lastStep.peakWidths,
+    );
 
     // newWidths = massConservingTemperatureWidths(
     //   newWidths,
@@ -310,7 +314,8 @@ function selfConsistentLoop(
     //   firstDerivatives,
     //   peaks,
     // );
-   
+
+    let newMassLosses = getNewMassLosses(lastStep.firstDerivatives, newWidths);
 
     widthError = xMeanAbsoluteError(newWidths, lastStep.peakWidths);
     massLossError = xMeanAbsoluteError(newMassLosses, lastStep.massLosses);
@@ -365,17 +370,28 @@ function getArrheniusPreactivation(beta, peakTemperature, peakWidth) {
   return (beta / peakWidth) * Math.exp(peakTemperature / peakWidth);
 }
 
+function filledSlice(values, lowerLimit, upperLimit) {
+  let array = new Array(values.length);
+  array = array.fill(0);
+  for (let i = lowerLimit; i < upperLimit + 1; i++) {
+    array[i] = values[i];
+  }
+  return array;
+}
+
 /**
  * Sums up eq. 12 (10.1002/fam.2849) contributions to reconstruct the full TGA curve
  *
  * @param {Number} initialMass m0
+ * @param {Array<Number>} massLosses
  * @param {Array<Number>} peakTemperatures
  * @param {Array<Number>} peakWidths
  * @param {Array} temperatures
  * @returns {Object}
  */
-function reconstructedDecomposition(
+export function reconstructedDecomposition(
   initialMass,
+  massLosses,
   peakTemperatures,
   peakWidths,
   temperatures,
@@ -383,16 +399,44 @@ function reconstructedDecomposition(
   let massTraces = [];
   //Implementme: the initial mass of i is the final mass of i-1
   let m0 = initialMass;
-  for (let i = 0; i < peakWidth.length; i++) {
-    let res = m0 * peak(temperatures[i], peakTemperatures[i], peakWidths[i]);
-    m0 = res[-1];
-    massTraces.push(res);
+  for (let i = 0; i < peakWidths.length; i++) {
+    let massTrace = [];
+    for (let j = 0; j < temperatures.length; j++) {
+      massTrace.push(
+        m0 * peak(temperatures[j], peakTemperatures[i], peakWidths[i]) +
+          m0 -
+          massLosses[i],
+      );
+    }
+    m0 -= massLosses[i];
+    massTraces.push(massTrace);
   }
 
-  let res = new Float64Array(massTraces.length);
-
+  //ToDo: replace with FloaArray as soon as merged
+  let res = new Array(temperatures.length);
+  res = res.fill(0);
+  let upperLimit;
+  let lowerLimit;
   for (let i = 0; i < massTraces.length; i++) {
-    res = xAdd(massTraces[i], res);
+    if (i < massTraces.length - 1) {
+      upperLimit = xFindClosestIndex(
+        temperatures,
+        peakTemperatures[i + 1] - peakWidths[i + 1],
+      );
+    } else {
+      upperLimit = temperatures.length - 1;
+    }
+
+    if (i >= 1) {
+      lowerLimit = xFindClosestIndex(
+        temperatures,
+        peakTemperatures[i] - peakWidths[i],
+      );
+    } else {
+      lowerLimit = 0;
+    }
+    console.log(upperLimit, lowerLimit);
+    res = xAdd(filledSlice(massTraces[i], lowerLimit, upperLimit), res);
   }
   return { allTraces: massTraces, sum: res };
 }

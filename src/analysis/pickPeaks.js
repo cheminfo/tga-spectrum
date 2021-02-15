@@ -29,10 +29,10 @@ function peakPicking(data, options = {}) {
   return peaks;
 }
 
-function negativeFilter(peaks) {
+function negativeFilter(peaks, tolerance) {
   let filteredPeaks = [];
   peaks.forEach((elm) => {
-    if (elm.y < 0) {
+    if (elm.y <= tolerance) {
       filteredPeaks.push(elm);
     }
   });
@@ -73,14 +73,14 @@ export function findPeaks(temperatures, masses, options = {}) {
     polynomial = 2,
     windowSize = 5,
     tolerance = 0.0001,
-    width = 20,
+    width = 30,
     minMaxRatio = 0.05,
-    minWidth = 1,
-    broadRatio = 0.05,
+    minWidth = 2,
+    broadRatio = 0.8,
     thirdDerivFilter = true,
     baselineCorrection = {
       apply: true,
-      windowS: 0.04,
+      windowS: 0.1,
       windowM: 0.02,
     },
   } = options;
@@ -119,11 +119,12 @@ export function findPeaks(temperatures, masses, options = {}) {
   );
 
   let optimizedPeaks = optimizePeaks({ x: temperatures, y: s }, pp);
+
   let joinedPeaks = joinBroadPeaks(optimizedPeaks, { width: width });
   joinedPeaks = joinedPeaks.filter((elem) => {
     return elem.width > minWidth;
   });
-  joinedPeaks = negativeFilter(joinedPeaks);
+  joinedPeaks = negativeFilter(joinedPeaks, tolerance);
   let peaks;
 
   if (thirdDerivFilter) {

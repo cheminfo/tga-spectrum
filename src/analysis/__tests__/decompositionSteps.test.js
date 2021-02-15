@@ -1,8 +1,13 @@
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
+import { createSequentialArray } from 'ml-spectra-processing';
+
 import { fromJcamp } from '../../index.js';
-import { testables } from '../decompositionSteps.js';
+import {
+  testables,
+  reconstructedDecomposition,
+} from '../decompositionSteps.js';
 
 const {
   initialize,
@@ -95,7 +100,7 @@ test('selfConsistentLoop basic sanity check tolerance', () => {
 
   let res1 = selfConsistentLoop(
     [-0.004, -0.04],
-    [0.1, 1],
+    [1.4707389254528528e-10, 1.2147051839499665e-7],
     [100, 150],
     [44, 44],
     88.87406805555581,
@@ -106,7 +111,26 @@ test('selfConsistentLoop basic sanity check tolerance', () => {
 
     { tolerance: 0.000001 },
   );
-  console.log(res1);
-  console.log(res0);
   expect(res1.iteration).toBeGreaterThan(res0.iteration);
+});
+
+test('reconstruct decomposition', () => {
+  let x = createSequentialArray({ from: 200, to: 500, length: 1000 });
+  let res = reconstructedDecomposition(1, [1], [377], [10], x);
+  expect(res).toHaveProperty('allTraces');
+  expect(res).toHaveProperty('sum');
+  expect(res.allTraces).toHaveLength(1);
+  expect(res.sum).toHaveLength(1000);
+  expect(res.sum[res.sum.length - 1]).toBeCloseTo(0);
+});
+
+test('reconstruct decomposition two step', () => {
+  let x = createSequentialArray({ from: 200, to: 500, length: 1000 });
+  let res = reconstructedDecomposition(1, [0.5, 0.25], [377, 450], [10, 10], x);
+  expect(res).toHaveProperty('allTraces');
+  expect(res).toHaveProperty('sum');
+  expect(res.allTraces).toHaveLength(2);
+  expect(res.sum).toHaveLength(1000);
+  expect(res.sum[res.sum.length - 1]).toBeCloseTo(0.25);
+  expect(res.allTraces[0][999]).toBeCloseTo(0.5);
 });
