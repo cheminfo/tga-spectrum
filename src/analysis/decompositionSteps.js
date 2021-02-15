@@ -1,6 +1,6 @@
 /*Implements automatic TGA analysis following 10.1002/fam.2849
 In contrast to the algorithm described in this paper we use initial peaks widths
-from global spectra deconvolution.
+from global spectra deconvolution. We also use those to calculate the initial weight losses
 */
 import mean from 'ml-array-mean';
 import {
