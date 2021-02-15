@@ -1,3 +1,4 @@
+/* Implements automatic peak picking (in the derivatives), optimization and joining of the peaks */
 import { rollingBallBaseline } from 'baselines';
 import { gsd, joinBroadPeaks, optimizePeaks } from 'ml-gsd';
 import savitzkyGolay from 'ml-savitzky-golay';
