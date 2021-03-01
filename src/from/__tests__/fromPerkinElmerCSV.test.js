@@ -6,7 +6,7 @@ import { fromPerkinElmerCSV } from '../fromPerkinElmerCSV';
 
 test('fromPerkinElmer', () => {
   let csv = readFileSync(
-    join(__dirname, '../../../testFiles/perkinElmer_csv.txt'),
+    join(__dirname, '../../../testFiles/perkinElmer.csv'),
     'latin1',
   );
   let analysis = fromPerkinElmerCSV(csv);
