@@ -1,6 +1,9 @@
 export function parsePerkinElmer(text) {
   let lines = text.split(/[\r\n]+/);
-  let result = { meta: {}, data: { time: [], weight: [], temperature: [] } };
+  let result = {
+    meta: { methodSteps: [] },
+    data: { time: [], weight: [], temperature: [] },
+  };
   let section = '';
   let inMethodSteps = false;
   for (let line of lines) {
@@ -8,8 +11,9 @@ export function parsePerkinElmer(text) {
       if (line.startsWith('1) TGA')) {
         inMethodSteps = false;
       } else {
-        if (!result.meta['Method Steps']) result.meta['Method Steps'] = '';
-        result.meta['Method Steps'] += `${line.replace(/\t/g, '  ')}\n`;
+        if (line[0] !== '\t' && line.length > 2) {
+          result.meta.methodSteps.push(line.replace(/\t\n,+$/g, ''));
+        }
       }
     } else if (line.match(/^[a-zA-Z -]+$/)) {
       section = trim(line);
