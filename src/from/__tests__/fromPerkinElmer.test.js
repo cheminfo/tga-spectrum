@@ -18,6 +18,7 @@ test('fromPerkinElmer', () => {
   expect(spectrum1.variables.y.label).toStrictEqual('Weight [mg]');
   expect(spectrum1.variables.x.units).toStrictEqual('°C');
   expect(spectrum1.variables.y.units).toStrictEqual('mg');
+  expect(spectrum1.meta.methodSteps).toHaveLength(6);
 
   let spectrum2 = analysis.getXYSpectrum({ units: 'mg vs s' });
 

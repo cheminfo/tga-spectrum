@@ -4,7 +4,11 @@
 [![Test coverage][codecov-image]][codecov-url]
 [![npm download][download-image]][download-url]
 
-.
+Parse TGA files from
+
+- Perkin Elmer `txt` and `csv` files
+- TA instruments `txt` and `xls` files
+
 
 ## Installation
 
@@ -16,8 +20,6 @@
 import TGASpectrum from 'tga-spectrum';
 
 let analysis = TGASpectrum.fromJcamp(jcamp);
-
-
 ```
 
 ## [API Documentation](https://cheminfo.github.io/tga-spectrum/)
