@@ -1,12 +1,14 @@
 export function parseTAInstruments(text) {
-  let lines = text.split(/\r?\n/).filter((line) => !line.match(/^\s*$/));
+  let lines = text
+    .split(/\r?\n/)
+    .filter((line) => !line.match(/(^\s*$)|(^StartOfData$)/));
 
   let meta = parseMeta(lines);
+
   let parsed = lines
     .slice(meta.dataStart, lines.length)
     .filter((line) => !line.startsWith('-'))
     .map((line) => line.split(/\s+/).map(Number));
-
   meta.balancePurgeFlow = [];
   meta.samplePurgeFlow = [];
   // We now assume that we always have 5 columns in the same order ...
@@ -67,7 +69,7 @@ function parseMeta(lines) {
       meta.runSerial = splitTrim(line);
     } else if (line.match(/^ProcName/)) {
       meta.procName = splitTrim(line);
-    } else if (line.match(/^StartOfData/)) {
+    } else if (line.match(/^OrgFile/)) {
       meta.dataStart = i + 1;
       break;
     }
