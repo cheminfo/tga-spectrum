@@ -332,7 +332,6 @@ function selfConsistentLoop(
     widthError: widthError,
     massLossError: massLossError,
   });
-  console.log(firstDerivatives);
   while (highError && iteration < maxIterations) {
     let lastStep = history[history.length - 1];
     let starWidths = getNewWidths(

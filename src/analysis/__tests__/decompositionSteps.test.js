@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
-import { createSequentialArray, xIsMonotone } from 'ml-spectra-processing';
+import { createSequentialArray } from 'ml-spectra-processing';
 
 import { fromJcamp } from '../../index.js';
 import {
