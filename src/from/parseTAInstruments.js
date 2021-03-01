@@ -8,7 +8,7 @@ export function parseTAInstruments(text) {
   let parsed = lines
     .slice(meta.dataStart, lines.length)
     .filter((line) => !line.startsWith('-'))
-    .map((line) => line.split(/\s+/).map(Number));
+    .map((line) => line.replace(/^\s/g, '').split(/\s+/).map(Number));
   meta.balancePurgeFlow = [];
   meta.samplePurgeFlow = [];
   // We now assume that we always have 5 columns in the same order ...
