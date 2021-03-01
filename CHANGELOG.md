@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.14.0](https://www.github.com/cheminfo/tga-spectrum/compare/v0.13.0...v0.14.0) (2021-03-01)
+
+
+### Features
+
+* udate dependencies for baseline correction ([ca8a845](https://www.github.com/cheminfo/tga-spectrum/commit/ca8a845f1289b1be110da79188d347bff8332795))
+
+
+### Bug Fixes
+
+* ta parser did not work on all ta txt files due to StartOfData line ([323a090](https://www.github.com/cheminfo/tga-spectrum/commit/323a090ddef464b0f6e305ffbf2076bd7ff50598))
+
 ## [0.13.0](https://www.github.com/cheminfo/tga-spectrum/compare/v0.12.1...v0.13.0) (2021-02-09)
 
 
