@@ -62,7 +62,7 @@ test('fromTAInstruments test 2', () => {
 
   expect(spectrum.meta.sampleName).toBe('Fe-BTC Grade A act');
   expect(spectrum.title).toBe('Fe-BTC Grade A act');
-  expect(spectrum.variables.x.data[0]).toStrictEqual(0.003733334);
+  expect(spectrum.variables.x.data[0]).toStrictEqual(46.87907);
   expect(spectrum.variables.x.data).toHaveLength(18995);
   expect(spectrum.variables.x.data[18994]).toStrictEqual(797.8466);
   expect(spectrum.variables.y.data).toHaveLength(18995);
