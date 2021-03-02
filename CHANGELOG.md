@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.14.1](https://www.github.com/cheminfo/tga-spectrum/compare/v0.14.0...v0.14.1) (2021-03-02)
+
+
+### Bug Fixes
+
+* ta parser bug ([5d295ca](https://www.github.com/cheminfo/tga-spectrum/commit/5d295ca2fc7b2b1fb7f40b8c7c217cd68b281b5a))
+
 ## [0.14.0](https://www.github.com/cheminfo/tga-spectrum/compare/v0.13.0...v0.14.0) (2021-03-01)
 
 
