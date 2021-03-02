@@ -9,3 +9,4 @@ export {
 export { fromPerkinElmer } from './from/fromPerkinElmer';
 export { fromPerkinElmerCSV } from './from/fromPerkinElmerCSV';
 export { fromTAInstruments } from './from/fromTAInstruments';
+export { fromTAInstrumentsExcel } from './from/fromTAInstrumentsExcel';
