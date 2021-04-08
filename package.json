@@ -64,7 +64,7 @@
       "iupac": "https://doi.org/10.1351/goldbook.T06324"
     },
     "functionality": {
-      "fileTypes:": [
+      "fileTypes": [
         {
           "extension": "txt",
           "manufacturer": "TA Instruments",
