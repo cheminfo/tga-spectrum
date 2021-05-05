@@ -47,8 +47,8 @@ function parseMeta(detailsSheet) {
   return meta;
 }
 
-export function parseTAInstrumentsExcel(inputData) {
-  const workbook = xlsx.read(inputData);
+export function parseTAInstrumentsExcel(blob) {
+  const workbook = xlsx.read(blob);
   let meta = parseMeta(workbook.Sheets.Details);
 
   let data = {
