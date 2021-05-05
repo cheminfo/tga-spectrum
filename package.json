@@ -84,6 +84,11 @@
           "extension": "jcamp",
           "manufacturer": "cheminfo",
           "example": "https://raw.githubusercontent.com/cheminfo/tga-spectrum/master/testFiles/ntuples.jdx"
+        },
+        {
+          "extension": "txt",
+          "manufacturer": "Netzsch",
+          "example": "https://raw.githubusercontent.com/cheminfo/tga-spectrum/master/testFiles/TGA_AlPyr_ELN"
         }
       ]
     }
