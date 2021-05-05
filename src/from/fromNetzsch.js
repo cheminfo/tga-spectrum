@@ -2,12 +2,6 @@ import { ensureString } from 'ensure-string';
 
 import { Analysis } from '..';
 
-const mapping = {
-  INSTRUMENT: 'intrumentName',
-  'DATE/TIME': 'date',
-  'SAMPLE MASS': 'sampleWeight',
-};
-
 export function fromNetzsch(blob) {
   const text = ensureString(blob, { encoding: 'iso8859-1' });
   let lines = text.split(/\r?\n/).filter((line) => line);
@@ -42,7 +36,7 @@ export function fromNetzsch(blob) {
       inData = true;
     } else {
       const { label, value } = line.match(/#(?<label>.*?):(?<value>.*)/).groups;
-      parsed.meta[mapping[label] || label] = value;
+      parsed.meta[label] = value;
     }
   }
 
