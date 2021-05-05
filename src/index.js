@@ -6,6 +6,7 @@ export {
   JSGraph,
 } from 'common-spectrum';
 
+export { fromNetzsch } from './from/fromNetzsch';
 export { fromPerkinElmer } from './from/fromPerkinElmer';
 export { fromPerkinElmerCSV } from './from/fromPerkinElmerCSV';
 export { fromTAInstruments } from './from/fromTAInstruments';
