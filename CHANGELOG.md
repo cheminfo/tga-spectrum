@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.15.1](https://www.github.com/cheminfo/tga-spectrum/compare/v0.15.0...v0.15.1) (2021-05-06)
+
+
+### Bug Fixes
+
+* use named imports from xlsx ([1081b83](https://www.github.com/cheminfo/tga-spectrum/commit/1081b834bd8d6b3f525db295c0895e2683f91a03))
+
 ## [0.15.0](https://www.github.com/cheminfo/tga-spectrum/compare/v0.14.1...v0.15.0) (2021-05-06)
 
 
