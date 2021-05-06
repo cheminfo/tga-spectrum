@@ -1,6 +1,6 @@
 {
   "name": "tga-spectrum",
-  "version": "0.15.0",
+  "version": "0.15.1",
   "description": "tga-spectrum provides tools to convert output files from thermogravimetric analysis (TGA) into JCAMP-DX, as well as tools to analyze the data (mass loss analysis)",
   "main": "lib/index.js",
   "module": "src/index.js",
