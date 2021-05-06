@@ -1,4 +1,4 @@
-let xlsx = require('xlsx');
+import { read, utils } from 'xlsx';
 
 function valueElseUndefined(cell) {
   return cell ? cell.v : undefined;
@@ -9,7 +9,7 @@ function valueElseUndefinedFloat(cell) {
 }
 
 function parseDataSheet(sheet) {
-  let range = xlsx.utils.decode_range(sheet['!ref']);
+  let range = utils.decode_range(sheet['!ref']);
   let data = [[], [], [], []]; // we assume that it is time, temperature, weight, weight %
   let rowNum;
   let colNum;
@@ -18,7 +18,7 @@ function parseDataSheet(sheet) {
     for (colNum = 0; colNum <= 3; colNum++) {
       data[colNum].push(
         valueElseUndefinedFloat(
-          sheet[xlsx.utils.encode_cell({ r: rowNum, c: colNum })],
+          sheet[utils.encode_cell({ r: rowNum, c: colNum })],
         ),
       );
     }
@@ -48,7 +48,7 @@ function parseMeta(detailsSheet) {
 }
 
 export function parseTAInstrumentsExcel(blob) {
-  const workbook = xlsx.read(blob);
+  const workbook = read(blob);
   let meta = parseMeta(workbook.Sheets.Details);
 
   let data = {
