@@ -48,7 +48,7 @@
     "rollup": "^2.47.0"
   },
   "dependencies": {
-    "common-spectrum": "0.33.0",
+    "common-spectrum": "0.34.0",
     "ensure-string": "^0.1.1",
     "papaparse": "^5.3.0",
     "xlsx": "^0.16.9"
