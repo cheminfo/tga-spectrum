@@ -53,7 +53,7 @@
     "papaparse": "^5.3.0",
     "xlsx": "^0.16.9"
   },
-  "cheminfo": {
+  "info": {
     "logo": "https://raw.githubusercontent.com/cheminfo/font/master/src/tga/assignment.svg",
     "domain": [
       "Physical Chemistry",
@@ -85,6 +85,11 @@
           "extension": "jcamp",
           "manufacturer": "cheminfo",
           "example": "https://raw.githubusercontent.com/cheminfo/tga-spectrum/master/testFiles/ntuples.jdx"
+        },
+        {
+          "extension": "txt",
+          "manufacturer": "Netzsch",
+          "example": "https://raw.githubusercontent.com/cheminfo/tga-spectrum/master/testFiles/netzsch.txt"
         }
       ]
     }
