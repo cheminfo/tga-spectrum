@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.15.0](https://www.github.com/cheminfo/tga-spectrum/compare/v0.14.1...v0.15.0) (2021-05-06)
+
+
+### ⚠ BREAKING CHANGES
+
+* Break compatibility with node 10 and 12
+
+### Features
+
+* add fromNetzsch ([89a40cd](https://www.github.com/cheminfo/tga-spectrum/commit/89a40cda2c527086187ac74eea7bf0460c72d50f))
+* adding cheminfo metadata ([8444025](https://www.github.com/cheminfo/tga-spectrum/commit/8444025838b745283bb91a47f48748d38b183457))
+* Break compatibility with node 10 and 12 ([0a40609](https://www.github.com/cheminfo/tga-spectrum/commit/0a406098ed1b9bb2178b085271c8f1d010f0374b))
+
+
+### Bug Fixes
+
+* mass in Netzsch parser ([#35](https://www.github.com/cheminfo/tga-spectrum/issues/35)) ([957fd00](https://www.github.com/cheminfo/tga-spectrum/commit/957fd0020b5356157d9acd169c830bc3e11f6d74))
+* typo in package.json metadata ([99df58d](https://www.github.com/cheminfo/tga-spectrum/commit/99df58d48cca5a135c42a4a1c59b73990b0e36d4))
+
 ### [0.14.1](https://www.github.com/cheminfo/tga-spectrum/compare/v0.14.0...v0.14.1) (2021-03-02)
 
 
