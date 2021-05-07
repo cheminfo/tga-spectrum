@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.16.0](https://www.github.com/cheminfo/tga-spectrum/compare/v0.15.1...v0.16.0) (2021-05-07)
+
+
+### Features
+
+* fromTAInstrument will convert ArrayBuffer to text ([080d9d8](https://www.github.com/cheminfo/tga-spectrum/commit/080d9d8a9f53d180407d0da390aa2f29de9d5c04))
+
 ### [0.15.1](https://www.github.com/cheminfo/tga-spectrum/compare/v0.15.0...v0.15.1) (2021-05-06)
 
 
