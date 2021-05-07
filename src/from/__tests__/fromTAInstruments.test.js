@@ -8,7 +8,6 @@ import { fromTAInstruments } from '../fromTAInstruments';
 test('fromTAInstruments', () => {
   let file = readFileSync(
     join(__dirname, '../../../testFiles/TAInstruments.txt'),
-    'utf16le',
   );
 
   const analysis = fromTAInstruments(file);

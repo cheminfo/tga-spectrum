@@ -1,8 +1,11 @@
+import { ensureString } from 'ensure-string';
+
 import { Analysis } from '..';
 
 import { parseTAInstruments } from './parseTAInstruments';
 
-export function fromTAInstruments(text) {
+export function fromTAInstruments(blob) {
+  const text = ensureString(blob, { encoding: 'utf-16le' });
   let analysis = new Analysis();
   let parsed = parseTAInstruments(text);
 
