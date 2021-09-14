@@ -2,9 +2,9 @@ import { Analysis } from '..';
 
 import { parseTAInstrumentsExcel } from './parseTAInstrumentsExcel';
 
-export function fromTAInstrumentsExcel(text) {
+export function fromTAInstrumentsExcel(arrayBuffer) {
   let analysis = new Analysis();
-  let parsed = parseTAInstrumentsExcel(text);
+  let parsed = parseTAInstrumentsExcel(arrayBuffer);
 
   analysis.pushSpectrum(
     {
