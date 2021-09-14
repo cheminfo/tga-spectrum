@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.17.0](https://www.github.com/cheminfo/tga-spectrum/compare/v0.16.0...v0.17.0) (2021-09-14)
+
+
+### Features
+
+* auto select utf16 for ta instruments ([eff05ef](https://www.github.com/cheminfo/tga-spectrum/commit/eff05ef70dab9aed745c8cf1b4ca01770077fe19))
+
+
+### Bug Fixes
+
+* from TAInstruments to deal with mof.txt ([33af3a5](https://www.github.com/cheminfo/tga-spectrum/commit/33af3a584bca6335ee248c31fd8eacd806b204e6))
+
 ## [0.16.0](https://www.github.com/cheminfo/tga-spectrum/compare/v0.15.1...v0.16.0) (2021-05-07)
 
 
