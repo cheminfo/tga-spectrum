@@ -5,7 +5,7 @@ import { Analysis } from '..';
 import { parseTAInstruments } from './parseTAInstruments';
 
 export function fromTAInstruments(blob) {
-  const text = ensureString(blob, { encoding: 'utf-16le' });
+  const text = ensureString(blob);
   let analysis = new Analysis();
   let parsed = parseTAInstruments(text);
 
