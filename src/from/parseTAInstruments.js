@@ -1,14 +1,19 @@
-export function parseTAInstruments(text) {
-  let lines = text
-    .split(/\r?\n/)
-    .filter((line) => !line.match(/(^\s*$)|(^StartOfData$)/));
+import { ensureString } from 'ensure-string';
 
-  let meta = parseMeta(lines);
+export function parseTAInstruments(arrayBuffer) {
+  let text = ensureString(arrayBuffer);
+  text = text.replace(/[\r\f]/g, '');
+  let metaLines = text.split(/\n/).filter((line) => line.match(/^[a-zA-Z]/));
+  let allDataLines = text
+    .split(/\n/)
+    .filter((line) => line.match(/^[0-9.-]/))
+    .map((line) => line.split(/\s+/).map(Number));
 
-  let parsed = lines
-    .slice(meta.dataStart, lines.length)
-    .filter((line) => !line.startsWith('-'))
-    .map((line) => line.replace(/^\s/g, '').split(/\s+/).map(Number));
+  let meta = parseMeta(metaLines);
+
+  //let events = allDataLines.filter((line) => line[0] < 0);
+  let dataLines = allDataLines.filter((line) => line[0] > 0);
+
   meta.balancePurgeFlow = [];
   meta.samplePurgeFlow = [];
   // We now assume that we always have 5 columns in the same order ...
@@ -20,11 +25,11 @@ export function parseTAInstruments(text) {
       temperature: [],
     },
   };
-  result.data.time = parsed.map((fields) => fields[0]);
-  result.data.temperature = parsed.map((fields) => fields[1]);
-  result.data.weight = parsed.map((fields) => fields[2]);
-  result.meta.balancePurgeFlow = parsed.map((fields) => fields[3]);
-  result.meta.samplePurgeFlow = parsed.map((fields) => fields[4]);
+  result.data.time = dataLines.map((fields) => fields[0]);
+  result.data.temperature = dataLines.map((fields) => fields[1]);
+  result.data.weight = dataLines.map((fields) => fields[2]);
+  result.meta.balancePurgeFlow = dataLines.map((fields) => fields[3]);
+  result.meta.samplePurgeFlow = dataLines.map((fields) => fields[4]);
 
   return result;
 }
