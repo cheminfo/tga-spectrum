@@ -36,9 +36,7 @@ function parseMeta(detailsSheet) {
   meta.sampleName = valueElseUndefined(detailsSheet.B5);
   meta.procedure = valueElseUndefined(detailsSheet.B6)
     .split(';')
-    .map(function (item) {
-      return item.trim();
-    });
+    .map( (item) => item.trim());
   let mass = valueElseUndefined(detailsSheet.B16).split(' ');
   meta.sampleWeight = parseFloat(mass[0]);
   meta.sampleWeightUnit = mass[1].trim();
