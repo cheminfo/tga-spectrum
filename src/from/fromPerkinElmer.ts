@@ -1,3 +1,5 @@
+import { ensureString } from 'ensure-string';
+
 import { Analysis } from '..';
 
 import { parsePerkinElmer } from './parsePerkinElmer';
@@ -7,7 +9,8 @@ import { parsePerkinElmer } from './parsePerkinElmer';
  * @param {string} text - String containing the JCAMP data
  * @return {Analysis} - New class element with the given data
  */
-export function fromPerkinElmer(text) {
+export function fromPerkinElmer(text: string | ArrayBuffer) {
+  ensureString(text);
   let analysis = new Analysis();
   let spectrum = parsePerkinElmer(text);
 

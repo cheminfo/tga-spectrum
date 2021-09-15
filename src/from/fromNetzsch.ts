@@ -2,8 +2,8 @@ import { ensureString } from 'ensure-string';
 
 import { Analysis } from '..';
 
-export function fromNetzsch(blob) {
-  const text = ensureString(blob, { encoding: 'iso8859-1' });
+export function fromNetzsch(arrayBuffer: string | ArrayBuffer) {
+  const text = ensureString(arrayBuffer, { encoding: 'iso8859-1' });
   let lines = text.split(/\r?\n/).filter((line) => line);
   let parsed = {
     meta: {},

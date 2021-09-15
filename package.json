@@ -2,96 +2,58 @@
   "name": "tga-spectrum",
   "version": "0.16.0",
   "description": "tga-spectrum provides tools to convert output files from thermogravimetric analysis (TGA) into JCAMP-DX, as well as tools to analyze the data (mass loss analysis)",
-  "main": "lib/index.js",
-  "module": "src/index.js",
+  "main": "./lib/index.js",
+  "module": "./lib-esm/index.js",
+  "types": "./lib/index.d.ts",
+  "keywords": [],
+  "author": "Luc Patiny",
+  "license": "MIT",
   "files": [
+    "src",
     "lib",
-    "src"
+    "lib-esm"
   ],
   "scripts": {
-    "build": "cheminfo-build  --entry src/index.js --root TGASpectrum",
-    "build-doc": "cheminfo doc",
-    "eslint": "eslint src",
+    "check-types": "tsc --noEmit",
+    "clean": "rimraf lib lib-esm",
+    "eslint": "eslint src --cache",
     "eslint-fix": "npm run eslint -- --fix",
-    "prepublishOnly": "rollup -c",
-    "test": "npm run test-coverage && npm run eslint",
-    "test-coverage": "jest --coverage",
-    "test-only": "jest"
+    "prepack": "npm run tsc",
+    "prettier": "prettier --check src",
+    "prettier-write": "prettier --write src",
+    "test": "npm run test-coverage && npm run eslint && npm run prettier && npm run check-types",
+    "test-coverage": "npm run test-only -- --coverage",
+    "test-only": "jest",
+    "tsc": "npm run clean && npm run tsc-cjs && npm run tsc-esm",
+    "tsc-cjs": "tsc --project tsconfig.cjs.json",
+    "tsc-esm": "tsc --project tsconfig.esm.json"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/cheminfo/tga-spectrum.git"
   },
-  "keywords": [],
-  "author": "Luc Patiny",
-  "license": "MIT",
   "bugs": {
     "url": "https://github.com/cheminfo/tga-spectrum/issues"
   },
   "homepage": "https://github.com/cheminfo/tga-spectrum#readme",
   "jest": {
+    "preset": "ts-jest",
     "testEnvironment": "node"
   },
-  "devDependencies": {
-    "@babel/plugin-transform-modules-commonjs": "^7.14.0",
-    "@types/jest": "^26.0.23",
-    "cheminfo-build": "1.1.10",
-    "codecov": "^3.8.2",
-    "eslint": "^7.25.0",
-    "eslint-config-cheminfo": "^5.2.3",
-    "eslint-plugin-import": "^2.22.1",
-    "eslint-plugin-jest": "^24.3.6",
-    "eslint-plugin-prettier": "^3.4.0",
-    "esm": "^3.2.25",
-    "jest": "^26.6.3",
-    "prettier": "^2.2.1",
-    "rollup": "^2.47.0"
-  },
   "dependencies": {
-    "common-spectrum": "0.34.0",
-    "ensure-string": "^0.1.1",
-    "papaparse": "^5.3.0",
-    "xlsx": "^0.16.9"
+    "common-spectrum": "0.40.0",
+    "ensure-string": "^1.1.0",
+    "papaparse": "^5.3.1",
+    "xlsx": "^0.17.1"
   },
-  "info": {
-    "logo": "https://raw.githubusercontent.com/cheminfo/font/master/src/tga/assignment.svg",
-    "domain": [
-      "Physical Chemistry",
-      "Materials Science"
-    ],
-    "technique": {
-      "name": "TGA",
-      "chmo": "0000690",
-      "iupac": "https://doi.org/10.1351/goldbook.T06324"
-    },
-    "functionality": {
-      "fileTypes": [
-        {
-          "extension": "txt",
-          "manufacturer": "TA Instruments",
-          "example": "https://raw.githubusercontent.com/cheminfo/tga-spectrum/master/testFiles/TAInstruments.txt"
-        },
-        {
-          "extension": "csv",
-          "manufacturer": "Perkin Elmer",
-          "example": "https://raw.githubusercontent.com/cheminfo/tga-spectrum/master/testFiles/perkinElmer.csv"
-        },
-        {
-          "extension": "txt",
-          "manufacturer": "Perkin Elmer",
-          "example": "https://raw.githubusercontent.com/cheminfo/tga-spectrum/master/testFiles/perkinElmer_tga4000.txt"
-        },
-        {
-          "extension": "jcamp",
-          "manufacturer": "cheminfo",
-          "example": "https://raw.githubusercontent.com/cheminfo/tga-spectrum/master/testFiles/ntuples.jdx"
-        },
-        {
-          "extension": "txt",
-          "manufacturer": "Netzsch",
-          "example": "https://raw.githubusercontent.com/cheminfo/tga-spectrum/master/testFiles/netzsch.txt"
-        }
-      ]
-    }
+  "devDependencies": {
+    "@types/jest": "^27.0.1",
+    "eslint": "^7.32.0",
+    "eslint-config-cheminfo-typescript": "^8.0.9",
+    "jest": "^27.2.0",
+    "prettier": "^2.4.0",
+    "rimraf": "^3.0.2",
+    "ts-jest": "^27.0.5",
+    "typescript": "^4.4.3"
   }
 }
