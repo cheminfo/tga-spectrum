@@ -46,6 +46,7 @@
     "common-spectrum": "0.43.1",
     "ensure-string": "^1.1.0",
     "papaparse": "^5.3.1",
+    "physical-chemistry-parser": "^1.5.0",
     "xlsx": "^0.17.2"
   },
   "devDependencies": {
