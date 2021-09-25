@@ -16,10 +16,15 @@ test('import from TA instruments excel file', () => {
     'z',
     't',
   ]);
-  expect(output.spectra[0].variables.x.data).toHaveLength(71627);
-  expect(output.spectra[0].variables.y.data).toHaveLength(71627);
-  expect(output.spectra[0].variables.z.data).toHaveLength(71627);
-  expect(output.spectra[0].variables.t.data).toHaveLength(71627);
-  expect(output.spectra[0].variables.x.data[0]).toStrictEqual(25.77);
-  expect(output.spectra[0].variables.x.data[71625]).toStrictEqual(169.93);
+
+  const variables = output.spectra[0].variables;
+
+  expect(variables.x.data).toHaveLength(71627);
+  expect(variables.y.data).toHaveLength(71627);
+  // @ts-expect-error
+  expect(variables.z.data).toHaveLength(71627);
+  // @ts-expect-error
+  expect(variables.t.data).toHaveLength(71627);
+  expect(variables.x.data[0]).toStrictEqual(25.77);
+  expect(variables.x.data[71625]).toStrictEqual(169.93);
 });

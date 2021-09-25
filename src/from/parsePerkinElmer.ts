@@ -1,6 +1,11 @@
-export function parsePerkinElmer(text) {
+import { ensureString } from 'ensure-string';
+
+export function parsePerkinElmer(
+  arrayBuffer: string | ArrayBuffer | Uint8Array,
+) {
+  const text = ensureString(arrayBuffer);
   let lines = text.split(/[\r\n]+/);
-  let result = {
+  let result: any = {
     meta: { methodSteps: [] },
     data: { time: [], weight: [], temperature: [] },
   };
@@ -11,20 +16,20 @@ export function parsePerkinElmer(text) {
       if (line.startsWith('1) TGA')) {
         inMethodSteps = false;
       } else {
-        if (line[0] !== '\t' && line.length > 2) {
+        if (!line.startsWith('\t') && line.length > 2) {
           result.meta.methodSteps.push(line.replace(/\t\n,+$/g, ''));
         }
       }
-    } else if (line.match(/^[a-zA-Z -]+$/)) {
+    } else if (/^[a-zA-Z -]+$/.exec(line)) {
       section = trim(line);
-    } else if (line.match(/.*:.*/)) {
+    } else if (/.*:.*/.exec(line)) {
       let position = line.indexOf(':');
       let description = line.substring(0, position);
       let value = trim(line.substring(position + 1));
       result.meta[(section ? `${section}_` : '') + description] = value;
-    } else if (line.match(/^[0-9\t .]+$/)) {
+    } else if (/^[0-9\t .]+$/.exec(line)) {
       let fields = line.replace(/^\t/, '').split('\t');
-      result.data.time.push(Number(fields[0] * 60));
+      result.data.time.push(Number(fields[0]) * 60);
       result.data.weight.push(Number(fields[1]));
       result.data.temperature.push(Number(fields[4]));
     } else {
@@ -36,6 +41,6 @@ export function parsePerkinElmer(text) {
   }
   return result;
 }
-function trim(string) {
+function trim(string: string) {
   return string.replace(/^[ \t]*(.*?)[ \t]*$/, '$1');
 }

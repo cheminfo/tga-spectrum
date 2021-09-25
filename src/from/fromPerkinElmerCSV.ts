@@ -1,3 +1,4 @@
+import { ensureString } from 'ensure-string';
 import Papa from 'papaparse';
 
 import { Analysis } from '..';
@@ -7,7 +8,10 @@ import { Analysis } from '..';
  * @param {string} text - String containing the JCAMP data
  * @return {Analysis} - New class element with the given data
  */
-export function fromPerkinElmerCSV(text) {
+export function fromPerkinElmerCSV(
+  arrayBuffer: string | ArrayBuffer | Uint8Array,
+) {
+  const text = ensureString(arrayBuffer);
   let parsed = Papa.parse(text, {
     skipEmptyLines: true,
     header: true,
@@ -18,24 +22,24 @@ export function fromPerkinElmerCSV(text) {
   analysis.pushSpectrum(
     {
       x: {
-        data: parsed.map((d) => d['Sample Temperature']),
+        data: parsed.map((d: any) => d['Sample Temperature']) as number[],
         label: 'Sample temperature [°C]',
-        type: 'dependent',
+        isDependent: true,
       },
       y: {
-        data: parsed.map((d) => d['Unsubtracted Weight']),
+        data: parsed.map((d: any) => d['Unsubtracted Weight']) as number[],
         label: 'Weight [mg]',
-        type: 'dependent',
+        isDependent: true,
       },
       p: {
-        data: parsed.map((d) => d['Program Temperature']),
+        data: parsed.map((d: any) => d['Program Temperature']) as number[],
         label: 'Program temperature [°C]',
-        type: 'dependent',
+        isDependent: true,
       },
       t: {
-        data: parsed.map((d) => d.Time),
+        data: parsed.map((d: any) => d.Time) as number[],
         label: 'Time [min]',
-        type: 'independent',
+        isDependent: false,
       },
     },
     { dataType: 'TGA' },

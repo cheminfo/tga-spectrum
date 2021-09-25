@@ -1,9 +1,14 @@
-export function parseTAInstruments(text) {
-  let lines = text
-    .split(/\r?\n/)
-    .filter((line) => !line.match(/(^\s*$)|(^StartOfData$)/));
+import { ensureString } from 'ensure-string';
 
-  let meta = parseMeta(lines);
+export function parseTAInstruments(
+  arrayBuffer: string | ArrayBuffer | Uint8Array,
+) {
+  const text = ensureString(arrayBuffer);
+  const lines = text
+    .split(/\r?\n/)
+    .filter((line) => !(/(^\s*$)|(^StartOfData$)/.exec(line)));
+
+  const meta = parseMeta(lines);
 
   let parsed = lines
     .slice(meta.dataStart, lines.length)
@@ -12,7 +17,7 @@ export function parseTAInstruments(text) {
   meta.balancePurgeFlow = [];
   meta.samplePurgeFlow = [];
   // We now assume that we always have 5 columns in the same order ...
-  let result = {
+  let result: any = {
     meta: meta,
     data: {
       time: [],
@@ -29,47 +34,47 @@ export function parseTAInstruments(text) {
   return result;
 }
 
-function splitTrim(string, item = 1) {
+function splitTrim(string: string, item = 1) {
   return string.split(/\t/)[item].replace(/^[ \t]*(.*?)[ \t]*$/, '$1');
 }
 
-function parseMeta(lines) {
-  let meta = { comments: [], methodSteps: [] };
+function parseMeta(lines: string[]) {
+  let meta: any = { comments: [], methodSteps: [] };
   for (let [i, line] of lines.entries()) {
-    if (line.match(/^Instrument/)) {
+    if (/^Instrument/.exec(line)) {
       meta.instrument = splitTrim(line);
-    } else if (line.match(/^InstSerial/)) {
+    } else if (/^InstSerial/.exec(line)) {
       meta.instrumentSerial = splitTrim(line);
-    } else if (line.match(/^Sample/)) {
+    } else if (/^Sample/.exec(line)) {
       meta.sampleName = splitTrim(line);
-    } else if (line.match(/^Size/)) {
+    } else if (/^Size/.exec(line)) {
       meta.weight = parseFloat(splitTrim(line));
       meta.weightUnit = splitTrim(line, 2);
-    } else if (line.match(/^Xcomment|^Comment/)) {
+    } else if (/^Xcomment|^Comment/.exec(line)) {
       meta.comments.push(splitTrim(line));
-    } else if (line.match(/^Method/)) {
+    } else if (/^Method/.exec(line)) {
       meta.method = splitTrim(line);
-    } else if (line.match(/^Mode/)) {
+    } else if (/^Mode/.exec(line)) {
       meta.mode = splitTrim(line);
-    } else if (line.match(/^File/)) {
+    } else if (/^File/.exec(line)) {
       meta.file = splitTrim(line);
-    } else if (line.match(/^Date/)) {
+    } else if (/^Date/.exec(line)) {
       meta.date = splitTrim(line);
-    } else if (line.match(/^Time/)) {
+    } else if (/^Time/.exec(line)) {
       meta.time = splitTrim(line);
-    } else if (line.match(/^OrgMethod/)) {
+    } else if (/^OrgMethod/.exec(line)) {
       meta.methodSteps.push(splitTrim(line));
-    } else if (line.match(/^Controls/)) {
+    } else if (/^Controls/.exec(line)) {
       meta.controls = splitTrim(line);
-    } else if (line.match(/^FurnaceType/)) {
+    } else if (/^FurnaceType/.exec(line)) {
       meta.furnaceType = splitTrim(line);
-    } else if (line.match(/^Operator/)) {
+    } else if (/^Operator/.exec(line)) {
       meta.operator = splitTrim(line);
-    } else if (line.match(/^RunSerial/)) {
+    } else if (/^RunSerial/.exec(line)) {
       meta.runSerial = splitTrim(line);
-    } else if (line.match(/^ProcName/)) {
+    } else if (/^ProcName/.exec(line)) {
       meta.procName = splitTrim(line);
-    } else if (line.match(/^OrgFile/)) {
+    } else if (/^OrgFile/.exec(line)) {
       meta.dataStart = i + 1;
       break;
     }

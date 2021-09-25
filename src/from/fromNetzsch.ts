@@ -1,27 +1,28 @@
+import { Analysis, Spectrum } from 'common-spectrum';
 import { ensureString } from 'ensure-string';
 
-import { Analysis } from '..';
-
-export function fromNetzsch(arrayBuffer: string | ArrayBuffer) {
+export function fromNetzsch(
+  arrayBuffer: string | ArrayBuffer | Uint8Array,
+): Analysis {
   const text = ensureString(arrayBuffer, { encoding: 'iso8859-1' });
   let lines = text.split(/\r?\n/).filter((line) => line);
-  let parsed = {
+  let parsed: Spectrum<number[]> = {
     meta: {},
     variables: {
       x: {
         data: [],
         label: 'Sample temperature [°C]',
-        type: 'dependent',
+        isDependent: true,
       },
       y: {
         data: [],
         label: 'Weight [mg]',
-        type: 'dependent',
+        isDependent: true,
       },
       t: {
         data: [],
         label: 'Time [min]',
-        type: 'independent',
+        isDependent: false,
       },
     },
   };
@@ -31,15 +32,20 @@ export function fromNetzsch(arrayBuffer: string | ArrayBuffer) {
       const [temperature, time, weight] = line.split(';').map(parseFloat);
       parsed.variables.x.data.push(temperature);
       parsed.variables.y.data.push(weight);
+      // @ts-ignore
       parsed.variables.t.data.push(time);
     } else if (line.startsWith('##')) {
       inData = true;
     } else {
-      const { label, value } = line.match(/#(?<label>.*?):(?<value>.*)/).groups;
+      const groups = /#(?<label>.*?):(?<value>.*)/.exec(line)?.groups;
+      if (!groups) throw new Error('TGA Netzsch parsing error');
+      const { label, value } = groups;
+      // @ts-expect-error
       parsed.meta[label] = value;
     }
   }
 
+  // @ts-expect-error
   const mass = parseFloat(parsed.meta['SAMPLE MASS /mg']);
   parsed.variables.y.data = parsed.variables.y.data.map((i) => {
     return i * mass;
@@ -50,5 +56,6 @@ export function fromNetzsch(arrayBuffer: string | ArrayBuffer) {
     dataType: 'TGA',
   });
 
+  // @ts-ignore
   return analysis;
 }

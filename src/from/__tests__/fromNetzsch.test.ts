@@ -15,6 +15,7 @@ test('fromNetzsch', () => {
   expect(spectrum.variables.y.data[0]).toStrictEqual(890.9062668);
   expect(spectrum.variables.x.data).toHaveLength(270);
   expect(spectrum.variables.y.data).toHaveLength(270);
+  // @ts-expect-error
   expect(spectrum.variables.t.data).toHaveLength(270);
   let jcamp = toJcamp(result);
   expect(jcamp.length).toBeGreaterThan(7500);

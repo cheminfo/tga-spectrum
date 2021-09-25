@@ -2,30 +2,30 @@ import { Analysis } from '..';
 
 import { parseTAInstrumentsExcel } from './parseTAInstrumentsExcel';
 
-export function fromTAInstrumentsExcel(text) {
+export function fromTAInstrumentsExcel(arrayBuffer: ArrayBuffer | Uint8Array) {
   let analysis = new Analysis();
-  let parsed = parseTAInstrumentsExcel(text);
+  let parsed = parseTAInstrumentsExcel(arrayBuffer);
 
   analysis.pushSpectrum(
     {
       x: {
         data: parsed.temperature,
-        type: 'dependent',
+        isDependent: true,
         label: 'Program temperature [°C]',
       },
       y: {
         data: parsed.weight,
-        type: 'dependent',
+        isDependent: true,
         label: 'Weight [mg]',
       },
       z: {
         data: parsed.weightPercent,
-        type: 'dependent',
+        isDependent: true,
         label: 'Weight [%]',
       },
       t: {
         data: parsed.time,
-        type: 'independent',
+        isDependent: false,
         label: 'Time [s]',
       },
     },

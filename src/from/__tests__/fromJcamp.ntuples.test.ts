@@ -16,7 +16,7 @@ test('fromJcamp', () => {
   // @ts-expect-error
   expect(spectrum.variables.y.data).toHaveLength(408);
   // @ts-expect-error
-  expect(spectrum.variables.x.label).toStrictEqual('Temperature [°C]');
+  expect(spectrum.variables.x.label).toStrictEqual('Temperature');
   // @ts-expect-error
-  expect(spectrum.variables.y.label).toStrictEqual('Weight [mg]');
+  expect(spectrum.variables.y.label).toStrictEqual('Weight');
 });

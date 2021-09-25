@@ -4,8 +4,10 @@ import { Analysis } from '..';
 
 import { parseTAInstruments } from './parseTAInstruments';
 
-export function fromTAInstruments(blob) {
-  const text = ensureString(blob, { encoding: 'utf-16le' });
+export function fromTAInstruments(
+  arrayBuffer: string | ArrayBuffer | Uint16Array,
+) {
+  const text = ensureString(arrayBuffer);
   let analysis = new Analysis();
   let parsed = parseTAInstruments(text);
 
@@ -13,17 +15,17 @@ export function fromTAInstruments(blob) {
     {
       x: {
         data: parsed.data.temperature,
-        type: 'dependent',
+        isDependent: true,
         label: 'Program temperature [°C]',
       },
       y: {
         data: parsed.data.weight,
-        type: 'dependent',
+        isDependent: true,
         label: 'Weight [mg]',
       },
       t: {
         data: parsed.data.time,
-        type: 'independent',
+        isDependent: false,
         label: 'Time [min]',
       },
     },

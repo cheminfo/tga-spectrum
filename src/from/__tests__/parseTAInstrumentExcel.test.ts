@@ -1,9 +1,9 @@
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
-import { parseTAInstrumentsExcel, testables } from '../parseTAInstrumentsExcel';
+import xlsx from 'xlsx';
 
-let xlsx = require('xlsx');
+import { parseTAInstrumentsExcel, testables } from '../parseTAInstrumentsExcel';
 
 const { parseMeta, parseDataSheet } = testables;
 

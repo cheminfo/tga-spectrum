@@ -14,7 +14,7 @@ test('fromTAInstruments', () => {
 
   const jcamp = toJcamp(analysis)
     .split(/\r?\n/)
-    .filter((line) => line.match(/##UNIT|##VAR_TYPE|##SYMBOL|##VAR_NAME/));
+    .filter((line) => /##UNIT|##VAR_TYPE|##SYMBOL|##VAR_NAME/.exec(line));
 
   expect(jcamp).toStrictEqual([
     '##VAR_NAME=  Program temperature,Weight,Time',
@@ -25,6 +25,7 @@ test('fromTAInstruments', () => {
 
   const spectrum = analysis.getXYSpectrum();
 
+  if (!spectrum || !spectrum.meta) throw new Error('Undefined spectrum');
   expect(Object.keys(spectrum.variables)).toStrictEqual(['x', 'y']);
 
   expect(spectrum.meta.sampleName).toBe('Cryo1-1_N1-2@25C');
@@ -46,7 +47,7 @@ test('fromTAInstruments test 2', () => {
 
   const jcamp = toJcamp(analysis)
     .split(/\r?\n/)
-    .filter((line) => line.match(/##UNIT|##VAR_TYPE|##SYMBOL|##VAR_NAME/));
+    .filter((line) => /##UNIT|##VAR_TYPE|##SYMBOL|##VAR_NAME/.exec(line));
 
   expect(jcamp).toStrictEqual([
     '##VAR_NAME=  Program temperature,Weight,Time',
@@ -56,6 +57,8 @@ test('fromTAInstruments test 2', () => {
   ]);
 
   const spectrum = analysis.getXYSpectrum();
+
+  if (!spectrum || !spectrum.meta) throw new Error('Undefined spectrum');
 
   expect(Object.keys(spectrum.variables)).toStrictEqual(['x', 'y']);
 

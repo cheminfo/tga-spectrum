@@ -9,10 +9,12 @@ import { parsePerkinElmer } from './parsePerkinElmer';
  * @param {string} text - String containing the JCAMP data
  * @return {Analysis} - New class element with the given data
  */
-export function fromPerkinElmer(text: string | ArrayBuffer) {
-  ensureString(text);
-  let analysis = new Analysis();
-  let spectrum = parsePerkinElmer(text);
+export function fromPerkinElmer(
+  arrayBuffer: string | ArrayBuffer | Uint8Array,
+) {
+  const text = ensureString(arrayBuffer);
+  const analysis = new Analysis();
+  const spectrum = parsePerkinElmer(text);
 
   analysis.pushSpectrum(
     {

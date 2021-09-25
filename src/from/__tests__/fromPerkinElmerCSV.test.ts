@@ -13,30 +13,31 @@ test('fromPerkinElmer', () => {
 
   let spectrum1 = analysis.getXYSpectrum({ index: 0 });
 
+  // @ts-expect-error
   expect(spectrum1.variables.x.data).toHaveLength(8637);
+  // @ts-expect-error
   expect(spectrum1.variables.y.data).toHaveLength(8637);
-  expect(spectrum1.variables.x.label).toStrictEqual('Sample temperature [°C]');
-  expect(spectrum1.variables.y.label).toStrictEqual('Weight [mg]');
+  // @ts-expect-error
+  expect(spectrum1.variables.x.label).toStrictEqual('Sample temperature');
+  // @ts-expect-error
+  expect(spectrum1.variables.y.label).toStrictEqual('Weight');
+  // @ts-expect-error
   expect(spectrum1.dataType).toBe('TGA');
 
   const jcamp = toJcamp(analysis);
   const spectrumCopy = fromJcamp(jcamp).spectra[0];
-  expect(spectrumCopy.variables.x.name).toStrictEqual('Sample temperature');
   expect(spectrumCopy.variables.x.units).toStrictEqual('°C');
-  expect(spectrumCopy.variables.x.label).toStrictEqual(
-    'Sample temperature [°C]',
-  );
-  expect(spectrumCopy.variables.y.name).toStrictEqual('Weight');
+  expect(spectrumCopy.variables.x.label).toStrictEqual('Sample temperature');
   expect(spectrumCopy.variables.y.units).toStrictEqual('mg');
-  expect(spectrumCopy.variables.y.label).toStrictEqual('Weight [mg]');
+  expect(spectrumCopy.variables.y.label).toStrictEqual('Weight');
 
-  expect(spectrumCopy.variables.t.name).toStrictEqual('Time');
+  // @ts-expect-error
   expect(spectrumCopy.variables.t.units).toStrictEqual('min');
-  expect(spectrumCopy.variables.t.label).toStrictEqual('Time [min]');
+  // @ts-expect-error
+  expect(spectrumCopy.variables.t.label).toStrictEqual('Time');
 
-  expect(spectrumCopy.variables.p.name).toStrictEqual('Program temperature');
+  // @ts-expect-error
   expect(spectrumCopy.variables.p.units).toStrictEqual('°C');
-  expect(spectrumCopy.variables.p.label).toStrictEqual(
-    'Program temperature [°C]',
-  );
+  // @ts-expect-error
+  expect(spectrumCopy.variables.p.label).toStrictEqual('Program temperature');
 });
