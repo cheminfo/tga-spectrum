@@ -3,21 +3,23 @@ import { ensureString } from 'ensure-string';
 export function parseTAInstruments(
   arrayBuffer: string | ArrayBuffer | Uint8Array,
 ) {
-  const text = ensureString(arrayBuffer);
-  const lines = text
-    .split(/\r?\n/)
-    .filter((line) => !(/(^\s*$)|(^StartOfData$)/.exec(line)));
+  let text = ensureString(arrayBuffer);
+  text = text.replace(/[\r\f]/g, '');
+  let metaLines = text.split(/\n/).filter((line) => /^[a-zA-Z]/.exec(line));
+  let allDataLines = text
+    .split(/\n/)
+    .filter((line) => /^[0-9.-]/.exec(line))
+    .map((line) => line.split(/\s+/).map(Number));
 
-  const meta = parseMeta(lines);
+  let meta = parseMeta(metaLines);
 
-  let parsed = lines
-    .slice(meta.dataStart, lines.length)
-    .filter((line) => !line.startsWith('-'))
-    .map((line) => line.replace(/^\s/g, '').split(/\s+/).map(Number));
+  //let events = allDataLines.filter((line) => line[0] < 0);
+  let dataLines = allDataLines.filter((line) => line[0] > 0);
+
   meta.balancePurgeFlow = [];
   meta.samplePurgeFlow = [];
   // We now assume that we always have 5 columns in the same order ...
-  let result: any = {
+  const result: any = {
     meta: meta,
     data: {
       time: [],
@@ -25,11 +27,11 @@ export function parseTAInstruments(
       temperature: [],
     },
   };
-  result.data.time = parsed.map((fields) => fields[0]);
-  result.data.temperature = parsed.map((fields) => fields[1]);
-  result.data.weight = parsed.map((fields) => fields[2]);
-  result.meta.balancePurgeFlow = parsed.map((fields) => fields[3]);
-  result.meta.samplePurgeFlow = parsed.map((fields) => fields[4]);
+  result.data.time = dataLines.map((fields) => fields[0]);
+  result.data.temperature = dataLines.map((fields) => fields[1]);
+  result.data.weight = dataLines.map((fields) => fields[2]);
+  result.meta.balancePurgeFlow = dataLines.map((fields) => fields[3]);
+  result.meta.samplePurgeFlow = dataLines.map((fields) => fields[4]);
 
   return result;
 }
@@ -39,7 +41,7 @@ function splitTrim(string: string, item = 1) {
 }
 
 function parseMeta(lines: string[]) {
-  let meta: any = { comments: [], methodSteps: [] };
+  const meta: any = { comments: [], methodSteps: [] };
   for (let [i, line] of lines.entries()) {
     if (/^Instrument/.exec(line)) {
       meta.instrument = splitTrim(line);
