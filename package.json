@@ -46,7 +46,7 @@
     "common-spectrum": "0.43.1",
     "ensure-string": "^1.1.0",
     "papaparse": "^5.3.1",
-    "physical-chemistry-parser": "^1.5.0",
+    "physical-chemistry-parser": "^2.0.1",
     "xlsx": "^0.17.2"
   },
   "devDependencies": {
@@ -55,7 +55,7 @@
     "cheminfo-build": "^1.1.11",
     "eslint": "^7.32.0",
     "eslint-config-cheminfo-typescript": "^8.0.9",
-    "jest": "^27.2.2",
+    "jest": "^27.2.3",
     "prettier": "^2.4.1",
     "rimraf": "^3.0.2",
     "ts-jest": "^27.0.5",

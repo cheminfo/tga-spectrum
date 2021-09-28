@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
-import { fromMettlerToledo } from '../fromMettlerToledo.js';
+import { fromMettlerToledo } from '../fromMettlerToledo';
 
 describe('fromMettlerToledo', () => {
   it('Absolute weight', () => {
@@ -9,38 +9,82 @@ describe('fromMettlerToledo', () => {
       join(__dirname, '../../../testFiles/mettlerToledoWeight.txt'),
     );
 
-    const results = fromMettlerToledo(arrayBuffer);
+    const analysis = fromMettlerToledo(arrayBuffer);
 
-    return;
-    expect(result.meta).toMatchSnapshot();
-    expect(result.jcamp).toBeDefined();
-    expect(result.jcamp).toContain('##DATA TYPE=TGA');
+    const spectrum = analysis.getSpectrum();
 
-    const parsed = fromMettlerToledo(result.jcamp, { keepRecordsRegExp: /.*/ })
-      .flatten[0];
-
-    expect(parsed.ntuples).toStrictEqual([
-      {
-        varname: 'Temperature',
-        symbol: 'x',
-        vartype: 'DEPENDENT',
-        vardim: 2251,
-        units: '°C',
-      },
-      {
-        varname: 'Weight',
-        symbol: 'y',
-        vartype: 'DEPENDENT',
-        vardim: 2251,
-        units: 'mg',
-      },
-      {
-        varname: 'Time',
-        symbol: 't',
-        vartype: 'INDEPENDENT',
-        vardim: 2251,
+    expect(spectrum.variables).toMatchObject({
+      t: {
         units: 's',
+        label: 'time',
+        min: 0,
+        max: 2250,
+        isMonotone: true,
+      },
+      x: {
+        units: '°C',
+        label: 'Temperature recorded',
+        min: 36.622,
+        max: 658.132,
+        isMonotone: false,
+      },
+      r: {
+        units: '°C',
+        label: 'Temperature programmed',
+        min: 35,
+        max: 650,
+        isMonotone: false,
+      },
+      y: {
+        units: 'mg',
+        label: 'Weight',
+        min: 2.304,
+        max: 12.8038,
+        isMonotone: false,
+      },
+    });
+
+    expect(spectrum.meta?.zones).toStrictEqual([
+      {
+        relativeMassLoss: 0.669395,
+        massLoss: { value: 8.5696, units: 'mg' },
+        from: { value: 38.13, units: '°C' },
+        to: { value: 647.27, units: '°C' },
+        kind: 'horizontal',
+        inflectionPoint: { value: 397.19, units: '°C' },
+        middlePoint: { value: 401.27, units: '°C' },
+      },
+      {
+        relativeMassLoss: 0.15049400000000002,
+        massLoss: { value: 1.9266, units: 'mg' },
+        from: { value: 647.27, units: '°C' },
+        to: { value: 649.22, units: '°C' },
+        kind: 'horizontal',
+        inflectionPoint: { value: 657.4, units: '°C' },
+        middlePoint: { value: 658.13, units: '°C' },
+      },
+      {
+        relativeMassLoss: 0.18011100000000002,
+        massLoss: { value: 2.304700000000001, units: 'mg' },
+        kind: 'Residual',
       },
     ]);
+
+    expect(spectrum.dataType).toStrictEqual('TGA');
+    expect(spectrum).toMatchObject({
+      dataType: 'TGA',
+      meta: {
+        method: '650 TGA/DSC',
+        holder: {
+          kind: 'Alumina 70ul',
+          mass: { units: 'mg', value: 179.215 },
+          material: 'Ceramic',
+        },
+        sampleMass: { value: 12.8009, units: 'mg' },
+        cheminfo: {
+          method: '650 TGA/DSC',
+        },
+      },
+    });
   });
 });
