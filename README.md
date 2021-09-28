@@ -19,6 +19,8 @@ import TGASpectrum from 'tga-spectrum';
 let analysis = TGASpectrum.fromJcamp(jcamp);
 ```
 
+## [API Documentation](https://cheminfo.github.io/tga-spectrum/)
+
 ## License
 
 [MIT](./LICENSE)
