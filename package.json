@@ -42,6 +42,7 @@
     "testEnvironment": "node"
   },
   "dependencies": {
+    "@types/react": "^17.0.24",
     "common-spectrum": "0.43.1",
     "ensure-string": "^1.1.0",
     "papaparse": "^5.3.1",
