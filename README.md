@@ -5,7 +5,13 @@
 [![Test coverage][codecov-image]][codecov-url]
 [![npm download][download-image]][download-url]
 
-.
+Parse TGA files from
+
+- Perkin Elmer `txt` and `csv` files
+- TA instruments `txt` and `xls` files
+- Perkin Elmer
+- Netzsch
+- Mettler Toledo
 
 ## Installation
 
