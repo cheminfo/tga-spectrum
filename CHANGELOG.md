@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.18.1](https://www.github.com/cheminfo/tga-spectrum/compare/v0.18.0...v0.18.1) (2021-09-28)
+
+
+### Bug Fixes
+
+* export missing fromMettlerToledo ([777220b](https://www.github.com/cheminfo/tga-spectrum/commit/777220bcbf2fee2ae5a05d3a2eca321128b797ad))
+
 ## [0.18.0](https://www.github.com/cheminfo/tga-spectrum/compare/v0.17.0...v0.18.0) (2021-09-28)
 
 
