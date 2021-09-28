@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.18.0](https://www.github.com/cheminfo/tga-spectrum/compare/v0.17.0...v0.18.0) (2021-09-28)
+
+
+### ⚠ BREAKING CHANGES
+
+* typescript lactame build
+* improve fromMettlerToledo
+
+### Features
+
+* add build script ([b95ae2e](https://www.github.com/cheminfo/tga-spectrum/commit/b95ae2eef12257cb980ccf1a85565ee7fdbcc42e))
+* add fromMettlerToledo ([bc5035d](https://www.github.com/cheminfo/tga-spectrum/commit/bc5035d5c9ece1a128197465ce6439334be46291))
+* add release-please ([3991b0d](https://www.github.com/cheminfo/tga-spectrum/commit/3991b0df086df8e722a38236fc725b1005bf77dc))
+* improve fromMettlerToledo ([a35b44f](https://www.github.com/cheminfo/tga-spectrum/commit/a35b44f199e6cc7679aca6ad3cb23ebe4c5da98b))
+* refactor to typescript ([9521b3e](https://www.github.com/cheminfo/tga-spectrum/commit/9521b3ea67fd7219f4d1668ba86ced7b7ab5c15a))
+* typescript lactame build ([05f5c9a](https://www.github.com/cheminfo/tga-spectrum/commit/05f5c9aac2a55d0cec89608dd1d2df8ed670ba87))
+* typescript refactoring ([5d0b42a](https://www.github.com/cheminfo/tga-spectrum/commit/5d0b42a20136afe0f37615e23b5d82120fba585a))
+
+
+### Bug Fixes
+
+* improve TAinstruments text parser ([750e47e](https://www.github.com/cheminfo/tga-spectrum/commit/750e47ebc811d91edef1b52369c4bf815147ebff))
+
 ## [0.17.0](https://www.github.com/cheminfo/tga-spectrum/compare/v0.16.0...v0.17.0) (2021-09-14)
 
 ### Features
