@@ -60,5 +60,46 @@
     "rimraf": "^3.0.2",
     "ts-jest": "^27.0.5",
     "typescript": "^4.4.3"
+  },
+  "info": {
+    "logo": "https://raw.githubusercontent.com/cheminfo/font/master/src/tga/assignment.svg",
+    "domain": [
+      "Physical Chemistry",
+      "Materials Science"
+    ],
+    "technique": {
+      "name": "TGA",
+      "chmo": "0000690",
+      "iupac": "https://doi.org/10.1351/goldbook.T06324"
+    },
+    "functionality": {
+      "fileTypes": [
+        {
+          "extension": "txt",
+          "manufacturer": "TA Instruments",
+          "example": "https://raw.githubusercontent.com/cheminfo/tga-spectrum/master/testFiles/TAInstruments.txt"
+        },
+        {
+          "extension": "csv",
+          "manufacturer": "Perkin Elmer",
+          "example": "https://raw.githubusercontent.com/cheminfo/tga-spectrum/master/testFiles/perkinElmer.csv"
+        },
+        {
+          "extension": "txt",
+          "manufacturer": "Perkin Elmer",
+          "example": "https://raw.githubusercontent.com/cheminfo/tga-spectrum/master/testFiles/perkinElmer_tga4000.txt"
+        },
+        {
+          "extension": "jcamp",
+          "manufacturer": "cheminfo",
+          "example": "https://raw.githubusercontent.com/cheminfo/tga-spectrum/master/testFiles/ntuples.jdx"
+        },
+        {
+          "extension": "txt",
+          "manufacturer": "Netzsch",
+          "example": "https://raw.githubusercontent.com/cheminfo/tga-spectrum/master/testFiles/netzsch.txt"
+        }
+      ]
+    }
   }
 }
