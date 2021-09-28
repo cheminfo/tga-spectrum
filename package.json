@@ -14,7 +14,7 @@
     "lib-esm"
   ],
   "scripts": {
-    "build": "npm run tsc-cjs && cheminfo-build  --entry lib/index.js --root TGASpectrum",
+    "build": "npm run tsc-esm && cheminfo-build  --entry lib-esm/index.js --root TGASpectrum",
     "check-types": "tsc --noEmit",
     "clean": "rimraf lib lib-esm",
     "eslint": "eslint src --cache",

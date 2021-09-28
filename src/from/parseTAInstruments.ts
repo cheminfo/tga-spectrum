@@ -5,7 +5,7 @@ export function parseTAInstruments(
 ) {
   let text = ensureString(arrayBuffer);
   text = text.replace(/[\r\f]/g, '');
-  let metaLines = text.split(/\n/).filter((line) => /^[a-zA-Z]/.exec(line));
+  let metaLines = text.split(/\n/).filter((line) => /^[a-zA-Z]/.test(line));
   let allDataLines = text
     .split(/\n/)
     .filter((line) => /^[0-9.-]/.exec(line))
