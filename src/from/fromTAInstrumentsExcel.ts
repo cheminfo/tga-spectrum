@@ -6,7 +6,7 @@ export function fromTAInstrumentsExcel(arrayBuffer: ArrayBuffer | Uint8Array) {
   let analysis = new Analysis();
   let parsed = parseTAInstrumentsExcel(arrayBuffer);
 
-  analysis.pushSpectrum(
+  analysis.pushMeasurement(
     {
       x: {
         data: parsed.temperature,
@@ -29,7 +29,7 @@ export function fromTAInstrumentsExcel(arrayBuffer: ArrayBuffer | Uint8Array) {
         label: 'Time [s]',
       },
     },
-    { dataType: 'TGA', title: parsed.meta.sampleName, meta: parsed.meta },
+    { dataType: 'TGA', description: parsed.meta.sampleName, meta: parsed.meta },
   );
 
   return analysis;

@@ -4,7 +4,7 @@ export {
   fromJcamp,
   toJcamp,
   JSGraph,
-} from 'common-spectrum';
+} from 'base-analysis';
 
 export { fromMettlerToledo } from './from/fromMettlerToledo';
 export { fromNetzsch } from './from/fromNetzsch';

@@ -11,7 +11,7 @@ export function fromTAInstruments(
   let analysis = new Analysis();
   let parsed = parseTAInstruments(text);
 
-  analysis.pushSpectrum(
+  analysis.pushMeasurement(
     {
       x: {
         data: parsed.data.temperature,
@@ -29,7 +29,7 @@ export function fromTAInstruments(
         label: 'Time [min]',
       },
     },
-    { dataType: 'TGA', title: parsed.meta.sampleName, meta: parsed.meta },
+    { dataType: 'TGA', description: parsed.meta.sampleName, meta: parsed.meta },
   );
 
   return analysis;

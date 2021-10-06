@@ -1,6 +1,6 @@
 import { fromPerkinElmer } from '..';
 
-describe('tga-spectrum', () => {
+describe('tga-measurement', () => {
   it('fromPerkinElmer', () => {
     expect(typeof fromPerkinElmer).toStrictEqual('function');
   });

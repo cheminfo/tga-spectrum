@@ -10,24 +10,24 @@ test('fromJcamp', () => {
   );
   let analysis = fromJcamp(jcamp);
 
-  let spectrum1 = analysis.getXYSpectrum();
+  let measurement1 = analysis.getMeasurementXY();
 
-  if (!spectrum1) throw new Error('Could not getXYSpectrum');
-  expect(spectrum1.variables.x.data).toHaveLength(2251);
-  expect(spectrum1.variables.y.data).toHaveLength(2251);
-  expect(spectrum1.variables.x.label).toStrictEqual('Ts');
-  expect(spectrum1.variables.x.units).toStrictEqual('°C');
-  expect(spectrum1.variables.y.label).toStrictEqual('Value');
-  expect(spectrum1.variables.y.units).toStrictEqual('mg');
+  if (!measurement1) throw new Error('Could not getMeasurementXY');
+  expect(measurement1.variables.x.data).toHaveLength(2251);
+  expect(measurement1.variables.y.data).toHaveLength(2251);
+  expect(measurement1.variables.x.label).toStrictEqual('Ts');
+  expect(measurement1.variables.x.units).toStrictEqual('°C');
+  expect(measurement1.variables.y.label).toStrictEqual('Value');
+  expect(measurement1.variables.y.units).toStrictEqual('mg');
 
-  let spectrum2 = analysis.getXYSpectrum({ units: 'mg vs s' });
+  let measurement2 = analysis.getMeasurementXY({ units: 'mg vs s' });
 
   // @ts-expect-error
-  expect(spectrum2.variables.x.data).toHaveLength(2251);
+  expect(measurement2.variables.x.data).toHaveLength(2251);
   // @ts-expect-error
-  expect(spectrum2.variables.y.data).toHaveLength(2251);
+  expect(measurement2.variables.y.data).toHaveLength(2251);
   // @ts-expect-error
-  expect(spectrum2.variables.x.label).toStrictEqual('t');
+  expect(measurement2.variables.x.label).toStrictEqual('t');
   // @ts-expect-error
-  expect(spectrum2.variables.y.label).toStrictEqual('Value');
+  expect(measurement2.variables.y.label).toStrictEqual('Value');
 });

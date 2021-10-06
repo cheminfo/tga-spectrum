@@ -19,7 +19,7 @@ export function fromPerkinElmerCSV(
   }).data;
 
   let analysis = new Analysis();
-  analysis.pushSpectrum(
+  analysis.pushMeasurement(
     {
       x: {
         data: parsed.map((d: any) => d['Sample Temperature']) as number[],

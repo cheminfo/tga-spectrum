@@ -11,33 +11,30 @@ test('fromPerkinElmer', () => {
   );
   let analysis = fromPerkinElmerCSV(csv);
 
-  let spectrum1 = analysis.getXYSpectrum({ index: 0 });
+  let measurement1 = analysis.getMeasurementXY({ index: 0 });
 
-  // @ts-expect-error
-  expect(spectrum1.variables.x.data).toHaveLength(8637);
-  // @ts-expect-error
-  expect(spectrum1.variables.y.data).toHaveLength(8637);
-  // @ts-expect-error
-  expect(spectrum1.variables.x.label).toStrictEqual('Sample temperature');
-  // @ts-expect-error
-  expect(spectrum1.variables.y.label).toStrictEqual('Weight');
-  // @ts-expect-error
-  expect(spectrum1.dataType).toBe('TGA');
+  expect(measurement1?.variables.x.data).toHaveLength(8637);
+  expect(measurement1?.variables.y.data).toHaveLength(8637);
+  expect(measurement1?.variables.x.label).toStrictEqual('Sample temperature');
+  expect(measurement1?.variables.y.label).toStrictEqual('Weight');
+  expect(measurement1?.dataType).toBe('TGA');
 
   const jcamp = toJcamp(analysis);
-  const spectrumCopy = fromJcamp(jcamp).spectra[0];
-  expect(spectrumCopy.variables.x.units).toStrictEqual('°C');
-  expect(spectrumCopy.variables.x.label).toStrictEqual('Sample temperature');
-  expect(spectrumCopy.variables.y.units).toStrictEqual('mg');
-  expect(spectrumCopy.variables.y.label).toStrictEqual('Weight');
+  const measurementCopy = fromJcamp(jcamp).measurements[0];
+  expect(measurementCopy.variables.x.units).toStrictEqual('°C');
+  expect(measurementCopy.variables.x.label).toStrictEqual('Sample temperature');
+  expect(measurementCopy.variables.y.units).toStrictEqual('mg');
+  expect(measurementCopy.variables.y.label).toStrictEqual('Weight');
 
   // @ts-expect-error
-  expect(spectrumCopy.variables.t.units).toStrictEqual('min');
+  expect(measurementCopy.variables.t.units).toStrictEqual('min');
   // @ts-expect-error
-  expect(spectrumCopy.variables.t.label).toStrictEqual('Time');
+  expect(measurementCopy.variables.t.label).toStrictEqual('Time');
 
   // @ts-expect-error
-  expect(spectrumCopy.variables.p.units).toStrictEqual('°C');
+  expect(measurementCopy.variables.p.units).toStrictEqual('°C');
   // @ts-expect-error
-  expect(spectrumCopy.variables.p.label).toStrictEqual('Program temperature');
+  expect(measurementCopy.variables.p.label).toStrictEqual(
+    'Program temperature',
+  );
 });

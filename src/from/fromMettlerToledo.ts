@@ -19,7 +19,7 @@ export function fromMettlerToledo(
 
   const cheminfo = result.meta;
 
-  analysis.pushSpectrum(result.variables, {
+  analysis.pushMeasurement(result.variables, {
     dataType: 'TGA',
     meta: { ...result.meta, cheminfo },
   });

@@ -1,4 +1,4 @@
-import { Analysis, Spectrum } from 'common-spectrum';
+import { Analysis, MeasurementXY } from 'base-analysis';
 import { ensureString } from 'ensure-string';
 
 export function fromNetzsch(
@@ -6,7 +6,7 @@ export function fromNetzsch(
 ): Analysis {
   const text = ensureString(arrayBuffer, { encoding: 'iso8859-1' });
   let lines = text.split(/\r?\n/).filter((line) => line);
-  let parsed: Spectrum<number[]> = {
+  let parsed: MeasurementXY<number[]> = {
     meta: {},
     variables: {
       x: {
@@ -40,18 +40,18 @@ export function fromNetzsch(
       const groups = /#(?<label>.*?):(?<value>.*)/.exec(line)?.groups;
       if (!groups) throw new Error('TGA Netzsch parsing error');
       const { label, value } = groups;
-      // @ts-expect-error
-      parsed.meta[label] = value;
+      if (parsed.meta) parsed.meta[label] = value;
     }
   }
 
-  // @ts-expect-error
-  const mass = parseFloat(parsed.meta['SAMPLE MASS /mg']);
-  parsed.variables.y.data = parsed.variables.y.data.map((i) => {
-    return i * mass;
-  });
+  const mass = parsed.meta && parseFloat(parsed.meta['SAMPLE MASS /mg']);
+  if (mass) {
+    parsed.variables.y.data = parsed.variables.y.data.map((i: number) => {
+      return i * mass;
+    });
+  }
   let analysis = new Analysis();
-  analysis.pushSpectrum(parsed.variables, {
+  analysis.pushMeasurement(parsed.variables, {
     meta: parsed.meta,
     dataType: 'TGA',
   });

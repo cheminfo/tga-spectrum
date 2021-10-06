@@ -11,9 +11,9 @@ describe('fromMettlerToledo', () => {
 
     const analysis = fromMettlerToledo(arrayBuffer);
 
-    const spectrum = analysis.getSpectrum();
+    const measurement = analysis.getFirstMeasurement();
 
-    expect(spectrum.variables).toMatchObject({
+    expect(measurement.variables).toMatchObject({
       t: {
         units: 's',
         label: 'time',
@@ -44,7 +44,7 @@ describe('fromMettlerToledo', () => {
       },
     });
 
-    expect(spectrum.meta?.zones).toStrictEqual([
+    expect(measurement.meta?.zones).toStrictEqual([
       {
         relativeMassLoss: 0.669395,
         massLoss: { value: 8.5696, units: 'mg' },
@@ -70,8 +70,8 @@ describe('fromMettlerToledo', () => {
       },
     ]);
 
-    expect(spectrum.dataType).toStrictEqual('TGA');
-    expect(spectrum).toMatchObject({
+    expect(measurement.dataType).toStrictEqual('TGA');
+    expect(measurement).toMatchObject({
       dataType: 'TGA',
       meta: {
         method: '650 TGA/DSC',

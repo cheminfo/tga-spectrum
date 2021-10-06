@@ -14,40 +14,40 @@ export function fromPerkinElmer(
 ) {
   const text = ensureString(arrayBuffer);
   const analysis = new Analysis();
-  const spectrum = parsePerkinElmer(text);
+  const measurement = parsePerkinElmer(text);
 
-  analysis.pushSpectrum(
+  analysis.pushMeasurement(
     {
       x: {
-        data: spectrum.data.temperature,
+        data: measurement.data.temperature,
         label: 'Temperature [°C]',
       },
       y: {
-        data: spectrum.data.weight,
+        data: measurement.data.weight,
         label: 'Weight [mg]',
       },
     },
     {
       dataType: 'TGA',
-      title: spectrum.meta['Sample ID'],
-      meta: spectrum.meta,
+      description: measurement.meta['Sample ID'],
+      meta: measurement.meta,
     },
   );
-  analysis.pushSpectrum(
+  analysis.pushMeasurement(
     {
       x: {
-        data: spectrum.data.time,
+        data: measurement.data.time,
         label: 'Time [min]',
       },
       y: {
-        data: spectrum.data.weight,
+        data: measurement.data.weight,
         label: 'Weight [mg]',
       },
     },
     {
       dataType: 'TGA',
-      title: spectrum.meta['Sample ID'],
-      meta: spectrum.meta,
+      description: measurement.meta['Sample ID'],
+      meta: measurement.meta,
     },
   );
   return analysis;

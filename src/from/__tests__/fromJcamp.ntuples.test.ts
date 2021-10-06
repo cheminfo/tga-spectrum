@@ -10,13 +10,13 @@ test('fromJcamp', () => {
   );
   let analysis = fromJcamp(jcamp);
 
-  let spectrum = analysis.getXYSpectrum();
+  let measurement = analysis.getMeasurementXY();
   // @ts-expect-error
-  expect(spectrum.variables.x.data).toHaveLength(408);
+  expect(measurement.variables.x.data).toHaveLength(408);
   // @ts-expect-error
-  expect(spectrum.variables.y.data).toHaveLength(408);
+  expect(measurement.variables.y.data).toHaveLength(408);
   // @ts-expect-error
-  expect(spectrum.variables.x.label).toStrictEqual('Temperature');
+  expect(measurement.variables.x.label).toStrictEqual('Temperature');
   // @ts-expect-error
-  expect(spectrum.variables.y.label).toStrictEqual('Weight');
+  expect(measurement.variables.y.label).toStrictEqual('Weight');
 });

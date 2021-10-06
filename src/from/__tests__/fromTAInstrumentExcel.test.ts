@@ -9,15 +9,15 @@ test('import from TA instruments excel file', () => {
   );
 
   const output = fromTAInstrumentsExcel(data);
-  expect(output.spectra).toHaveLength(1);
-  expect(Object.keys(output.spectra[0].variables)).toStrictEqual([
+  expect(output.measurements).toHaveLength(1);
+  expect(Object.keys(output.measurements[0].variables)).toStrictEqual([
     'x',
     'y',
     'z',
     't',
   ]);
 
-  const variables = output.spectra[0].variables;
+  const variables = output.measurements[0].variables;
 
   expect(variables.x.data).toHaveLength(71627);
   expect(variables.y.data).toHaveLength(71627);
