@@ -1,7 +1,7 @@
 {
-  "name": "tga-spectrum",
-  "version": "0.18.1",
-  "description": "tga-spectrum provides tools to convert output files from thermogravimetric analysis (TGA) into JCAMP-DX, as well as tools to analyze the data (mass loss analysis)",
+  "name": "tga-analysis",
+  "version": "0.0.0",
+  "description": "Provides tools to convert output files from thermogravimetric analysis (TGA) into JCAMP-DX, as well as tools to analyze the data (mass loss analysis)",
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
   "types": "./lib/index.d.ts",
@@ -31,12 +31,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/cheminfo/tga-spectrum.git"
+    "url": "git+https://github.com/cheminfo/analysis.git"
   },
   "bugs": {
-    "url": "https://github.com/cheminfo/tga-spectrum/issues"
+    "url": "https://github.com/cheminfo/analysis/issues"
   },
-  "homepage": "https://github.com/cheminfo/tga-spectrum#readme",
+  "homepage": "https://github.com/cheminfo/analysis#readme",
   "jest": {
     "preset": "ts-jest",
     "testEnvironment": "node"
@@ -77,27 +77,27 @@
         {
           "extension": "txt",
           "manufacturer": "TA Instruments",
-          "example": "https://raw.githubusercontent.com/cheminfo/tga-spectrum/master/testFiles/TAInstruments.txt"
+          "example": "https://raw.githubusercontent.com/cheminfo/analysis/master/testFiles/TAInstruments.txt"
         },
         {
           "extension": "csv",
           "manufacturer": "Perkin Elmer",
-          "example": "https://raw.githubusercontent.com/cheminfo/tga-spectrum/master/testFiles/perkinElmer.csv"
+          "example": "https://raw.githubusercontent.com/cheminfo/analysis/master/testFiles/perkinElmer.csv"
         },
         {
           "extension": "txt",
           "manufacturer": "Perkin Elmer",
-          "example": "https://raw.githubusercontent.com/cheminfo/tga-spectrum/master/testFiles/perkinElmer_tga4000.txt"
+          "example": "https://raw.githubusercontent.com/cheminfo/analysis/master/testFiles/perkinElmer_tga4000.txt"
         },
         {
           "extension": "jcamp",
           "manufacturer": "cheminfo",
-          "example": "https://raw.githubusercontent.com/cheminfo/tga-spectrum/master/testFiles/ntuples.jdx"
+          "example": "https://raw.githubusercontent.com/cheminfo/analysis/master/testFiles/ntuples.jdx"
         },
         {
           "extension": "txt",
           "manufacturer": "Netzsch",
-          "example": "https://raw.githubusercontent.com/cheminfo/tga-spectrum/master/testFiles/netzsch.txt"
+          "example": "https://raw.githubusercontent.com/cheminfo/analysis/master/testFiles/netzsch.txt"
         }
       ]
     }
