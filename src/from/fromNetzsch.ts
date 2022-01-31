@@ -48,7 +48,7 @@ export function fromNetzsch(
   // @ts-expect-error
   const mass = parseFloat(parsed.meta['SAMPLE MASS /mg']);
   parsed.variables.y.data = parsed.variables.y.data.map((i) => {
-    return i * mass;
+    return (i / 100) * mass;
   });
   let analysis = new Analysis();
   analysis.pushSpectrum(parsed.variables, {
