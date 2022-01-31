@@ -16,10 +16,10 @@ test('fromPerkinElmer', () => {
   expect(spectrum1).toBeDefined();
   expect(spectrum1.variables.x.data).toHaveLength(1155);
   expect(spectrum1.variables.y.data).toHaveLength(1155);
-  expect(spectrum1.variables.x.label).toStrictEqual('Temperature');
-  expect(spectrum1.variables.y.label).toStrictEqual('Weight');
-  expect(spectrum1.variables.x.units).toStrictEqual('°C');
-  expect(spectrum1.variables.y.units).toStrictEqual('mg');
+  expect(spectrum1.variables.x.label).toBe('Temperature');
+  expect(spectrum1.variables.y.label).toBe('Weight');
+  expect(spectrum1.variables.x.units).toBe('°C');
+  expect(spectrum1.variables.y.units).toBe('mg');
   // @ts-expect-error
   expect(spectrum1.meta.methodSteps).toHaveLength(6);
 
@@ -27,8 +27,8 @@ test('fromPerkinElmer', () => {
 
   expect(spectrum2.variables.x.data).toHaveLength(1155);
   expect(spectrum2.variables.y.data).toHaveLength(1155);
-  expect(spectrum2.variables.x.label).toStrictEqual('Time');
-  expect(spectrum2.variables.y.label).toStrictEqual('Weight');
-  expect(spectrum2.variables.x.units).toStrictEqual('s');
-  expect(spectrum2.variables.y.units).toStrictEqual('mg');
+  expect(spectrum2.variables.x.label).toBe('Time');
+  expect(spectrum2.variables.y.label).toBe('Weight');
+  expect(spectrum2.variables.x.units).toBe('s');
+  expect(spectrum2.variables.y.units).toBe('mg');
 });

@@ -15,10 +15,10 @@ test('fromJcamp', () => {
   if (!spectrum1) throw new Error('Could not getXYSpectrum');
   expect(spectrum1.variables.x.data).toHaveLength(2251);
   expect(spectrum1.variables.y.data).toHaveLength(2251);
-  expect(spectrum1.variables.x.label).toStrictEqual('Ts');
-  expect(spectrum1.variables.x.units).toStrictEqual('°C');
-  expect(spectrum1.variables.y.label).toStrictEqual('Value');
-  expect(spectrum1.variables.y.units).toStrictEqual('mg');
+  expect(spectrum1.variables.x.label).toBe('Ts');
+  expect(spectrum1.variables.x.units).toBe('°C');
+  expect(spectrum1.variables.y.label).toBe('Value');
+  expect(spectrum1.variables.y.units).toBe('mg');
 
   let spectrum2 = analysis.getXYSpectrum({ units: 'mg vs s' });
 
@@ -27,7 +27,7 @@ test('fromJcamp', () => {
   // @ts-expect-error
   expect(spectrum2.variables.y.data).toHaveLength(2251);
   // @ts-expect-error
-  expect(spectrum2.variables.x.label).toStrictEqual('t');
+  expect(spectrum2.variables.x.label).toBe('t');
   // @ts-expect-error
-  expect(spectrum2.variables.y.label).toStrictEqual('Value');
+  expect(spectrum2.variables.y.label).toBe('Value');
 });
