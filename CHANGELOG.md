@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.18.2](https://www.github.com/cheminfo/tga-spectrum/compare/v0.18.1...v0.18.2) (2022-01-31)
+
+
+### Bug Fixes
+
+* Netzsch parser bug ([#45](https://www.github.com/cheminfo/tga-spectrum/issues/45)) ([ac3c0e3](https://www.github.com/cheminfo/tga-spectrum/commit/ac3c0e3d7680cda5240fd0d979163ffc9803894e))
+
 ### [0.18.1](https://www.github.com/cheminfo/tga-spectrum/compare/v0.18.0...v0.18.1) (2021-09-28)
 
 
