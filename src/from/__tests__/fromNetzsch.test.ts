@@ -11,8 +11,8 @@ test('fromNetzsch', () => {
   expect(result.spectra).toHaveLength(1);
   const spectrum = result.getSpectrum();
   expect(Object.keys(spectrum.variables)).toStrictEqual(['x', 'y', 't']);
-  expect(spectrum.variables.x.data[0]).toStrictEqual(27.141);
-  expect(spectrum.variables.y.data[0]).toStrictEqual(890.9062668);
+  expect(spectrum.variables.x.data[0]).toBe(27.141);
+  expect(spectrum.variables.y.data[0]).toBe(890.9062668);
   expect(spectrum.variables.x.data).toHaveLength(270);
   expect(spectrum.variables.y.data).toHaveLength(270);
   // @ts-expect-error

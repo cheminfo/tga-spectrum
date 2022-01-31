@@ -70,7 +70,7 @@ describe('fromMettlerToledo', () => {
       },
     ]);
 
-    expect(spectrum.dataType).toStrictEqual('TGA');
+    expect(spectrum.dataType).toBe('TGA');
     expect(spectrum).toMatchObject({
       dataType: 'TGA',
       meta: {
