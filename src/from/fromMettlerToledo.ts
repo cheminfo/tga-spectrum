@@ -17,7 +17,7 @@ export function fromMettlerToledo(
       (result.variables.y.units === 'mg' || result.variables.y.units === '%'),
   )[0];
 
-  const cheminfo = result.meta;
+  const cheminfo = {meta: result.meta};
 
   analysis.pushSpectrum(result.variables, {
     dataType: 'TGA',

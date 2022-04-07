@@ -82,7 +82,41 @@ describe('fromMettlerToledo', () => {
         },
         sampleMass: { value: 12.8009, units: 'mg' },
         cheminfo: {
-          method: '650 TGA/DSC',
+          meta: {
+            method: '650 TGA/DSC',
+            holder: {
+              kind: 'Alumina 70ul',
+              mass: { value: 179.215, units: 'mg' },
+              material: 'Ceramic',
+            },
+            initialValue: { value: 12.8009, units: 'mg' },
+            zones: [
+              {
+                relativeMassLoss: 0.669395,
+                massLoss: { value: 8.5696, units: 'mg' },
+                from: { value: 38.13, units: '°C' },
+                to: { value: 647.27, units: '°C' },
+                kind: 'horizontal',
+                inflectionPoint: { value: 397.19, units: '°C' },
+                middlePoint: { value: 401.27, units: '°C' },
+              },
+              {
+                relativeMassLoss: 0.15049400000000002,
+                massLoss: { value: 1.9266, units: 'mg' },
+                from: { value: 647.27, units: '°C' },
+                to: { value: 649.22, units: '°C' },
+                kind: 'horizontal',
+                inflectionPoint: { value: 657.4, units: '°C' },
+                middlePoint: { value: 658.13, units: '°C' },
+              },
+              {
+                relativeMassLoss: 0.18011100000000002,
+                massLoss: { value: 2.304700000000001, units: 'mg' },
+                kind: 'Residual',
+              },
+            ],
+            sampleMass: { value: 12.8009, units: 'mg' },
+          },
         },
       },
     });
