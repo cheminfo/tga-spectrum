@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.18.3](https://www.github.com/cheminfo/tga-spectrum/compare/v0.18.2...v0.18.3) (2022-04-07)
+
+
+### Bug Fixes
+
+* add meta in cheminfo property in jcamp ([3b6dfb7](https://www.github.com/cheminfo/tga-spectrum/commit/3b6dfb7a6a6e35ddd507d295aac8c9431a630be5))
+
 ### [0.18.2](https://www.github.com/cheminfo/tga-spectrum/compare/v0.18.1...v0.18.2) (2022-01-31)
 
 
