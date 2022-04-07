@@ -32,7 +32,7 @@ export function fromNetzsch(
       const [temperature, time, weight] = line.split(';').map(parseFloat);
       parsed.variables.x.data.push(temperature);
       parsed.variables.y.data.push(weight);
-      // @ts-ignore
+      // @ts-expect-error can have errors
       parsed.variables.t.data.push(time);
     } else if (line.startsWith('##')) {
       inData = true;
@@ -40,12 +40,12 @@ export function fromNetzsch(
       const groups = /#(?<label>.*?):(?<value>.*)/.exec(line)?.groups;
       if (!groups) throw new Error('TGA Netzsch parsing error');
       const { label, value } = groups;
-      // @ts-expect-error
+      // @ts-expect-error can have errors
       parsed.meta[label] = value;
     }
   }
 
-  // @ts-expect-error
+  // @ts-expect-error can have errors
   const mass = parseFloat(parsed.meta['SAMPLE MASS /mg']);
   parsed.variables.y.data = parsed.variables.y.data.map((i) => {
     return (i / 100) * mass;
@@ -56,6 +56,5 @@ export function fromNetzsch(
     dataType: 'TGA',
   });
 
-  // @ts-ignore
   return analysis;
 }

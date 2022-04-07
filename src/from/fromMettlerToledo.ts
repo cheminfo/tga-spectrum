@@ -1,4 +1,4 @@
-//@ts-ignore
+//@ts-expect-error imported library
 import { tgaParseMettlerToledo } from 'physical-chemistry-parser';
 
 import { Analysis } from '..';
@@ -17,7 +17,7 @@ export function fromMettlerToledo(
       (result.variables.y.units === 'mg' || result.variables.y.units === '%'),
   )[0];
 
-  const cheminfo = {meta: result.meta};
+  const cheminfo = { meta: result.meta };
 
   analysis.pushSpectrum(result.variables, {
     dataType: 'TGA',
