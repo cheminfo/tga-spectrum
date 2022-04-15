@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.19.0](https://www.github.com/cheminfo/tga-spectrum/compare/v0.18.3...v0.19.0) (2022-04-15)
+
+
+### Features
+
+* upate tga fromMettlerToledo to deal with latin1 or utf8 file ([6bb5654](https://www.github.com/cheminfo/tga-spectrum/commit/6bb5654d665b5b89869bb601a005a0812f311274))
+
 ### [0.18.3](https://www.github.com/cheminfo/tga-spectrum/compare/v0.18.2...v0.18.3) (2022-04-07)
 
 
