@@ -19,7 +19,7 @@ test('fromNetzsch', () => {
   expect(spectrum.variables.t.data).toHaveLength(270);
   let jcamp = toJcamp(result);
   expect(jcamp.length).toBeGreaterThan(7500);
-  expect(jcamp.length).toBeLessThan(9215);
+  expect(jcamp.length).toBeLessThan(10000);
 });
 
 test('issue 44', () => {
