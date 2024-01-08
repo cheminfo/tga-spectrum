@@ -6,13 +6,13 @@ import { Spectrum } from 'common-spectrum';
 import { fromPerkinElmer } from '../fromPerkinElmer';
 
 test('fromPerkinElmer', () => {
-  let jcamp = readFileSync(
+  const jcamp = readFileSync(
     join(__dirname, '../../../testFiles/perkinElmer_tga4000.txt'),
     'latin1',
   );
-  let analysis = fromPerkinElmer(jcamp);
+  const analysis = fromPerkinElmer(jcamp);
 
-  let spectrum1 = analysis.getXYSpectrum() as Spectrum;
+  const spectrum1 = analysis.getXYSpectrum() as Spectrum;
   expect(spectrum1).toBeDefined();
   expect(spectrum1.variables.x.data).toHaveLength(1155);
   expect(spectrum1.variables.y.data).toHaveLength(1155);
@@ -20,10 +20,9 @@ test('fromPerkinElmer', () => {
   expect(spectrum1.variables.y.label).toBe('Weight');
   expect(spectrum1.variables.x.units).toBe('°C');
   expect(spectrum1.variables.y.units).toBe('mg');
-  // @ts-expect-error
-  expect(spectrum1.meta.methodSteps).toHaveLength(6);
+  expect(spectrum1.meta?.methodSteps).toHaveLength(6);
 
-  let spectrum2 = analysis.getXYSpectrum({ units: 'mg vs s' }) as Spectrum;
+  const spectrum2 = analysis.getXYSpectrum({ units: 'mg vs s' }) as Spectrum;
 
   expect(spectrum2.variables.x.data).toHaveLength(1155);
   expect(spectrum2.variables.y.data).toHaveLength(1155);

@@ -5,8 +5,8 @@ export function fromNetzsch(
   arrayBuffer: string | ArrayBuffer | Uint8Array,
 ): Analysis {
   const text = ensureString(arrayBuffer, { encoding: 'iso8859-1' });
-  let lines = text.split(/\r?\n/).filter((line) => line);
-  let parsed: Spectrum<number[]> = {
+  const lines = text.split(/\r?\n/).filter((line) => line);
+  const parsed: Spectrum<number[]> = {
     meta: {},
     variables: {
       x: {
@@ -27,7 +27,7 @@ export function fromNetzsch(
     },
   };
   let inData = false;
-  for (let line of lines) {
+  for (const line of lines) {
     if (inData) {
       const [temperature, time, weight] = line.split(';').map(parseFloat);
       parsed.variables.x.data.push(temperature);
@@ -50,7 +50,7 @@ export function fromNetzsch(
   parsed.variables.y.data = parsed.variables.y.data.map((i) => {
     return (i / 100) * mass;
   });
-  let analysis = new Analysis();
+  const analysis = new Analysis();
   analysis.pushSpectrum(parsed.variables, {
     meta: parsed.meta,
     dataType: 'TGA',

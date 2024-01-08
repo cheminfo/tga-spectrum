@@ -4,19 +4,15 @@ import { join } from 'path';
 import { fromJcamp } from '../..';
 
 test('fromJcamp', () => {
-  let jcamp = readFileSync(
+  const jcamp = readFileSync(
     join(__dirname, '../../../testFiles/ntuples.jdx'),
     'utf8',
   );
-  let analysis = fromJcamp(jcamp);
+  const analysis = fromJcamp(jcamp);
 
-  let spectrum = analysis.getXYSpectrum();
-  // @ts-expect-error
-  expect(spectrum.variables.x.data).toHaveLength(408);
-  // @ts-expect-error
-  expect(spectrum.variables.y.data).toHaveLength(408);
-  // @ts-expect-error
-  expect(spectrum.variables.x.label).toBe('Temperature');
-  // @ts-expect-error
-  expect(spectrum.variables.y.label).toBe('Weight');
+  const spectrum = analysis.getXYSpectrum();
+  expect(spectrum?.variables.x.data).toHaveLength(408);
+  expect(spectrum?.variables.y.data).toHaveLength(408);
+  expect(spectrum?.variables.x.label).toBe('Temperature');
+  expect(spectrum?.variables.y.label).toBe('Weight');
 });

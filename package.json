@@ -42,24 +42,24 @@
     "testEnvironment": "node"
   },
   "dependencies": {
-    "@types/react": "^18.0.21",
-    "common-spectrum": "2.2.1",
+    "@types/react": "^18.2.47",
+    "common-spectrum": "2.4.0",
     "ensure-string": "^1.2.0",
-    "papaparse": "^5.3.2",
+    "papaparse": "^5.4.1",
     "physical-chemistry-parser": "^3.1.0",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
-    "@types/jest": "^29.1.1",
-    "@types/papaparse": "^5.3.5",
-    "cheminfo-build": "^1.1.11",
-    "eslint": "^8.24.0",
-    "eslint-config-cheminfo-typescript": "^11.1.0",
-    "jest": "^29.1.2",
-    "prettier": "^2.7.1",
-    "rimraf": "^3.0.2",
-    "ts-jest": "^29.0.3",
-    "typescript": "^4.8.4"
+    "@types/jest": "^29.5.11",
+    "@types/papaparse": "^5.3.14",
+    "cheminfo-build": "^1.2.0",
+    "eslint": "^8.56.0",
+    "eslint-config-cheminfo-typescript": "^12.1.0",
+    "jest": "^29.7.0",
+    "prettier": "^3.1.1",
+    "rimraf": "^5.0.5",
+    "ts-jest": "^29.1.1",
+    "typescript": "^5.3.3"
   },
   "info": {
     "logo": "https://raw.githubusercontent.com/cheminfo/font/main/src/tga/assignment.svg",

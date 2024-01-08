@@ -12,13 +12,13 @@ export function fromPerkinElmerCSV(
   arrayBuffer: string | ArrayBuffer | Uint8Array,
 ) {
   const text = ensureString(arrayBuffer);
-  let parsed = Papa.parse(text, {
+  const parsed = Papa.parse(text, {
     skipEmptyLines: true,
     header: true,
     dynamicTyping: true,
   }).data;
 
-  let analysis = new Analysis();
+  const analysis = new Analysis();
   analysis.pushSpectrum(
     {
       x: {

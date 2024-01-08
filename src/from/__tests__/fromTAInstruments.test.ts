@@ -7,7 +7,7 @@ import { fromTAInstruments } from '../fromTAInstruments';
 
 describe('fromTAInstruments', () => {
   it('TAInstruments.txt', () => {
-    let file = readFileSync(
+    const file = readFileSync(
       join(__dirname, '../../../testFiles/TAInstruments.txt'),
     );
 
@@ -26,7 +26,7 @@ describe('fromTAInstruments', () => {
 
     const spectrum = analysis.getXYSpectrum();
 
-    if (!spectrum || !spectrum.meta) {
+    if (!spectrum?.meta) {
       throw new Error('could not retrieve spectrum with meta');
     }
     expect(Object.keys(spectrum.variables)).toStrictEqual(['x', 'y']);
@@ -41,7 +41,7 @@ describe('fromTAInstruments', () => {
   });
 
   it('mof.txt', () => {
-    let file = readFileSync(join(__dirname, '../../../testFiles/mof.txt'));
+    const file = readFileSync(join(__dirname, '../../../testFiles/mof.txt'));
 
     const analysis = fromTAInstruments(file);
 
@@ -57,7 +57,7 @@ describe('fromTAInstruments', () => {
     ]);
 
     const spectrum = analysis.getXYSpectrum();
-    if (!spectrum || !spectrum.meta) {
+    if (!spectrum?.meta) {
       throw new Error('could not retrieve spectrum with meta');
     }
 

@@ -3,8 +3,8 @@ import { Analysis } from '..';
 import { parseTAInstrumentsExcel } from './parseTAInstrumentsExcel';
 
 export function fromTAInstrumentsExcel(arrayBuffer: ArrayBuffer | Uint8Array) {
-  let analysis = new Analysis();
-  let parsed = parseTAInstrumentsExcel(arrayBuffer);
+  const analysis = new Analysis();
+  const parsed = parseTAInstrumentsExcel(arrayBuffer);
 
   analysis.pushSpectrum(
     {
