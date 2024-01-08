@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.20.0](https://www.github.com/cheminfo/tga-spectrum/compare/v0.19.0...v0.20.0) (2024-01-08)
+
+
+### Features
+
+* update dependencies and deal with '%' in jcamp symbol names ([9959e59](https://www.github.com/cheminfo/tga-spectrum/commit/9959e598dd43f24778da3fc367b7a6ba367f2c1e))
+
 ## [0.19.0](https://www.github.com/cheminfo/tga-spectrum/compare/v0.18.3...v0.19.0) (2022-04-15)
 
 
