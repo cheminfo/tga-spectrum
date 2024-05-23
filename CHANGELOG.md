@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.21.0](https://www.github.com/cheminfo/tga-spectrum/compare/v0.20.0...v0.21.0) (2024-05-23)
+
+
+### Features
+
+* rewrite TA Instruments XLS parser ([6403a65](https://www.github.com/cheminfo/tga-spectrum/commit/6403a6503418e0fb99c3453cead2b22651874ee6))
+
 ## [0.20.0](https://www.github.com/cheminfo/tga-spectrum/compare/v0.19.0...v0.20.0) (2024-01-08)
 
 
