@@ -10,8 +10,30 @@ export function fromTAInstrumentsExcel(arrayBuffer: ArrayBuffer | Uint8Array) {
   analysis.pushSpectrum(parsed.variables, {
     dataType: 'TGA',
     title: parsed.meta['Sample name'],
-    meta: parsed.meta,
+    meta: {
+      ...parsed.meta,
+      cheminfo: {
+        meta: {
+          method: 'Full',
+        },
+      },
+    },
   });
+
+  for (const sheet of parsed.sheets) {
+    analysis.pushSpectrum(sheet.variables, {
+      dataType: 'TGA',
+      title: parsed.meta['Sample name'],
+      meta: {
+        ...parsed.meta,
+        cheminfo: {
+          meta: {
+            method: sheet.name,
+          },
+        },
+      },
+    });
+  }
 
   return analysis;
 }

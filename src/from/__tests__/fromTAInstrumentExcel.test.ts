@@ -8,16 +8,16 @@ test('import from TA instruments excel file', () => {
     join(__dirname, '../../../testFiles/190307-ALP-DMF@100%-TPD-2.xls'),
   );
 
-  const output = fromTAInstrumentsExcel(data);
-  expect(output.spectra).toHaveLength(1);
-  expect(Object.keys(output.spectra[0].variables)).toStrictEqual([
+  const analysis = fromTAInstrumentsExcel(data);
+  expect(analysis.spectra).toHaveLength(10);
+  expect(Object.keys(analysis.spectra[0].variables)).toStrictEqual([
     't',
     'x',
     'y',
     'z',
   ]);
 
-  const variables = output.spectra[0].variables;
+  const variables = analysis.spectra[0].variables;
 
   expect(variables.x.data).toHaveLength(71636);
   expect(variables.y.data).toHaveLength(71636);

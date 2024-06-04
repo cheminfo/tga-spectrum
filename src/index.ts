@@ -3,6 +3,7 @@ export {
   AnalysesManager,
   fromJcamp,
   toJcamp,
+  toJcamps,
   JSGraph,
 } from 'common-spectrum';
 
