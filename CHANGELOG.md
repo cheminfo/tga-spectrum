@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.22.0](https://www.github.com/cheminfo/tga-spectrum/compare/v0.21.0...v0.22.0) (2024-06-04)
+
+
+### ⚠ BREAKING CHANGES
+
+* fromTAInstrumentExcel generate both the combined chart and all the charts indivisually
+
+### Features
+
+* fromTAInstrumentExcel generate both the combined chart and all the charts indivisually ([3f55179](https://www.github.com/cheminfo/tga-spectrum/commit/3f551793d4790280f1dfc11afd15f281a448efef))
+
 ## [0.21.0](https://www.github.com/cheminfo/tga-spectrum/compare/v0.20.0...v0.21.0) (2024-05-23)
 
 
