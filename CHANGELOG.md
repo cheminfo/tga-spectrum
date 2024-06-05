@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.22.1](https://www.github.com/cheminfo/tga-spectrum/compare/v0.22.0...v0.22.1) (2024-06-05)
+
+
+### Bug Fixes
+
+* deal with empty sheets in TAInstruments ([708bb11](https://www.github.com/cheminfo/tga-spectrum/commit/708bb112822829a36d794edadc0d48dda566c5fb))
+
 ## [0.22.0](https://www.github.com/cheminfo/tga-spectrum/compare/v0.21.0...v0.22.0) (2024-06-04)
 
 
