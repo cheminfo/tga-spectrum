@@ -1,12 +1,14 @@
-import { readFileSync } from 'fs';
-import { join } from 'path';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 
-import { toJcamp, fromJcamp } from '../..';
-import { fromPerkinElmerCSV } from '../fromPerkinElmerCSV';
+import { expect, test } from 'vitest';
+
+import { fromJcamp, toJcamp } from '../../index.js';
+import { fromPerkinElmerCSV } from '../fromPerkinElmerCSV.js';
 
 test('fromPerkinElmer', () => {
   const csv = readFileSync(
-    join(__dirname, '../../../testFiles/perkinElmer.csv'),
+    join(import.meta.dirname, '../../../testFiles/perkinElmer.csv'),
     'latin1',
   );
   const analysis = fromPerkinElmerCSV(csv);
@@ -21,6 +23,7 @@ test('fromPerkinElmer', () => {
 
   const jcamp = toJcamp(analysis);
   const spectrumCopy = fromJcamp(jcamp).spectra[0];
+
   expect(spectrumCopy.variables.x.units).toBe('°C');
   expect(spectrumCopy.variables.x.label).toBe('Sample temperature');
   expect(spectrumCopy.variables.y.units).toBe('mg');

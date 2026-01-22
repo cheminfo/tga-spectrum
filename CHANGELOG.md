@@ -9,79 +9,70 @@
 
 ## [0.22.0](https://www.github.com/cheminfo/tga-spectrum/compare/v0.21.0...v0.22.0) (2024-06-04)
 
-
 ### ⚠ BREAKING CHANGES
 
-* fromTAInstrumentExcel generate both the combined chart and all the charts indivisually
+- fromTAInstrumentExcel generate both the combined chart and all the charts indivisually
 
 ### Features
 
-* fromTAInstrumentExcel generate both the combined chart and all the charts indivisually ([3f55179](https://www.github.com/cheminfo/tga-spectrum/commit/3f551793d4790280f1dfc11afd15f281a448efef))
+- fromTAInstrumentExcel generate both the combined chart and all the charts indivisually ([3f55179](https://www.github.com/cheminfo/tga-spectrum/commit/3f551793d4790280f1dfc11afd15f281a448efef))
 
 ## [0.21.0](https://www.github.com/cheminfo/tga-spectrum/compare/v0.20.0...v0.21.0) (2024-05-23)
 
-
 ### Features
 
-* rewrite TA Instruments XLS parser ([6403a65](https://www.github.com/cheminfo/tga-spectrum/commit/6403a6503418e0fb99c3453cead2b22651874ee6))
+- rewrite TA Instruments XLS parser ([6403a65](https://www.github.com/cheminfo/tga-spectrum/commit/6403a6503418e0fb99c3453cead2b22651874ee6))
 
 ## [0.20.0](https://www.github.com/cheminfo/tga-spectrum/compare/v0.19.0...v0.20.0) (2024-01-08)
 
-
 ### Features
 
-* update dependencies and deal with '%' in jcamp symbol names ([9959e59](https://www.github.com/cheminfo/tga-spectrum/commit/9959e598dd43f24778da3fc367b7a6ba367f2c1e))
+- update dependencies and deal with '%' in jcamp symbol names ([9959e59](https://www.github.com/cheminfo/tga-spectrum/commit/9959e598dd43f24778da3fc367b7a6ba367f2c1e))
 
 ## [0.19.0](https://www.github.com/cheminfo/tga-spectrum/compare/v0.18.3...v0.19.0) (2022-04-15)
 
-
 ### Features
 
-* upate tga fromMettlerToledo to deal with latin1 or utf8 file ([6bb5654](https://www.github.com/cheminfo/tga-spectrum/commit/6bb5654d665b5b89869bb601a005a0812f311274))
+- upate tga fromMettlerToledo to deal with latin1 or utf8 file ([6bb5654](https://www.github.com/cheminfo/tga-spectrum/commit/6bb5654d665b5b89869bb601a005a0812f311274))
 
 ### [0.18.3](https://www.github.com/cheminfo/tga-spectrum/compare/v0.18.2...v0.18.3) (2022-04-07)
 
-
 ### Bug Fixes
 
-* add meta in cheminfo property in jcamp ([3b6dfb7](https://www.github.com/cheminfo/tga-spectrum/commit/3b6dfb7a6a6e35ddd507d295aac8c9431a630be5))
+- add meta in cheminfo property in jcamp ([3b6dfb7](https://www.github.com/cheminfo/tga-spectrum/commit/3b6dfb7a6a6e35ddd507d295aac8c9431a630be5))
 
 ### [0.18.2](https://www.github.com/cheminfo/tga-spectrum/compare/v0.18.1...v0.18.2) (2022-01-31)
 
-
 ### Bug Fixes
 
-* Netzsch parser bug ([#45](https://www.github.com/cheminfo/tga-spectrum/issues/45)) ([ac3c0e3](https://www.github.com/cheminfo/tga-spectrum/commit/ac3c0e3d7680cda5240fd0d979163ffc9803894e))
+- Netzsch parser bug ([#45](https://www.github.com/cheminfo/tga-spectrum/issues/45)) ([ac3c0e3](https://www.github.com/cheminfo/tga-spectrum/commit/ac3c0e3d7680cda5240fd0d979163ffc9803894e))
 
 ### [0.18.1](https://www.github.com/cheminfo/tga-spectrum/compare/v0.18.0...v0.18.1) (2021-09-28)
 
-
 ### Bug Fixes
 
-* export missing fromMettlerToledo ([777220b](https://www.github.com/cheminfo/tga-spectrum/commit/777220bcbf2fee2ae5a05d3a2eca321128b797ad))
+- export missing fromMettlerToledo ([777220b](https://www.github.com/cheminfo/tga-spectrum/commit/777220bcbf2fee2ae5a05d3a2eca321128b797ad))
 
 ## [0.18.0](https://www.github.com/cheminfo/tga-spectrum/compare/v0.17.0...v0.18.0) (2021-09-28)
 
-
 ### ⚠ BREAKING CHANGES
 
-* typescript lactame build
-* improve fromMettlerToledo
+- typescript lactame build
+- improve fromMettlerToledo
 
 ### Features
 
-* add build script ([b95ae2e](https://www.github.com/cheminfo/tga-spectrum/commit/b95ae2eef12257cb980ccf1a85565ee7fdbcc42e))
-* add fromMettlerToledo ([bc5035d](https://www.github.com/cheminfo/tga-spectrum/commit/bc5035d5c9ece1a128197465ce6439334be46291))
-* add release-please ([3991b0d](https://www.github.com/cheminfo/tga-spectrum/commit/3991b0df086df8e722a38236fc725b1005bf77dc))
-* improve fromMettlerToledo ([a35b44f](https://www.github.com/cheminfo/tga-spectrum/commit/a35b44f199e6cc7679aca6ad3cb23ebe4c5da98b))
-* refactor to typescript ([9521b3e](https://www.github.com/cheminfo/tga-spectrum/commit/9521b3ea67fd7219f4d1668ba86ced7b7ab5c15a))
-* typescript lactame build ([05f5c9a](https://www.github.com/cheminfo/tga-spectrum/commit/05f5c9aac2a55d0cec89608dd1d2df8ed670ba87))
-* typescript refactoring ([5d0b42a](https://www.github.com/cheminfo/tga-spectrum/commit/5d0b42a20136afe0f37615e23b5d82120fba585a))
-
+- add build script ([b95ae2e](https://www.github.com/cheminfo/tga-spectrum/commit/b95ae2eef12257cb980ccf1a85565ee7fdbcc42e))
+- add fromMettlerToledo ([bc5035d](https://www.github.com/cheminfo/tga-spectrum/commit/bc5035d5c9ece1a128197465ce6439334be46291))
+- add release-please ([3991b0d](https://www.github.com/cheminfo/tga-spectrum/commit/3991b0df086df8e722a38236fc725b1005bf77dc))
+- improve fromMettlerToledo ([a35b44f](https://www.github.com/cheminfo/tga-spectrum/commit/a35b44f199e6cc7679aca6ad3cb23ebe4c5da98b))
+- refactor to typescript ([9521b3e](https://www.github.com/cheminfo/tga-spectrum/commit/9521b3ea67fd7219f4d1668ba86ced7b7ab5c15a))
+- typescript lactame build ([05f5c9a](https://www.github.com/cheminfo/tga-spectrum/commit/05f5c9aac2a55d0cec89608dd1d2df8ed670ba87))
+- typescript refactoring ([5d0b42a](https://www.github.com/cheminfo/tga-spectrum/commit/5d0b42a20136afe0f37615e23b5d82120fba585a))
 
 ### Bug Fixes
 
-* improve TAinstruments text parser ([750e47e](https://www.github.com/cheminfo/tga-spectrum/commit/750e47ebc811d91edef1b52369c4bf815147ebff))
+- improve TAinstruments text parser ([750e47e](https://www.github.com/cheminfo/tga-spectrum/commit/750e47ebc811d91edef1b52369c4bf815147ebff))
 
 ## [0.17.0](https://www.github.com/cheminfo/tga-spectrum/compare/v0.16.0...v0.17.0) (2021-09-14)
 

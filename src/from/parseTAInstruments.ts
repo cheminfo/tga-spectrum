@@ -1,10 +1,9 @@
+import type { TextData } from 'cheminfo-types';
 import { ensureString } from 'ensure-string';
 
-export function parseTAInstruments(
-  arrayBuffer: string | ArrayBuffer | Uint8Array,
-) {
+export function parseTAInstruments(arrayBuffer: TextData) {
   let text = ensureString(arrayBuffer);
-  text = text.replace(/[\r\f]/g, '');
+  text = text.replaceAll(/[\r\f]/g, '');
   const metaLines = text.split(/\n/).filter((line) => /^[a-zA-Z]/.test(line));
   const allDataLines = text
     .split(/\n/)
@@ -50,7 +49,7 @@ function parseMeta(lines: string[]) {
     } else if (/^Sample/.exec(line)) {
       meta.sampleName = splitTrim(line);
     } else if (/^Size/.exec(line)) {
-      meta.weight = parseFloat(splitTrim(line));
+      meta.weight = Number.parseFloat(splitTrim(line));
       meta.weightUnit = splitTrim(line, 2);
     } else if (/^Xcomment|^Comment/.exec(line)) {
       meta.comments.push(splitTrim(line));

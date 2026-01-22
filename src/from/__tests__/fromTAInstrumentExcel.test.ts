@@ -1,14 +1,20 @@
-import { readFileSync } from 'fs';
-import { join } from 'path';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 
-import { fromTAInstrumentsExcel } from '../fromTAInstrumentsExcel';
+import { expect, test } from 'vitest';
+
+import { fromTAInstrumentsExcel } from '../fromTAInstrumentsExcel.js';
 
 test('import from TA instruments excel file', () => {
   const data = readFileSync(
-    join(__dirname, '../../../testFiles/190307-ALP-DMF@100%-TPD-2.xls'),
+    join(
+      import.meta.dirname,
+      '../../../testFiles/190307-ALP-DMF@100%-TPD-2.xls',
+    ),
   );
 
   const analysis = fromTAInstrumentsExcel(data);
+
   expect(analysis.spectra).toHaveLength(10);
   expect(Object.keys(analysis.spectra[0].variables)).toStrictEqual([
     't',

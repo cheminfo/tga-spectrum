@@ -1,15 +1,15 @@
 export {
-  Analysis,
   AnalysesManager,
+  Analysis,
+  JSGraph,
   fromJcamp,
   toJcamp,
   toJcamps,
-  JSGraph,
 } from 'common-spectrum';
 
-export { fromMettlerToledo } from './from/fromMettlerToledo';
-export { fromNetzsch } from './from/fromNetzsch';
-export { fromPerkinElmer } from './from/fromPerkinElmer';
-export { fromPerkinElmerCSV } from './from/fromPerkinElmerCSV';
-export { fromTAInstruments } from './from/fromTAInstruments';
-export { fromTAInstrumentsExcel } from './from/fromTAInstrumentsExcel';
+export { fromMettlerToledo } from './from/fromMettlerToledo.js';
+export { fromNetzsch } from './from/fromNetzsch.js';
+export { fromPerkinElmer } from './from/fromPerkinElmer.js';
+export { fromPerkinElmerCSV } from './from/fromPerkinElmerCSV.js';
+export { fromTAInstruments } from './from/fromTAInstruments.js';
+export { fromTAInstrumentsExcel } from './from/fromTAInstrumentsExcel.js';

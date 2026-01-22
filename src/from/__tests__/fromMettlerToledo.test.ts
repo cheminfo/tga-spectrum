@@ -1,12 +1,14 @@
-import { readFileSync } from 'fs';
-import { join } from 'path';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 
-import { fromMettlerToledo } from '../fromMettlerToledo';
+import { describe, expect, it } from 'vitest';
+
+import { fromMettlerToledo } from '../fromMettlerToledo.js';
 
 describe('fromMettlerToledo', () => {
   it('Absolute weight', () => {
     const arrayBuffer = readFileSync(
-      join(__dirname, '../../../testFiles/mettlerToledoWeight.txt'),
+      join(import.meta.dirname, '../../../testFiles/mettlerToledoWeight.txt'),
     );
 
     const analysis = fromMettlerToledo(arrayBuffer);
@@ -19,28 +21,24 @@ describe('fromMettlerToledo', () => {
         label: 'time',
         min: 0,
         max: 2250,
-        isMonotone: true,
       },
       x: {
         units: '°C',
         label: 'Temperature recorded',
         min: 36.622,
         max: 658.132,
-        isMonotone: false,
       },
       r: {
         units: '°C',
         label: 'Temperature programmed',
         min: 35,
         max: 650,
-        isMonotone: false,
       },
       y: {
         units: 'mg',
         label: 'Weight',
         min: 2.304,
         max: 12.8038,
-        isMonotone: false,
       },
     });
 

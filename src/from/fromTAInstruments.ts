@@ -1,12 +1,11 @@
+import type { TextData } from 'cheminfo-types';
 import { ensureString } from 'ensure-string';
 
-import { Analysis } from '..';
+import { Analysis } from '../index.js';
 
-import { parseTAInstruments } from './parseTAInstruments';
+import { parseTAInstruments } from './parseTAInstruments.js';
 
-export function fromTAInstruments(
-  arrayBuffer: string | ArrayBuffer | Uint16Array,
-) {
+export function fromTAInstruments(arrayBuffer: TextData) {
   const text = ensureString(arrayBuffer);
   const analysis = new Analysis();
   const parsed = parseTAInstruments(text);

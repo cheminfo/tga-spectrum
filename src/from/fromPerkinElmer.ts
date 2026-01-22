@@ -1,13 +1,14 @@
 import { ensureString } from 'ensure-string';
 
-import { Analysis } from '..';
+import { Analysis } from '../index.js';
 
-import { parsePerkinElmer } from './parsePerkinElmer';
+import { parsePerkinElmer } from './parsePerkinElmer.js';
 
 /**
  * Creates a new Chromatogram element based in a JCAMP string
- * @param {string} text - String containing the JCAMP data
- * @return {Analysis} - New class element with the given data
+ * @param text - String containing the JCAMP data
+ * @param arrayBuffer
+ * @returns - New class element with the given data
  */
 export function fromPerkinElmer(
   arrayBuffer: string | ArrayBuffer | Uint8Array,

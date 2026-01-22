@@ -16,14 +16,14 @@ export function parsePerkinElmer(
       if (line.startsWith('1) TGA')) {
         inMethodSteps = false;
       } else if (!line.startsWith('\t') && line.length > 2) {
-        result.meta.methodSteps.push(line.replace(/\t\n,+$/g, ''));
+        result.meta.methodSteps.push(line.replaceAll(/\t\n,+$/g, ''));
       }
     } else if (/^[a-zA-Z -]+$/.exec(line)) {
       section = trim(line);
     } else if (/.*:.*/.exec(line)) {
       const position = line.indexOf(':');
-      const description = line.substring(0, position);
-      const value = trim(line.substring(position + 1));
+      const description = line.slice(0, Math.max(0, position));
+      const value = trim(line.slice(Math.max(0, position + 1)));
       result.meta[(section ? `${section}_` : '') + description] = value;
     } else if (/^[0-9\t .]+$/.exec(line)) {
       const fields = line.replace(/^\t/, '').split('\t');
