@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.0.0](https://github.com/cheminfo/tga-spectrum/compare/v0.22.1...v1.0.0) (2026-01-23)
+
+
+### ⚠ BREAKING CHANGES
+
+* migrate to type=module, update dependencies and migrate jest to vitest
+
+### Features
+
+* add parsePerkinElmerAscii ([9ba7e95](https://github.com/cheminfo/tga-spectrum/commit/9ba7e95314283d858016ce1b8f71898537186a75))
+
+
+### Miscellaneous Chores
+
+* migrate to type=module, update dependencies and migrate jest to vitest ([e80e743](https://github.com/cheminfo/tga-spectrum/commit/e80e7430510dc9503fb968446f6350ccbaf42e37))
+
 ### [0.22.1](https://www.github.com/cheminfo/tga-spectrum/compare/v0.22.0...v0.22.1) (2024-06-05)
 
 ### Bug Fixes
