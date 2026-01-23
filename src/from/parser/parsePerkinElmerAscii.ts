@@ -1,6 +1,6 @@
 import { ensureString } from 'ensure-string';
 
-export function parsePerkinElmer(
+export function parsePerkinElmerAscii(
   arrayBuffer: string | ArrayBuffer | Uint8Array,
 ) {
   const text = ensureString(arrayBuffer);

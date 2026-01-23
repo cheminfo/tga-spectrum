@@ -2,7 +2,7 @@ import { ensureString } from 'ensure-string';
 
 import { Analysis } from '../index.js';
 
-import { parsePerkinElmer } from './parsePerkinElmer.js';
+import { parsePerkinElmerAscii } from './parser/parsePerkinElmerAscii.ts';
 
 /**
  * Creates a new Chromatogram element based in a JCAMP string
@@ -15,7 +15,7 @@ export function fromPerkinElmer(
 ) {
   const text = ensureString(arrayBuffer);
   const analysis = new Analysis();
-  const spectrum = parsePerkinElmer(text);
+  const spectrum = parsePerkinElmerAscii(text);
 
   analysis.pushSpectrum(
     {

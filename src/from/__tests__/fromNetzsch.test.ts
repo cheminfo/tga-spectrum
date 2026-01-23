@@ -7,9 +7,7 @@ import { toJcamp } from '../../index.js';
 import { fromNetzsch } from '../fromNetzsch.js';
 
 test('fromNetzsch', () => {
-  const text = readFileSync(
-    join(import.meta.dirname, '../../../testFiles/netzsch.txt'),
-  );
+  const text = readFileSync(join(import.meta.dirname, './data/netzsch.txt'));
   const result = fromNetzsch(text);
 
   expect(result.spectra).toHaveLength(1);
@@ -30,9 +28,7 @@ test('fromNetzsch', () => {
 });
 
 test('issue 44', () => {
-  const text = readFileSync(
-    join(import.meta.dirname, '../../../testFiles/netzsch2.txt'),
-  );
+  const text = readFileSync(join(import.meta.dirname, './data/netzsch2.txt'));
   const result = fromNetzsch(text);
 
   expect(result.spectra).toHaveLength(1);

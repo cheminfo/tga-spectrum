@@ -7,10 +7,7 @@ import { fromTAInstrumentsExcel } from '../fromTAInstrumentsExcel.js';
 
 test('import from TA instruments excel file', () => {
   const data = readFileSync(
-    join(
-      import.meta.dirname,
-      '../../../testFiles/190307-ALP-DMF@100%-TPD-2.xls',
-    ),
+    join(import.meta.dirname, './data/190307-ALP-DMF@100%-TPD-2.xls'),
   );
 
   const analysis = fromTAInstrumentsExcel(data);

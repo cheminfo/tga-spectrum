@@ -7,7 +7,10 @@ import { fromPerkinElmer } from '../fromPerkinElmer.js';
 
 test('fromPerkinElmer', () => {
   const jcamp = readFileSync(
-    join(import.meta.dirname, '../../../testFiles/perkinElmer_tga4000.txt'),
+    join(
+      import.meta.dirname,
+      '../parser/__tests__/data/tga/perkinElmer_tga4000.txt',
+    ),
     'latin1',
   );
   const analysis = fromPerkinElmer(jcamp);

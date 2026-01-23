@@ -45,6 +45,7 @@
     "physical-chemistry-parser": "^3.4.2"
   },
   "devDependencies": {
+    "@types/node": "^25.0.10",
     "@types/papaparse": "^5.5.2",
     "@types/react": "^19.2.9",
     "@vitest/coverage-v8": "^4.0.17",
@@ -74,27 +75,27 @@
         {
           "extension": "txt",
           "manufacturer": "TA Instruments",
-          "example": "https://raw.githubusercontent.com/cheminfo/tga-spectrum/main/testFiles/TAInstruments.txt"
+          "example": "https://raw.githubusercontent.com/cheminfo/tga-spectrum/main/src/from/__tests__/data/TAInstruments.txt"
         },
         {
           "extension": "csv",
           "manufacturer": "Perkin Elmer",
-          "example": "https://raw.githubusercontent.com/cheminfo/tga-spectrum/main/testFiles/perkinElmer.csv"
+          "example": "https://raw.githubusercontent.com/cheminfo/tga-spectrum/main/src/from/__tests__/data/perkinElmer.csv"
         },
         {
           "extension": "txt",
           "manufacturer": "Perkin Elmer",
-          "example": "https://raw.githubusercontent.com/cheminfo/tga-spectrum/main/testFiles/perkinElmer_tga4000.txt"
+          "example": "https://raw.githubusercontent.com/cheminfo/tga-spectrum/main/src/from/__tests__/data/perkinElmer_tga4000.txt"
         },
         {
           "extension": "jcamp",
           "manufacturer": "cheminfo",
-          "example": "https://raw.githubusercontent.com/cheminfo/tga-spectrum/main/testFiles/ntuples.jdx"
+          "example": "https://raw.githubusercontent.com/cheminfo/tga-spectrum/main/src/from/__tests__/data/ntuples.jdx"
         },
         {
           "extension": "txt",
           "manufacturer": "Netzsch",
-          "example": "https://raw.githubusercontent.com/cheminfo/tga-spectrum/main/testFiles/netzsch.txt"
+          "example": "https://raw.githubusercontent.com/cheminfo/tga-spectrum/main/src/from/__tests__/data/netzsch.txt"
         }
       ]
     }

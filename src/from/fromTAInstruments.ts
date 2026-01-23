@@ -3,7 +3,7 @@ import { ensureString } from 'ensure-string';
 
 import { Analysis } from '../index.js';
 
-import { parseTAInstruments } from './parseTAInstruments.js';
+import { parseTAInstruments } from './parser/parseTAInstruments.ts';
 
 export function fromTAInstruments(arrayBuffer: TextData) {
   const text = ensureString(arrayBuffer);

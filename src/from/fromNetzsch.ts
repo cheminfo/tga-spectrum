@@ -1,4 +1,5 @@
 import { Analysis } from 'common-spectrum';
+
 import { ensureString } from 'ensure-string';
 
 export function fromNetzsch(

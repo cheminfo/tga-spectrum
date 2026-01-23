@@ -8,7 +8,7 @@ import { fromPerkinElmerCSV } from '../fromPerkinElmerCSV.js';
 
 test('fromPerkinElmer', () => {
   const csv = readFileSync(
-    join(import.meta.dirname, '../../../testFiles/perkinElmer.csv'),
+    join(import.meta.dirname, '../parser/__tests__/data/tga/perkinElmer.csv'),
     'latin1',
   );
   const analysis = fromPerkinElmerCSV(csv);

@@ -8,7 +8,7 @@ import { fromMettlerToledo } from '../fromMettlerToledo.js';
 describe('fromMettlerToledo', () => {
   it('Absolute weight', () => {
     const arrayBuffer = readFileSync(
-      join(import.meta.dirname, '../../../testFiles/mettlerToledoWeight.txt'),
+      join(import.meta.dirname, './data/mettlerToledoWeight.txt'),
     );
 
     const analysis = fromMettlerToledo(arrayBuffer);

@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { toJcamp } from 'common-spectrum';
+
 import { describe, expect, it } from 'vitest';
 
 import { fromTAInstruments } from '../fromTAInstruments.js';
@@ -9,7 +10,7 @@ import { fromTAInstruments } from '../fromTAInstruments.js';
 describe('fromTAInstruments', () => {
   it('TAInstruments.txt', () => {
     const file = readFileSync(
-      join(import.meta.dirname, '../../../testFiles/TAInstruments.txt'),
+      join(import.meta.dirname, './data/TAInstruments.txt'),
     );
 
     const analysis = fromTAInstruments(file);
@@ -41,9 +42,7 @@ describe('fromTAInstruments', () => {
   });
 
   it('mof.txt', () => {
-    const file = readFileSync(
-      join(import.meta.dirname, '../../../testFiles/mof.txt'),
-    );
+    const file = readFileSync(join(import.meta.dirname, './data/mof.txt'));
 
     const analysis = fromTAInstruments(file);
 
