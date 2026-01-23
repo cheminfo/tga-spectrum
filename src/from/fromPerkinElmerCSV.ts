@@ -1,3 +1,4 @@
+import type { TextData } from 'cheminfo-types';
 import { ensureString } from 'ensure-string';
 import Papa from 'papaparse';
 
@@ -9,9 +10,7 @@ import { Analysis } from '../index.js';
  * @param arrayBuffer
  * @returns - New class element with the given data
  */
-export function fromPerkinElmerCSV(
-  arrayBuffer: string | ArrayBuffer | Uint8Array,
-) {
+export function fromPerkinElmerCSV(arrayBuffer: TextData) {
   const text = ensureString(arrayBuffer);
   const parsed = Papa.parse(text, {
     skipEmptyLines: true,

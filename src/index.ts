@@ -13,3 +13,5 @@ export { fromPerkinElmer } from './from/fromPerkinElmer.js';
 export { fromPerkinElmerCSV } from './from/fromPerkinElmerCSV.js';
 export { fromTAInstruments } from './from/fromTAInstruments.js';
 export { fromTAInstrumentsExcel } from './from/fromTAInstrumentsExcel.js';
+
+export { parsePerkinElmerAscii } from './from/parser/parsePerkinElmerAscii.js';

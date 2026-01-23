@@ -1,10 +1,9 @@
 import { Analysis } from 'common-spectrum';
 
+import type { TextData } from 'cheminfo-types';
 import { ensureString } from 'ensure-string';
 
-export function fromNetzsch(
-  arrayBuffer: string | ArrayBuffer | Uint8Array,
-): Analysis {
+export function fromNetzsch(arrayBuffer: TextData): Analysis {
   const text = ensureString(arrayBuffer, { encoding: 'iso8859-1' });
   const lines = text.split(/\r?\n/).filter(Boolean);
   const parsed = {

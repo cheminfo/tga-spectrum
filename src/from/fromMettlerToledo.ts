@@ -1,11 +1,10 @@
-//@ts-expect-error imported library
+import type { TextData } from 'cheminfo-types';
+// @ts-expect-error imported library for which we don't have types
 import { tgaParseMettlerToledo } from 'physical-chemistry-parser';
 
 import { Analysis } from '../index.js';
 
-export function fromMettlerToledo(
-  arrayBuffer: string | ArrayBuffer | Uint8Array,
-) {
+export function fromMettlerToledo(arrayBuffer: TextData) {
   const analysis = new Analysis();
 
   const results: any[] = tgaParseMettlerToledo(arrayBuffer);
