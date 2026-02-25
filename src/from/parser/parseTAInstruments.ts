@@ -13,7 +13,7 @@ export function parseTAInstruments(arrayBuffer: TextData) {
   const meta = parseMeta(metaLines);
 
   //let events = allDataLines.filter((line) => line[0] < 0);
-  const dataLines = allDataLines.filter((line) => line[0] > 0);
+  const dataLines = allDataLines.filter((line) => (line[0] ?? 0) > 0);
 
   meta.balancePurgeFlow = [];
   meta.samplePurgeFlow = [];
@@ -36,7 +36,7 @@ export function parseTAInstruments(arrayBuffer: TextData) {
 }
 
 function splitTrim(string: string, item = 1) {
-  return string.split(/\t/)[item].replace(/^[ \t]*(.*?)[ \t]*$/, '$1');
+  return (string.split(/\t/)[item] ?? '').replace(/^[ \t]*(.*?)[ \t]*$/, '$1');
 }
 
 function parseMeta(lines: string[]) {

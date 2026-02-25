@@ -1,9 +1,9 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { expect, test } from 'vitest';
+import { assert, expect, test } from 'vitest';
 
-import { fromTAInstrumentsExcel } from '../fromTAInstrumentsExcel.js';
+import { fromTAInstrumentsExcel } from '../fromTAInstrumentsExcel.ts';
 
 test('import from TA instruments excel file', () => {
   const data = readFileSync(
@@ -13,14 +13,18 @@ test('import from TA instruments excel file', () => {
   const analysis = fromTAInstrumentsExcel(data);
 
   expect(analysis.spectra).toHaveLength(10);
-  expect(Object.keys(analysis.spectra[0].variables)).toStrictEqual([
+
+  const firstSpectrum = analysis.spectra[0];
+  assert(firstSpectrum !== undefined);
+
+  expect(Object.keys(firstSpectrum.variables)).toStrictEqual([
     't',
     'x',
     'y',
     'z',
   ]);
 
-  const variables = analysis.spectra[0].variables;
+  const variables = firstSpectrum.variables;
 
   expect(variables.x.data).toHaveLength(71636);
   expect(variables.y.data).toHaveLength(71636);

@@ -54,6 +54,7 @@ function getSections(blob: TextData) {
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
+    if (line === undefined) continue;
     if (line.startsWith('Method Steps:')) {
       currentSection = 'methodSteps';
       continue;
@@ -82,7 +83,7 @@ function getSections(blob: TextData) {
           const match = line.match(/^([0-9]+)\)\s+/);
           if (match) {
             result.methodSteps.steps.push({
-              id: Number.parseInt(match[1], 10),
+              id: Number.parseInt(match[1] ?? '', 10),
               label: line.replace('\t', ' ').trim(),
               description: '',
               variables: [],
@@ -102,7 +103,7 @@ function getSections(blob: TextData) {
         }
         break;
       case 'dataHeader':
-        dataHeaders = parseDataHeader(line, lines[i + 1]);
+        dataHeaders = parseDataHeader(line, lines[i + 1] ?? '');
         i++;
         currentSection = 'data';
         currentStep.variables = structuredClone(dataHeaders);
@@ -129,7 +130,7 @@ function getSections(blob: TextData) {
             );
           }
           for (let j = 0; j < dataParts.length; j++) {
-            currentStep?.variables[j].data.push(dataParts[j]);
+            currentStep.variables[j]?.data.push(dataParts[j] ?? 0);
           }
         }
         break;
@@ -155,7 +156,7 @@ function parseDataBlockHeader(line: string, result: Section) {
   if (!match) {
     throw new Error(`Could not parse data block header line: ${line}`);
   }
-  const id = Number.parseInt(match[1], 10);
+  const id = Number.parseInt(match[1] ?? '', 10);
   // find the corresponding step
   const step = result.methodSteps.steps.find((s) => s.id === id);
   if (!step) {
@@ -163,7 +164,7 @@ function parseDataBlockHeader(line: string, result: Section) {
   }
   return {
     id,
-    description: match[2].trim(),
+    description: (match[2] ?? '').trim(),
     step,
   };
 }
@@ -181,9 +182,10 @@ function parseDataHeader(
   const secondLineParts = nextLine.split('\t').map((s) => s.trim());
   const combined: string[] = [];
   for (let i = 0; i < firstLineParts.length; i++) {
-    let combinedHeader = firstLineParts[i];
-    if (i < secondLineParts.length && secondLineParts[i] !== '') {
-      combinedHeader += ` ${secondLineParts[i]}`;
+    let combinedHeader = firstLineParts[i] ?? '';
+    const secondPart = secondLineParts[i];
+    if (secondPart !== undefined && secondPart !== '') {
+      combinedHeader += ` ${secondPart}`;
     }
     combined.push(combinedHeader);
   }

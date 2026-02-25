@@ -1,7 +1,7 @@
 import type { TextData } from 'cheminfo-types';
 import { ensureString } from 'ensure-string';
 
-import { Analysis } from '../index.js';
+import { Analysis } from '../index.ts';
 
 import { parseTAInstruments } from './parser/parseTAInstruments.ts';
 

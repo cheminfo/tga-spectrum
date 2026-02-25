@@ -3,8 +3,8 @@ import { join } from 'node:path';
 
 import { expect, test } from 'vitest';
 
-import { fromJcamp, toJcamp } from '../../index.js';
-import { fromPerkinElmerCSV } from '../fromPerkinElmerCSV.js';
+import { fromJcamp, toJcamp } from '../../index.ts';
+import { fromPerkinElmerCSV } from '../fromPerkinElmerCSV.ts';
 
 test('fromPerkinElmer', () => {
   const csv = readFileSync(
@@ -24,13 +24,15 @@ test('fromPerkinElmer', () => {
   const jcamp = toJcamp(analysis);
   const spectrumCopy = fromJcamp(jcamp).spectra[0];
 
-  expect(spectrumCopy.variables.x.units).toBe('°C');
-  expect(spectrumCopy.variables.x.label).toBe('Sample temperature');
-  expect(spectrumCopy.variables.y.units).toBe('mg');
-  expect(spectrumCopy.variables.y.label).toBe('Weight');
+  expect(spectrumCopy).toBeDefined();
 
-  expect(spectrumCopy.variables.t?.units).toBe('min');
-  expect(spectrumCopy.variables.t?.label).toBe('Time');
-  expect(spectrumCopy.variables.p?.units).toBe('°C');
-  expect(spectrumCopy.variables.p?.label).toBe('Program temperature');
+  expect(spectrumCopy?.variables.x.units).toBe('°C');
+  expect(spectrumCopy?.variables.x.label).toBe('Sample temperature');
+  expect(spectrumCopy?.variables.y.units).toBe('mg');
+  expect(spectrumCopy?.variables.y.label).toBe('Weight');
+
+  expect(spectrumCopy?.variables.t?.units).toBe('min');
+  expect(spectrumCopy?.variables.t?.label).toBe('Time');
+  expect(spectrumCopy?.variables.p?.units).toBe('°C');
+  expect(spectrumCopy?.variables.p?.label).toBe('Program temperature');
 });

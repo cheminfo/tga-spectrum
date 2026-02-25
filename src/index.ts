@@ -7,11 +7,11 @@ export {
   toJcamps,
 } from 'common-spectrum';
 
-export { fromMettlerToledo } from './from/fromMettlerToledo.js';
-export { fromNetzsch } from './from/fromNetzsch.js';
-export { fromPerkinElmer } from './from/fromPerkinElmer.js';
-export { fromPerkinElmerCSV } from './from/fromPerkinElmerCSV.js';
-export { fromTAInstruments } from './from/fromTAInstruments.js';
-export { fromTAInstrumentsExcel } from './from/fromTAInstrumentsExcel.js';
+export { fromMettlerToledo } from './from/fromMettlerToledo.ts';
+export { fromNetzsch } from './from/fromNetzsch.ts';
+export { fromPerkinElmer } from './from/fromPerkinElmer.ts';
+export { fromPerkinElmerCSV } from './from/fromPerkinElmerCSV.ts';
+export { fromTAInstruments } from './from/fromTAInstruments.ts';
+export { fromTAInstrumentsExcel } from './from/fromTAInstrumentsExcel.ts';
 
-export { parsePerkinElmerAscii } from './from/parser/parsePerkinElmerAscii.js';
+export { parsePerkinElmerAscii } from './from/parser/parsePerkinElmerAscii.ts';

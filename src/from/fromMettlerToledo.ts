@@ -2,7 +2,7 @@ import type { TextData } from 'cheminfo-types';
 // @ts-expect-error imported library for which we don't have types
 import { tgaParseMettlerToledo } from 'physical-chemistry-parser';
 
-import { Analysis } from '../index.js';
+import { Analysis } from '../index.ts';
 
 export function fromMettlerToledo(arrayBuffer: TextData) {
   const analysis = new Analysis();

@@ -3,7 +3,7 @@ import { join } from 'node:path';
 
 import { expect, test } from 'vitest';
 
-import { fromJcamp } from '../../index.js';
+import { fromJcamp } from '../../index.ts';
 
 test('fromJcamp', () => {
   const jcamp = readFileSync(

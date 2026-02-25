@@ -3,8 +3,8 @@ import { join } from 'node:path';
 
 import { expect, test } from 'vitest';
 
-import { toJcamp } from '../../index.js';
-import { fromNetzsch } from '../fromNetzsch.js';
+import { toJcamp } from '../../index.ts';
+import { fromNetzsch } from '../fromNetzsch.ts';
 
 test('fromNetzsch', () => {
   const text = readFileSync(join(import.meta.dirname, './data/netzsch.txt'));

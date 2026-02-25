@@ -3,7 +3,7 @@ import { join } from 'node:path';
 
 import { expect, test } from 'vitest';
 
-import { fromPerkinElmer } from '../fromPerkinElmer.js';
+import { fromPerkinElmer } from '../fromPerkinElmer.ts';
 
 test('fromPerkinElmer', () => {
   const text = readFileSync(

@@ -29,9 +29,10 @@ export function fromNetzsch(arrayBuffer: TextData): Analysis {
   let inData = false;
   for (const line of lines) {
     if (inData) {
-      const [temperature, time, weight] = line
-        .split(';')
-        .map(Number.parseFloat);
+      const parts = line.split(';').map(Number.parseFloat);
+      const temperature = parts[0] ?? 0;
+      const time = parts[1] ?? 0;
+      const weight = parts[2] ?? 0;
       parsed.variables.x.data.push(temperature);
       parsed.variables.y.data.push(weight);
       parsed.variables.t.data.push(time);
@@ -40,12 +41,12 @@ export function fromNetzsch(arrayBuffer: TextData): Analysis {
     } else {
       const groups = /#(?<label>.*?):(?<value>.*)/.exec(line)?.groups;
       if (!groups) throw new Error('TGA Netzsch parsing error');
-      const { label, value } = groups;
+      const { label, value } = groups as { label: string; value: string };
       parsed.meta[label] = value;
     }
   }
 
-  const mass = Number.parseFloat(parsed.meta['SAMPLE MASS /mg']);
+  const mass = Number.parseFloat(parsed.meta['SAMPLE MASS /mg'] ?? '');
   parsed.variables.y.data = parsed.variables.y.data.map((i) => {
     return (i / 100) * mass;
   });

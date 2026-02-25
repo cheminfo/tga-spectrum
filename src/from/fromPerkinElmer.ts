@@ -1,7 +1,7 @@
 import type { TextData } from 'cheminfo-types';
 import { ensureString } from 'ensure-string';
 
-import { Analysis } from '../index.js';
+import { Analysis } from '../index.ts';
 
 import { parsePerkinElmerAscii } from './parser/parsePerkinElmerAscii.ts';
 
@@ -23,12 +23,19 @@ export function fromPerkinElmer(arrayBuffer: TextData) {
     footer: parsed.footer,
   };
 
-  const variables = parsed.methodSteps.steps[0].variables;
+  const firstStep = parsed.methodSteps.steps[0];
+  if (!firstStep) {
+    return analysis;
+  }
+  const variables = firstStep.variables;
   for (let i = 1; i < parsed.methodSteps.steps.length; i++) {
-    const stepVariable = parsed.methodSteps.steps[i].variables;
+    const stepVariable = parsed.methodSteps.steps[i]?.variables;
+    if (!stepVariable) continue;
     for (let j = 0; j < variables.length; j++) {
-      if (variables[j].data && stepVariable[j].data) {
-        variables[j].data = variables[j].data.concat(stepVariable[j].data);
+      const variable = variables[j];
+      const stepVar = stepVariable[j];
+      if (variable?.data && stepVar?.data) {
+        variable.data = variable.data.concat(stepVar.data);
       }
     }
   }

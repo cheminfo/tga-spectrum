@@ -20,7 +20,8 @@ test('TGA parsePerkinElmerAscii', async () => {
 
   const step = result.methodSteps.steps[0];
 
-  expect(step.variables).toHaveLength(8);
+  expect(step).toBeDefined();
+  expect(step?.variables).toHaveLength(8);
   expect(result).toMatchSnapshot();
 });
 
@@ -39,7 +40,8 @@ test('DSC parsePerkinElmerAscii', async () => {
 
   const step = result.methodSteps.steps[0];
 
-  expect(step.variables).toHaveLength(9);
+  expect(step).toBeDefined();
+  expect(step?.variables).toHaveLength(9);
 
   expect(result).toMatchSnapshot();
 });

@@ -1,7 +1,7 @@
 //@ts-expect-error imported library
 import { tgaParseTAInstrumentsXLS } from 'physical-chemistry-parser';
 
-import { Analysis } from '../index.js';
+import { Analysis } from '../index.ts';
 
 export function fromTAInstrumentsExcel(arrayBuffer: ArrayBuffer | Uint8Array) {
   const analysis = new Analysis();

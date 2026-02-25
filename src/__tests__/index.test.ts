@@ -1,9 +1,7 @@
-import { describe, expect, it } from 'vitest';
+import { expect, test } from 'vitest';
 
-import { fromPerkinElmer } from '../index.js';
+import { fromPerkinElmer } from '../index.ts';
 
-describe('tga-spectrum', () => {
-  it('fromPerkinElmer', () => {
-    expect(typeof fromPerkinElmer).toBe('function');
-  });
+test('fromPerkinElmer', () => {
+  expect(typeof fromPerkinElmer).toBe('function');
 });
