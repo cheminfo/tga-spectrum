@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/cheminfo/tga-spectrum/compare/v1.0.0...v1.1.0) (2026-03-27)
+
+
+### Features
+
+* enforce TGA metadata types using TGAMeta from cheminfo-types ([4ca0e7f](https://github.com/cheminfo/tga-spectrum/commit/4ca0e7f610c516021ae83f47b0d22f3b8e44357b))
+
 ## [1.0.0](https://github.com/cheminfo/tga-spectrum/compare/v0.22.1...v1.0.0) (2026-01-23)
 
 ### ⚠ BREAKING CHANGES
