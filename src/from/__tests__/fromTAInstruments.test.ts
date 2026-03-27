@@ -2,7 +2,6 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { toJcamp } from 'common-spectrum';
-
 import { expect, test } from 'vitest';
 
 import { fromTAInstruments } from '../fromTAInstruments.ts';

@@ -1,6 +1,5 @@
-import { Analysis } from 'common-spectrum';
-
 import type { TextData } from 'cheminfo-types';
+import { Analysis } from 'common-spectrum';
 import { ensureString } from 'ensure-string';
 
 export function fromNetzsch(arrayBuffer: TextData): Analysis {
