@@ -5,11 +5,13 @@ import { expect, test } from 'vitest';
 
 import { fromMettlerToledo } from '../fromMettlerToledo.ts';
 
-test('fromMettlerToledo - Absolute weight', () => {
-  const arrayBuffer = readFileSync(
-    join(import.meta.dirname, './data/mettlerToledoWeight.txt'),
-  );
+const mettlerToledoWeightPath = join(
+  import.meta.dirname,
+  './data/mettlerToledoWeight.txt',
+);
 
+test('fromMettlerToledo - Absolute weight', () => {
+  const arrayBuffer = readFileSync(mettlerToledoWeightPath);
   const analysis = fromMettlerToledo(arrayBuffer);
 
   const spectrum = analysis.getSpectrum();
@@ -116,5 +118,29 @@ test('fromMettlerToledo - Absolute weight', () => {
         },
       },
     },
+  });
+});
+
+test('fromMettlerToledo - load as utf8 string fails (file is latin1)', () => {
+  const text = readFileSync(mettlerToledoWeightPath, 'utf8');
+
+  expect(() => fromMettlerToledo(text)).toThrowError(
+    /A spectrum must contain at least x and y variables/,
+  );
+});
+
+test('fromMettlerToledo - load as latin1 string', () => {
+  const text = readFileSync(mettlerToledoWeightPath, 'latin1');
+
+  const analysis = fromMettlerToledo(text);
+
+  const spectrum = analysis.getSpectrum();
+
+  expect(spectrum.dataType).toBe('TGA');
+  expect(spectrum.variables.y).toMatchObject({
+    units: 'mg',
+    label: 'Weight',
+    min: 2.304,
+    max: 12.8038,
   });
 });
