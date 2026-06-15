@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/cheminfo/tga-spectrum/compare/v1.1.0...v1.2.0) (2026-06-15)
+
+
+### Features
+
+* update common-spectrum ([37d6ae7](https://github.com/cheminfo/tga-spectrum/commit/37d6ae76e7bcd22e85d4f37f168600d314d89029))
+
 ## [1.1.0](https://github.com/cheminfo/tga-spectrum/compare/v1.0.0...v1.1.0) (2026-03-27)
 
 
