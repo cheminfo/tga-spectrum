@@ -33,12 +33,12 @@ interface Section {
 
 function getSections(blob: TextData) {
   const result: Section = {
-    header: {} as Record<string, string>,
+    header: {},
     methodSteps: {
       info: [] as string[],
       steps: [] as MethodStep[],
     },
-    footer: '' as string,
+    footer: '',
   };
   const text = ensureString(blob);
   const lines = text.split(/\r?\n/);
@@ -68,15 +68,14 @@ function getSections(blob: TextData) {
     }
 
     switch (currentSection) {
-      case 'header':
-        {
-          const [key, ...rest] = line.split(':').map((s) => s.trim());
-          const value = rest.join(':');
-          if (key && value.length > 0) {
-            result.header[key] = value;
-          }
+      case 'header': {
+        const [key, ...rest] = line.split(':').map((s) => s.trim());
+        const value = rest.join(':');
+        if (key && value.length > 0) {
+          result.header[key] = value;
         }
         break;
+      }
       case 'methodSteps':
         if (line.match(/^[0-9]/)) {
           // 1)	Hold for 1.0 min at 50.00�C
@@ -94,14 +93,13 @@ function getSections(blob: TextData) {
           result.methodSteps.info.push(line.replaceAll('\t', '  '));
         }
         break;
-      case 'dataFirstLine':
-        {
-          const { step, description } = parseDataBlockHeader(line, result);
-          currentStep = step;
-          currentStep.description = description;
-          currentSection = 'dataHeader';
-        }
+      case 'dataFirstLine': {
+        const { step, description } = parseDataBlockHeader(line, result);
+        currentStep = step;
+        currentStep.description = description;
+        currentSection = 'dataHeader';
         break;
+      }
       case 'dataHeader':
         dataHeaders = parseDataHeader(line, lines[i + 1] ?? '');
         i++;

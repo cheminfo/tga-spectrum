@@ -36,24 +36,24 @@
   },
   "homepage": "https://github.com/cheminfo/tga-spectrum#readme",
   "dependencies": {
-    "common-spectrum": "^3.2.0",
+    "common-spectrum": "^4.0.1",
     "ensure-string": "^2.0.0",
     "papaparse": "^5.5.3",
     "physical-chemistry-parser": "^4.0.0"
   },
   "devDependencies": {
-    "@types/node": "^25.5.0",
+    "@types/node": "^25.9.3",
     "@types/papaparse": "^5.5.2",
-    "@vitest/coverage-v8": "^4.1.2",
-    "@zakodium/tsconfig": "^1.0.3",
+    "@vitest/coverage-v8": "^4.1.9",
+    "@zakodium/tsconfig": "^1.0.5",
     "cheminfo-build": "^1.3.2",
-    "cheminfo-types": "^1.12.0",
+    "cheminfo-types": "^1.15.0",
     "eslint": "^9.39.2",
-    "eslint-config-cheminfo-typescript": "^21.1.0",
-    "prettier": "^3.8.1",
+    "eslint-config-cheminfo-typescript": "^22.1.0",
+    "prettier": "^3.8.4",
     "rimraf": "^6.1.3",
-    "typescript": "^5.9.3",
-    "vitest": "^4.1.2"
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.9"
   },
   "info": {
     "logo": "https://raw.githubusercontent.com/cheminfo/font/main/src/tga/assignment.svg",

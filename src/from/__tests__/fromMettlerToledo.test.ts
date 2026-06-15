@@ -124,7 +124,7 @@ test('fromMettlerToledo - Absolute weight', () => {
 test('fromMettlerToledo - load as utf8 string fails (file is latin1)', () => {
   const text = readFileSync(mettlerToledoWeightPath, 'utf8');
 
-  expect(() => fromMettlerToledo(text)).toThrowError(
+  expect(() => fromMettlerToledo(text)).toThrow(
     /A spectrum must contain at least x and y variables/,
   );
 });
